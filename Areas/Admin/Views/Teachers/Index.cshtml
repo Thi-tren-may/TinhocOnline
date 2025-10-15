@@ -1,0 +1,55 @@
+@using TinhocOnline.Models
+@model List<Users>
+@{
+    ViewData["Title"] = "Danh sách giáo viên";
+}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Danh sách giáo viên</h1>
+    </div>
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-15">
+                <div class="card recent-sales overflow-auto">
+                    <div class="card-body mt-4">
+                        <table class="table table-borderless dataTable">
+                    <thead>
+                        <tr>
+                            <th>UserID</th>
+                            <th>UserName</th>
+                            <th>FullName</th>
+                            <th>Email</th>
+                            <th>IsActive</th>
+                            <th>CreatedAt</th>
+                            <th>LastLogin</th>
+                            <th>Functions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="col-1 text-center">@user.UserID</td>
+                                <td class="col-2 text-center">@user.UserName</td>
+                                <td class="col-3 text-center">@user.FullName</td>
+                                <td class="col-3 text-center">@user.Email</td>
+                                <td class="col-1 text-center">@user.IsActive</td>
+                                <td class="col-2 text-center">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td class="col-2 text-center">@user.LastLogin?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-primary btn-sm"
+                                    title="Edit the menu"><i class="bi bi-pencil"></i></a>
+                                    <a asp-area="Admin" asp-controller="User" asp-action="Delete" asp-route-id="@user.UserID" class="btn btn-sm btn-danger"
+                                    title="Delete the menu"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </div>
+                </div>    
+                        </table>
+            </div>
+        </div>
+    </section>
+</main>

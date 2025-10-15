@@ -13,5 +13,6 @@ namespace TinhocOnline.Models
         {
         }
         public DbSet<AdminMenu> AdminMenus { get; set; }
+         public DbSet<Users> tblUsers { get; set; }
     }
 }
