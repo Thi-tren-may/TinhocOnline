@@ -42,7 +42,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
             return View(teacher);
         }
 
-                // POST: Thực hiện xóa
+        // POST: Thực hiện xóa
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -67,6 +67,49 @@ namespace TinhocOnline.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        // GET: Admin/Teachers/Edit/5
+[HttpGet]
+public IActionResult Edit(int? id)
+{
+    if (id == null || id == 0)
+        return NotFound();
+
+    var teacher = _context.tblTeachers
+        .Include(t => t.User)
+        .FirstOrDefault(t => t.UserID == id);
+
+    if (teacher == null)
+        return NotFound();
+
+    // Trả về View với model là kiểu Users (View yêu cầu)
+    return View(teacher.User);
+}
+
+
+  [HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Edit(Users user)
+{
+    if (!ModelState.IsValid)
+        return View(user); // Trả lại view với thông báo lỗi nếu có
+
+    // Lấy user hiện có trong database
+    var existingUser = _context.tblUsers.FirstOrDefault(u => u.UserID == user.UserID);
+            if (existingUser == null)
+                return NotFound();
+
+            // Cập nhật các thuộc tính
+            existingUser.UserName = user.UserName;
+    existingUser.FullName = user.FullName;
+    existingUser.Email = user.Email;
+    existingUser.Role = user.Role;
+    existingUser.IsActive = user.IsActive;
+
+    _context.tblUsers.Update(existingUser);
+    _context.SaveChanges();
+
+    return RedirectToAction("Index");
+}
 
     }
 }
