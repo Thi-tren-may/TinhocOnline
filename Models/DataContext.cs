@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TinhocOnline.Areas.Admin.Controllers;
 using TinhocOnline.Areas.Admin.Models;
 
 namespace TinhocOnline.Models
@@ -13,6 +14,7 @@ namespace TinhocOnline.Models
         {
         }
         public DbSet<AdminMenu> AdminMenus { get; set; }
-         public DbSet<Users> tblUsers { get; set; }
+        public DbSet<Users> tblUsers { get; set; }
+        public DbSet<Teacher> tblTeachers { get; set; }
     }
 }

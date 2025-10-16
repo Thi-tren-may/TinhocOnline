@@ -38,17 +38,18 @@
                                 <td class="col-2 text-center">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
                                 <td class="col-2 text-center">@user.LastLogin?.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
-                                    <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-primary btn-sm"
+                                    <a asp-area="Admin" asp-controller="Teachers" asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-primary btn-sm"
                                     title="Edit the menu"><i class="bi bi-pencil"></i></a>
-                                    <a asp-area="Admin" asp-controller="User" asp-action="Delete" asp-route-id="@user.UserID" class="btn btn-sm btn-danger"
-                                    title="Delete the menu"><i class="bi bi-trash"></i></a>
+                                    <a asp-area="Admin" asp-controller="Teachers" asp-action="Delete" asp-route-id="@user.UserID"class="btn btn-sm btn-danger" 
+                                    title="Delete Teacher"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                         }
                     </tbody>
+                        </table>
+
                 </div>
                 </div>    
-                        </table>
             </div>
         </div>
     </section>
