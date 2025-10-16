@@ -1,0 +1,59 @@
+@model TinhocOnline.Models.Users
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h2>Chỉnh sửa thông tin giáo viên</h2>
+    </div>
+
+    <div class="container shadow p-5">
+        <form method="post" asp-action="Edit">
+            <div class="form-row">
+
+                <!-- Ẩn ID -->
+                <input asp-for="UserID" type="hidden" />
+
+                <div class="form-group col-md-6 mb-3">
+                    <label>Tên đăng nhập</label>
+                    <input asp-for="UserName" class="form-control" placeholder="Nhập tên đăng nhập..." readonly />
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label>Họ và tên</label>
+                    <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên giáo viên..." />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label>Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="Nhập email..." />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label>Vai trò (Role)</label>
+                    <select asp-for="Role" class="form-select">
+                        <option value="Teacher">Teacher</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label>Trạng thái</label>
+                    @Html.CheckBox("IsActive",Model.IsActive)
+                    <span>Hoạt động</span>
+                </div>
+
+                <a asp-area="Admin" asp-controller="Teachers" asp-action="Index" class="btn btn-lg btn-warning p-2">
+                    <i class="bi bi-arrow-left-circle"></i> Quay lại
+                </a>
+
+                <button type="submit" class="btn btn-lg btn-primary p-2">
+                    <i class="bi bi-save"></i> Lưu thay đổi
+                </button>
+
+            </div>
+        </form>
+    </div>
+</main>
