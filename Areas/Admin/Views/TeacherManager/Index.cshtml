@@ -1,0 +1,108 @@
+﻿@model IEnumerable<TinhocOnline.Models.User>
+
+@{
+    ViewData["Title"] = "Quản lý Giáo viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Quản lý Giáo viên</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Danh sách giáo viên</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                        <h5 class="card-title">Danh sách giáo viên</h5>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Thêm giáo viên
+                        </a>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="teacherTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="text-center" style="width: 5%;">#</th>
+                                    <th scope="col" style="width: 20%;">Họ và tên</th>
+                                    <th scope="col" style="width: 15%;">Username</th>
+                                    <th scope="col" style="width: 25%;">Email</th>
+                                    <th scope="col" class="text-center" style="width: 15%;">Trạng thái</th>
+                                    <th scope="col" class="text-center" style="width: 20%;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">@index</td>
+                                        <td>
+                                            <strong>@item.FullName</strong>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted">@item.Username</span>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-envelope"></i> @item.Email
+                                        </td>
+                                        <td class="text-center">
+                                            @if (item.Status == "active")
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> Hoạt động
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-x-circle"></i> Ngừng hoạt động
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.UserId" 
+                                                   class="btn btn-sm btn-info" title="Chi tiết">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.UserId" 
+                                                   class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.UserId" 
+                                                   class="btn btn-sm btn-danger" title="Xóa">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info text-center" role="alert">
+                            <i class="bi bi-info-circle"></i> Chưa có giáo viên nào trong hệ thống.
+                            <a asp-action="Create" class="alert-link">Thêm giáo viên mới</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

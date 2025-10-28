@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TinhocOnline.Areas.Admin.Controllers;
-using TinhocOnline.Areas.Admin.Models;
 
 namespace TinhocOnline.Models
 {
@@ -13,8 +7,103 @@ namespace TinhocOnline.Models
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
-        public DbSet<AdminMenu> AdminMenus { get; set; }
-        public DbSet<Users> tblUsers { get; set; }
-        public DbSet<Teacher> tblTeachers { get; set; }
+
+        // DbSets
+        public DbSet<User> Users { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<StudentExam> StudentExams { get; set; }
+        public DbSet<StudentAnswer> StudentAnswers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // User configurations
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            // Question configurations
+            modelBuilder.Entity<Question>()
+                .HasOne(q => q.Subject)
+                .WithMany(s => s.Questions)
+                .HasForeignKey(q => q.SubjectId)
+                .OnDelete(DeleteBehavior.Restrict); // có nghĩa là khi Subject bị xóa thì các Question liên quan sẽ không bị xóa theo
+
+            modelBuilder.Entity<Question>()
+                .HasOne(q => q.Creator)
+                .WithMany(u => u.Questions)
+                .HasForeignKey(q => q.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Answer configurations
+            modelBuilder.Entity<Answer>()
+                .HasOne(a => a.Question)
+                .WithMany(q => q.Answers)
+                .HasForeignKey(a => a.QuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Exam configurations
+            modelBuilder.Entity<Exam>()
+                .HasOne(e => e.Subject)
+                .WithMany(s => s.Exams)
+                .HasForeignKey(e => e.SubjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Exam>()
+                .HasOne(e => e.Creator)
+                .WithMany(u => u.Exams)
+                .HasForeignKey(e => e.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ExamQuestion configurations
+            modelBuilder.Entity<ExamQuestion>()
+                .HasOne(eq => eq.Exam)
+                .WithMany(e => e.ExamQuestions)
+                .HasForeignKey(eq => eq.ExamId)
+                .OnDelete(DeleteBehavior.Cascade);  // Khi Exam bị xóa thì các ExamQuestion liên quan sẽ bị xóa theo
+
+            modelBuilder.Entity<ExamQuestion>()
+                .HasOne(eq => eq.Question)
+                .WithMany(q => q.ExamQuestions)
+                .HasForeignKey(eq => eq.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // StudentExam configurations
+            modelBuilder.Entity<StudentExam>()
+                .HasOne(se => se.Exam)
+                .WithMany(e => e.StudentExams)
+                .HasForeignKey(se => se.ExamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentExam>()
+                .HasOne(se => se.Student)
+                .WithMany(u => u.StudentExams)
+                .HasForeignKey(se => se.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // StudentAnswer configurations
+            modelBuilder.Entity<StudentAnswer>()
+                .HasOne(sa => sa.StudentExam)
+                .WithMany(se => se.StudentAnswers)
+                .HasForeignKey(sa => sa.StudentExamId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<StudentAnswer>()
+                .HasOne(sa => sa.Question)
+                .WithMany(q => q.StudentAnswers)
+                .HasForeignKey(sa => sa.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAnswer>()
+                .HasOne(sa => sa.Answer)
+                .WithMany()
+                .HasForeignKey(sa => sa.AnswerId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

@@ -1,0 +1,134 @@
+﻿@model TinhocOnline.Models.User
+
+@{
+    ViewData["Title"] = "Xóa giáo viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Xóa giáo viên</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Giáo viên</a></li>
+            <li class="breadcrumb-item active">Xóa</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Warning Alert -->
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo!
+                </h4>
+                <p>Bạn có chắc chắn muốn xóa giáo viên này không?</p>
+                <hr>
+                <p class="mb-0">
+                    <strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan sẽ bị xóa vĩnh viễn.
+                </p>
+            </div>
+
+            <!-- User Info Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin giáo viên sẽ bị xóa</h5>
+
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <img src="~/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                        </div>
+
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold" style="width: 35%;">
+                                            <i class="bi bi-person-badge text-muted"></i> ID:
+                                        </td>
+                                        <td>#@Model.UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-person text-muted"></i> Họ và tên:
+                                        </td>
+                                        <td><strong>@Model.FullName</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-person-circle text-muted"></i> Username:
+                                        </td>
+                                        <td>@Model.Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-envelope text-muted"></i> Email:
+                                        </td>
+                                        <td>@Model.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-shield-check text-muted"></i> Vai trò:
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@Model.Role</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-toggle-on text-muted"></i> Trạng thái:
+                                        </td>
+                                        <td>
+                                            @if (Model.Status == "active")
+                                            {
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Ngừng hoạt động</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="UserId" />
+                        
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-between">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Hủy, quay lại
+                                </a>
+                                
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                    <i class="bi bi-trash"></i> Xác nhận xóa
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Warning -->
+            <div class="card bg-light mt-3">
+                <div class="card-body">
+                    <h6 class="card-title text-danger">
+                        <i class="bi bi-info-circle"></i> Dữ liệu sẽ bị ảnh hưởng:
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Tài khoản giáo viên sẽ bị xóa vĩnh viễn</li>
+                        <li>Các lớp học do giáo viên này phụ trách có thể bị ảnh hưởng</li>
+                        <li>Lịch sử giảng dạy và đánh giá sẽ không còn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,174 @@
+﻿@model TinhocOnline.Models.User
+
+@{
+    ViewData["Title"] = "Chi tiết học sinh";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Thông tin chi tiết học sinh</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Học sinh</a></li>
+            <li class="breadcrumb-item active">Chi tiết</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin cá nhân</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <img src="~/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="mt-3">@Model.FullName</h5>
+                                @if (Model.Status == "active")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Ngừng hoạt động
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">
+                                            <i class="bi bi-person-badge text-primary"></i> ID tài khoản:
+                                        </td>
+                                        <td>#@Model.UserId</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-person text-primary"></i> Họ và tên:
+                                        </td>
+                                        <td>@Model.FullName</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-person-circle text-primary"></i> Username:
+                                        </td>
+                                        <td>@Model.Username</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-envelope text-primary"></i> Email:
+                                        </td>
+                                        <td>
+                                            <a href="mailto:@Model.Email">@Model.Email</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-shield-check text-primary"></i> Vai trò:
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@Model.Role</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <i class="bi bi-toggle-on text-primary"></i> Trạng thái:
+                                        </td>
+                                        <td>
+                                            @if (Model.Status == "active")
+                                            {
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Ngừng hoạt động</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-warning">
+                                <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                            </a>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thống kê học tập</h5>
+                    <div class="activity">
+                        <div class="activity-item d-flex mb-3">
+                            <div class="activite-label text-muted">Số khóa học đã đăng ký:</div>
+                            <i class="bi bi-circle-fill activity-badge text-success align-self-start ms-auto"></i>
+                            <div class="activity-content ms-2">
+                                <strong>0</strong> khóa
+                            </div>
+                        </div>
+
+                        <div class="activity-item d-flex mb-3">
+                            <div class="activite-label text-muted">Bài tập đã hoàn thành:</div>
+                            <i class="bi bi-circle-fill activity-badge text-info align-self-start ms-auto"></i>
+                            <div class="activity-content ms-2">
+                                <strong>0</strong> bài
+                            </div>
+                        </div>
+
+                        <div class="activity-item d-flex mb-3">
+                            <div class="activite-label text-muted">Điểm trung bình:</div>
+                            <i class="bi bi-circle-fill activity-badge text-warning align-self-start ms-auto"></i>
+                            <div class="activity-content ms-2">
+                                <strong>0</strong> điểm
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thao tác nhanh</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" disabled>
+                            <i class="bi bi-envelope"></i> Gửi email
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" disabled>
+                            <i class="bi bi-file-text"></i> Xem báo cáo
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" disabled>
+                            <i class="bi bi-key"></i> Đặt lại mật khẩu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

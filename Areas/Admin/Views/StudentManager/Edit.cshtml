@@ -1,0 +1,143 @@
+﻿@model TinhocOnline.Models.User
+
+@{
+    ViewData["Title"] = "Chỉnh sửa học sinh";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Chỉnh sửa thông tin học sinh</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Học sinh</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cập nhật thông tin</h5>
+
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        <input type="hidden" asp-for="UserId" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="FullName" class="form-label">
+                                    <i class="bi bi-person"></i> Họ và tên <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên đầy đủ" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="student@email.com" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Tên đăng nhập <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Username" class="form-control" readonly style="background-color: #f8f9fa;" />
+                                <small class="text-muted">Username không thể thay đổi</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label">
+                                    <i class="bi bi-lock"></i> Mật khẩu mới
+                                </label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Để trống nếu không đổi" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <small class="text-muted">Để trống nếu không muốn thay đổi mật khẩu</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label">
+                                    <i class="bi bi-shield-check"></i> Vai trò
+                                </label>
+                                <select asp-for="Role" class="form-select" disabled style="background-color: #f8f9fa;">
+                                    <option value="student">Học sinh</option>
+                                    <option value="teacher">Giáo viên</option>
+                                    <option value="admin">Quản trị viên</option>
+                                </select>
+                                <input type="hidden" asp-for="Role" />
+                                <small class="text-muted">Vai trò không thể thay đổi</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">
+                                    <i class="bi bi-toggle-on"></i> Trạng thái
+                                </label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Active">Hoạt động</option>
+                                    <option value="Inactive">Ngừng hoạt động</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Cập nhật
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Hủy
+                                </a>
+                                <a asp-action="Details" asp-route-id="@Model.UserId" class="btn btn-info">
+                                    <i class="bi bi-info-circle"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin tài khoản</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>ID:</strong> #@Model.UserId
+                        </li>
+                        <li class="mb-2">
+                            <strong>Username:</strong> @Model.Username
+                        </li>
+                        <li class="mb-2">
+                            <strong>Vai trò hiện tại:</strong> 
+                            <span class="badge bg-primary">@Model.Role</span>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Trạng thái:</strong>
+                            @if (Model.Status == "active")
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Ngừng hoạt động</span>
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
