@@ -1,0 +1,99 @@
+﻿@model TinhocOnline.Models.Topic
+
+@{
+    ViewData["Title"] = "Thêm chủ đề";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Thêm chủ đề mới</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Chủ đề</a></li>
+            <li class="breadcrumb-item active">Thêm mới</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin chủ đề</h5>
+
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="TopicCode" class="form-label">
+                                    <i class="bi bi-tag"></i> Mã chủ đề <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="TopicCode" class="form-control" readonly style="background-color: #f8f9fa;" placeholder="Chủ đề @(ViewBag.NextTopicCode ?? "A")" />
+                                <small class="text-muted">Mã chủ đề được tự động tạo</small>
+                                <span asp-validation-for="TopicCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">
+                                    <i class="bi bi-toggle-on"></i> Trạng thái
+                                </label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="active" selected>Hoạt động</option>
+                                    <option value="inactive">Ngừng hoạt động</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TopicName" class="form-label">
+                                <i class="bi bi-journal-text"></i> Tên chủ đề <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="TopicName" class="form-control" placeholder="Nhập tên chủ đề" />
+                            <span asp-validation-for="TopicName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">
+                                <i class="bi bi-card-text"></i> Mô tả
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả chi tiết về chủ đề"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Lưu thông tin
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hướng dẫn</h5>
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Thông tin</h6>
+                        <ul class="mb-0">
+                            <li>Mã chủ đề được tự động tạo theo thứ tự A, B, C...</li>
+                            <li>Chủ đề tiếp theo sẽ là: <strong>@(ViewBag.NextTopicCode ?? "A")</strong></li>
+                            <li>Nhập tên và mô tả cho chủ đề mới</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

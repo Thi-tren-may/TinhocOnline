@@ -1,16 +1,16 @@
-﻿@model IEnumerable<TinhocOnline.Models.User>
+﻿@model IEnumerable<TinhocOnline.Models.Topic>
 
 @{
-    ViewData["Title"] = "Quản lý Học sinh";
+    ViewData["Title"] = "Quản lý Chủ đề";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="pagetitle">
-    <h1>Quản lý Học sinh</h1>
+    <h1>Quản lý Chủ đề</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
-            <li class="breadcrumb-item active">Danh sách học sinh</li>
+            <li class="breadcrumb-item active">Danh sách chủ đề</li>
         </ol>
     </nav>
 </div>
@@ -21,41 +21,43 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                        <h5 class="card-title">Danh sách học sinh</h5>
+                        <h5 class="card-title">Danh sách chủ đề (A-G)</h5>
                         <a asp-action="Create" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Thêm học sinh
+                            <i class="bi bi-plus-circle"></i> Thêm chủ đề
                         </a>
+                    </div>
+
+                    <!-- Alert Info -->
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Hệ thống có 7 chủ đề theo chương trình Tin học phổ thông (A-G).
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
                     <!-- Table -->
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped">
+                        <table class="table table-hover table-striped" id="topicTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col" class="text-center" style="width: 5%;">#</th>
-                                    <th scope="col" style="width: 20%;">Họ và tên</th>
-                                    <th scope="col" style="width: 15%;">Username</th>
-                                    <th scope="col" style="width: 25%;">Email</th>
-                                    <th scope="col" class="text-center" style="width: 15%;">Trạng thái</th>
-                                    <th scope="col" class="text-center" style="width: 20%;">Hành động</th>
+                                    <th scope="col" class="text-center" style="width: 8%;">Mã</th>
+                                    <th scope="col" style="width: 30%;">Tên chủ đề</th>
+                                    <th scope="col" style="width: 40%;">Mô tả</th>
+                                    <th scope="col" class="text-center" style="width: 12%;">Trạng thái</th>
+                                    <th scope="col" class="text-center" style="width: 10%;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @{
-                                    var index = 1;
-                                }
-                                @foreach (var item in Model)
+                                @foreach (var item in Model.OrderBy(t => t.TopicCode))
                                 {
                                     <tr>
-                                        <td class="text-center">@index</td>
-                                        <td>
-                                            <strong>@item.FullName</strong>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary fs-6">@item.TopicCode</span>
                                         </td>
                                         <td>
-                                            <span class="text-muted">@item.Username</span>
+                                            <strong>@item.TopicName</strong>
                                         </td>
                                         <td>
-                                            <i class="bi bi-envelope"></i> @item.Email
+                                            <span class="text-muted">@(item.Description ?? "Chưa có mô tả")</span>
                                         </td>
                                         <td class="text-center">
                                             @if (item.Status == "active")
@@ -73,22 +75,21 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
-                                                <a asp-action="Details" asp-route-id="@item.UserId" 
+                                                <a asp-action="Details" asp-route-id="@item.TopicId" 
                                                    class="btn btn-sm btn-info" title="Chi tiết">
                                                     <i class="bi bi-info-circle"></i>
                                                 </a>
-                                                <a asp-action="Edit" asp-route-id="@item.UserId" 
+                                                <a asp-action="Edit" asp-route-id="@item.TopicId" 
                                                    class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-                                                <a asp-action="Delete" asp-route-id="@item.UserId" 
+                                                <a asp-action="Delete" asp-route-id="@item.TopicId" 
                                                    class="btn btn-sm btn-danger" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
                                             </div>
                                         </td>
                                     </tr>
-                                    index++;
                                 }
                             </tbody>
                         </table>
@@ -96,9 +97,8 @@
 
                     @if (!Model.Any())
                     {
-                        <div class="alert alert-info text-center" role="alert">
-                            <i class="bi bi-info-circle"></i> Chưa có học sinh nào trong hệ thống.
-                            <a asp-action="Create" class="alert-link">Thêm học sinh mới</a>
+                        <div class="alert alert-warning text-center" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> Chưa có chủ đề nào trong hệ thống. Vui lòng thêm mới!
                         </div>
                     }
                 </div>

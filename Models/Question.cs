@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace TinhocOnline.Models
 {
@@ -14,6 +15,10 @@ namespace TinhocOnline.Models
 
         [Required]
         public int SubjectId { get; set; }
+
+        // Câu hỏi thuộc chủ đề nào
+        [Required]
+        public int TopicId { get; set; }
 
         [Required]
         [Column(TypeName = "nvarchar(max)")]
@@ -30,14 +35,25 @@ namespace TinhocOnline.Models
         public string Status { get; set; } = "active";
 
         // Navigation properties
+        [ValidateNever]
         [ForeignKey("SubjectId")]
         public virtual Subject Subject { get; set; }
 
+        [ValidateNever]
+        [ForeignKey("TopicId")]
+        public virtual Topic Topic { get; set; }
+
+        [ValidateNever]
         [ForeignKey("CreatedBy")]
         public virtual User Creator { get; set; }
 
+        [ValidateNever]
         public virtual ICollection<Answer> Answers { get; set; }
+        
+        [ValidateNever]
         public virtual ICollection<ExamQuestion> ExamQuestions { get; set; }
+        
+        [ValidateNever]
         public virtual ICollection<StudentAnswer> StudentAnswers { get; set; }
     }
 }

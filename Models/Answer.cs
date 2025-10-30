@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace TinhocOnline.Models
 {
@@ -25,6 +26,7 @@ namespace TinhocOnline.Models
         public string AnswerOrder { get; set; }
 
         // Navigation properties
+        [ValidateNever]
         [ForeignKey("QuestionId")]
         public virtual Question Question { get; set; }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace TinhocOnline.Models
 {
@@ -40,13 +41,21 @@ namespace TinhocOnline.Models
         public string Status { get; set; } = "draft";
 
         // Navigation properties
+        [ValidateNever]
         [ForeignKey("SubjectId")]
         public virtual Subject Subject { get; set; }
 
+        [ValidateNever]
         [ForeignKey("CreatedBy")]
         public virtual User Creator { get; set; }
 
+        [ValidateNever]
         public virtual ICollection<ExamQuestion> ExamQuestions { get; set; }
+        
+        [ValidateNever]
         public virtual ICollection<StudentExam> StudentExams { get; set; }
+        
+        [ValidateNever]
+        public virtual ICollection<ExamTopic> ExamTopics { get; set; }
     }
 }

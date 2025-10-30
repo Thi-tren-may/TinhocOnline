@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TinhocOnline.Models;
 
@@ -11,9 +12,11 @@ using TinhocOnline.Models;
 namespace TinhocOnline.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20251030124026_AddTopicsAndExamTopics")]
+    partial class AddTopicsAndExamTopics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,7 +183,7 @@ namespace TinhocOnline.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TopicId")
+                    b.Property<int?>("TopicId")
                         .HasColumnType("int");
 
                     b.HasKey("QuestionId");
@@ -308,10 +311,8 @@ namespace TinhocOnline.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("TopicCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("TopicName")
                         .IsRequired()
@@ -320,8 +321,7 @@ namespace TinhocOnline.Migrations
 
                     b.HasKey("TopicId");
 
-                    b.HasIndex("TopicCode")
-                        .IsUnique();
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Topics");
                 });
@@ -455,10 +455,9 @@ namespace TinhocOnline.Migrations
                         .IsRequired();
 
                     b.HasOne("TinhocOnline.Models.Topic", "Topic")
-                        .WithMany("Questions")
+                        .WithMany()
                         .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Creator");
 
@@ -512,6 +511,17 @@ namespace TinhocOnline.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("TinhocOnline.Models.Topic", b =>
+                {
+                    b.HasOne("TinhocOnline.Models.Subject", "Subject")
+                        .WithMany("Topics")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("TinhocOnline.Models.Exam", b =>
                 {
                     b.Navigation("ExamQuestions");
@@ -540,13 +550,13 @@ namespace TinhocOnline.Migrations
                     b.Navigation("Exams");
 
                     b.Navigation("Questions");
+
+                    b.Navigation("Topics");
                 });
 
             modelBuilder.Entity("TinhocOnline.Models.Topic", b =>
                 {
                     b.Navigation("ExamTopics");
-
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("TinhocOnline.Models.User", b =>

@@ -11,10 +11,12 @@ namespace TinhocOnline.Models
         // DbSets
         public DbSet<User> Users { get; set; }
         public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Topic> Topics { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<ExamTopic> ExamTopics { get; set; }
         public DbSet<StudentExam> StudentExams { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
 
@@ -32,7 +34,13 @@ namespace TinhocOnline.Models
                 .HasOne(q => q.Subject)
                 .WithMany(s => s.Questions)
                 .HasForeignKey(q => q.SubjectId)
-                .OnDelete(DeleteBehavior.Restrict); // có nghĩa là khi Subject bị xóa thì các Question liên quan sẽ không bị xóa theo
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasOne(q => q.Topic)
+                .WithMany(t => t.Questions)
+                .HasForeignKey(q => q.TopicId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Question>()
                 .HasOne(q => q.Creator)
@@ -103,6 +111,24 @@ namespace TinhocOnline.Models
                 .HasOne(sa => sa.Answer)
                 .WithMany()
                 .HasForeignKey(sa => sa.AnswerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Topic configurations
+            modelBuilder.Entity<Topic>()
+                .HasIndex(t => t.TopicCode)
+                .IsUnique();
+
+            // ExamTopic configurations
+            modelBuilder.Entity<ExamTopic>()
+                .HasOne(et => et.Exam)
+                .WithMany(e => e.ExamTopics)
+                .HasForeignKey(et => et.ExamId)
+                .OnDelete(DeleteBehavior.Cascade); // Khi Exam bị xóa thì các ExamTopic liên quan sẽ bị xóa theo
+
+            modelBuilder.Entity<ExamTopic>()
+                .HasOne(et => et.Topic)
+                .WithMany(t => t.ExamTopics)
+                .HasForeignKey(et => et.TopicId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

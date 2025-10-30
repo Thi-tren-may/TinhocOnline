@@ -45,7 +45,8 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // GET: Admin/StudentManager/Create
         public IActionResult Create()
         {
-            return View();
+            var user = new User { Role = "student", Status = "active" };
+            return View(user);
         }
 
         // POST: Admin/StudentManager/Create
@@ -55,6 +56,9 @@ namespace TinhocOnline.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserId,Username,Password,FullName,Email,Role,Status")] User user)
         {
+            // Đảm bảo Role luôn là "student"
+            user.Role = "student";
+            
             if (ModelState.IsValid)
             {
                 _context.Add(user);

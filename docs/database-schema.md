@@ -36,13 +36,36 @@ Quản lý danh mục các môn học.
 
 ---
 
-### 3. Questions (Câu hỏi)
+### 3. Topics (Chủ đề)
+Quản lý các chủ đề theo chương trình Tin học phổ thông.
+
+| Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
+|---------|-------------|-----------|-------|
+| `topic_id` | INT | PK, IDENTITY(1,1) | ID chủ đề |
+| `topic_code` | VARCHAR(10) | UNIQUE, NOT NULL | Mã chủ đề: A, B, C, D, E, F, G |
+| `topic_name` | NVARCHAR(200) | NOT NULL | Tên chủ đề |
+| `description` | NVARCHAR(500) | NULL | Mô tả chủ đề |
+| `status` | VARCHAR(20) | DEFAULT 'active' | Trạng thái: 'active', 'inactive' |
+
+**Danh sách Topics cố định:**
+- **A**: Máy tính và xã hội tri thức
+- **B**: Mạng máy tính và Internet
+- **C**: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin
+- **D**: Đạo đức, pháp luật và văn hóa trong môi trường số
+- **E**: Ứng dụng tin học
+- **F**: Giải quyết vấn đề với sự trợ giúp của máy tính
+- **G**: Hướng nghiệp với tin học
+
+---
+
+### 4. Questions (Câu hỏi)
 Ngân hàng câu hỏi của hệ thống.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
 |---------|-------------|-----------|-------|
 | `question_id` | INT | PK, IDENTITY(1,1) | ID câu hỏi |
 | `subject_id` | INT | FK, NOT NULL | ID môn học |
+| `topic_id` | INT | FK, NOT NULL | ID chủ đề (A-G) |
 | `question_text` | NVARCHAR(MAX) | NOT NULL | Nội dung câu hỏi |
 | `difficulty_level` | VARCHAR(20) | NOT NULL | Độ khó: 'easy', 'medium', 'hard' |
 | `created_by` | INT | FK, NOT NULL | ID giáo viên tạo |
@@ -50,11 +73,12 @@ Ngân hàng câu hỏi của hệ thống.
 
 **Foreign Keys:**
 - `subject_id` REFERENCES `Subjects(subject_id)`
+- `topic_id` REFERENCES `Topics(topic_id)`
 - `created_by` REFERENCES `Users(user_id)`
 
 ---
 
-### 4. Answers (Đáp án)
+### 5. Answers (Đáp án)
 Lưu trữ các đáp án cho mỗi câu hỏi.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
@@ -72,7 +96,7 @@ Lưu trữ các đáp án cho mỗi câu hỏi.
 
 ---
 
-### 5. Exams (Đề thi)
+### 6. Exams (Đề thi)
 Thông tin các đề thi.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
@@ -94,7 +118,30 @@ Thông tin các đề thi.
 
 ---
 
-### 6. Exam_Questions (Câu hỏi trong đề thi)
+### 7. Exam_Topics (Chủ đề trong đề thi)
+Quan hệ nhiều-nhiều giữa Exams và Topics. Một đề thi có thể bao gồm nhiều chủ đề.
+
+| Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
+|---------|-------------|-----------|-------|
+| `exam_topic_id` | INT | PK, IDENTITY(1,1) | ID |
+| `exam_id` | INT | FK, NOT NULL | ID đề thi |
+| `topic_id` | INT | FK, NOT NULL | ID chủ đề |
+| `question_count` | INT | NOT NULL | Số câu hỏi từ chủ đề này |
+
+**Foreign Keys:**
+- `exam_id` REFERENCES `Exams(exam_id)` ON DELETE CASCADE
+- `topic_id` REFERENCES `Topics(topic_id)`
+
+**Ví dụ:** 
+- Đề thi "Giữa kỳ Tin học" có 50 câu:
+  - 10 câu từ chủ đề A (Máy tính và xã hội tri thức)
+  - 15 câu từ chủ đề B (Mạng máy tính)
+  - 15 câu từ chủ đề C (Lưu trữ thông tin)
+  - 10 câu từ chủ đề E (Ứng dụng tin học)
+
+---
+
+### 8. Exam_Questions (Câu hỏi trong đề thi)
 Quan hệ nhiều-nhiều giữa Exams và Questions.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
@@ -110,7 +157,7 @@ Quan hệ nhiều-nhiều giữa Exams và Questions.
 
 ---
 
-### 7. Student_Exams (Bài thi của học sinh)
+### 9. Student_Exams (Bài thi của học sinh)
 Lưu trữ thông tin bài làm của học sinh.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
@@ -129,7 +176,7 @@ Lưu trữ thông tin bài làm của học sinh.
 
 ---
 
-### 8. Student_Answers (Câu trả lời của học sinh)
+### 10. Student_Answers (Câu trả lời của học sinh)
 Lưu trữ từng câu trả lời của học sinh.
 
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mô tả |

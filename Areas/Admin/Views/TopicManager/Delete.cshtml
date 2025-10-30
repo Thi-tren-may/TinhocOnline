@@ -1,0 +1,131 @@
+﻿@model TinhocOnline.Models.Topic
+
+@{
+    ViewData["Title"] = "Xóa chủ đề";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Xóa chủ đề</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Chủ đề</a></li>
+            <li class="breadcrumb-item active">Xóa</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Warning Alert -->
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo!
+                </h4>
+                <p>Bạn có chắc chắn muốn xóa chủ đề này không?</p>
+                <hr>
+                <p class="mb-0">
+                    <strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Việc xóa chủ đề có thể ảnh hưởng đến:
+                </p>
+                <ul class="mt-2">
+                    <li>Tất cả câu hỏi thuộc chủ đề này</li>
+                    <li>Các đề thi có liên kết với chủ đề</li>
+                    <li>Dữ liệu thống kê liên quan</li>
+                </ul>
+            </div>
+
+            <!-- Topic Info Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin chủ đề sẽ bị xóa</h5>
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold" style="width: 35%;">
+                                    <i class="bi bi-hash text-muted"></i> ID:
+                                </td>
+                                <td>#@Model.TopicId</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="bi bi-tag text-muted"></i> Mã chủ đề:
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@Model.TopicCode</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="bi bi-bookmark text-muted"></i> Tên chủ đề:
+                                </td>
+                                <td><strong>@Model.TopicName</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="bi bi-text-paragraph text-muted"></i> Mô tả:
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(Model.Description))
+                                    {
+                                        @Model.Description
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa có mô tả</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="bi bi-toggle-on text-muted"></i> Trạng thái:
+                                </td>
+                                <td>
+                                    @if (Model.Status == "active")
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Ngừng hoạt động</span>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <hr>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="TopicId" />
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Xác nhận xóa
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Hủy
+                            </a>
+                            <a asp-action="Details" asp-route-id="@Model.TopicId" class="btn btn-info">
+                                <i class="bi bi-info-circle"></i> Xem chi tiết
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Warning -->
+            <div class="alert alert-warning mt-3" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-shield-exclamation"></i> Khuyến nghị
+                </h6>
+                <p class="mb-0">
+                    Thay vì xóa, bạn có thể <strong>Ngừng hoạt động</strong> chủ đề này 
+                    để giữ lại dữ liệu lịch sử nhưng không cho phép sử dụng trong tương lai.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
