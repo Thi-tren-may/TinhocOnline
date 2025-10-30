@@ -276,29 +276,33 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "Dashboard")">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "" : "collapsed")" 
+                   href="@Url.Action("Index", "Dashboard")">
                     <i class="bi bi-grid"></i>
                     <span>Tổng quan</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "TeacherManager")">
-                    <i class="bi bi-journal-text"></i>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TeacherManager" ? "" : "collapsed")" 
+                   href="@Url.Action("Index", "TeacherManager")">
+                    <i class="bi bi-person-video3"></i>
                     <span>Giáo Viên</span>
                 </a>
             </li><!-- End Teacher Nav -->
 
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "StudentManager")">
-                    <i class="bi bi-journal-text"></i>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "StudentManager" ? "" : "collapsed")" 
+                   href="@Url.Action("Index", "StudentManager")">
+                    <i class="bi bi-people"></i>
                     <span>Học Sinh</span>
                 </a>
             </li><!-- End Student Nav -->
 
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "TopicManager")">
-                    <i class="bi bi-journal-text"></i>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TopicManager" ? "" : "collapsed")" 
+                   href="@Url.Action("Index", "TopicManager")">
+                    <i class="bi bi-bookmarks"></i>
                     <span>Chủ Đề</span>
                 </a>
             </li><!-- End Topic Nav -->

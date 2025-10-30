@@ -59,6 +59,13 @@ namespace TinhocOnline.Areas.Admin.Controllers
             // Đảm bảo Role luôn là "student"
             user.Role = "student";
             
+            // Kiểm tra username đã tồn tại
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+            {
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại trong hệ thống");
+                return View(user);
+            }
+            
             if (ModelState.IsValid)
             {
                 _context.Add(user);
@@ -94,6 +101,13 @@ namespace TinhocOnline.Areas.Admin.Controllers
             if (id != user.UserId)
             {
                 return NotFound();
+            }
+
+            // Kiểm tra username đã tồn tại (trừ user hiện tại)
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username && u.UserId != user.UserId))
+            {
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại trong hệ thống");
+                return View(user);
             }
 
             if (ModelState.IsValid)

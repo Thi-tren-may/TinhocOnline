@@ -1,0 +1,227 @@
+﻿@{
+    ViewData["Title"] = "Dashboard - Giáo Viên";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section dashboard">
+    <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+            <div class="row">
+
+                <!-- Total Students Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Tổng số học sinh <span>| Năm nay</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>145</h6>
+                                    <span class="text-success small pt-1 fw-bold">12%</span>
+                                    <span class="text-muted small pt-2 ps-1">tăng</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Total Students Card -->
+                <!-- Active Exams Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Bài kiểm tra <span>| Đang hoạt động</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>12</h6>
+                                    <span class="text-success small pt-1 fw-bold">8%</span>
+                                    <span class="text-muted small pt-2 ps-1">tăng</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Active Exams Card -->
+                <!-- Subjects Card -->
+                <div class="col-xxl-4 col-xl-12">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Môn học <span>| Đang dạy</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>4</h6>
+                                    <span class="text-muted small pt-2 ps-1">môn học</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Subjects Card -->
+                <!-- Recent Exams -->
+                <div class="col-12">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card-body">
+                            <h5 class="card-title">Bài kiểm tra gần đây <span>| Hôm nay</span></h5>
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tên bài kiểm tra</th>
+                                        <th scope="col">Môn học</th>
+                                        <th scope="col">Số HS đã làm</th>
+                                        <th scope="col">Trạng thái</th>
+                                        <th scope="col">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>Kiểm tra giữa kỳ</td>
+                                        <td>Tin học</td>
+                                        <td>45/50</td>
+                                        <td><span class="badge bg-success">Đang mở</span></td>
+                                        <td><button class="btn btn-sm btn-primary">Xem</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Bài tập tuần 5</td>
+                                        <td>Lập trình C++</td>
+                                        <td>30/45</td>
+                                        <td><span class="badge bg-warning">Đang mở</span></td>
+                                        <td><button class="btn btn-sm btn-primary">Xem</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>Kiểm tra định kỳ</td>
+                                        <td>Cấu trúc dữ liệu</td>
+                                        <td>50/50</td>
+                                        <td><span class="badge bg-secondary">Đã đóng</span></td>
+                                        <td><button class="btn btn-sm btn-primary">Xem</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">4</th>
+                                        <td>Thực hành số 2</td>
+                                        <td>Cơ sở dữ liệu</td>
+                                        <td>28/40</td>
+                                        <td><span class="badge bg-success">Đang mở</span></td>
+                                        <td><button class="btn btn-sm btn-primary">Xem</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">5</th>
+                                        <td>Kiểm tra cuối kỳ</td>
+                                        <td>Tin học</td>
+                                        <td>0/50</td>
+                                        <td><span class="badge bg-info">Chưa mở</span></td>
+                                        <td><button class="btn btn-sm btn-primary">Xem</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div><!-- End Recent Exams -->
+
+            </div>
+        </div><!-- End Left side columns -->
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hoạt động gần đây <span>| Hôm nay</span></h5>
+                    <div class="activity">
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">15 phút</div>
+                            <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                            <div class="activity-content">
+                                Tạo bài kiểm tra mới <a href="#" class="fw-bold text-dark">Kiểm tra cuối kỳ</a>
+                            </div>
+                        </div><!-- End activity item-->
+
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">45 phút</div>
+                            <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+                            <div class="activity-content">
+                                Chấm điểm <a href="#" class="fw-bold text-dark">30 bài kiểm tra</a>
+                            </div>
+                        </div><!-- End activity item-->
+
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">1 giờ</div>
+                            <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                            <div class="activity-content">
+                                Cập nhật <a href="#" class="fw-bold text-dark">Đề cương môn học</a>
+                            </div>
+                        </div><!-- End activity item-->
+
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">2 giờ</div>
+                            <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+                            <div class="activity-content">
+                                Đóng bài kiểm tra <a href="#" class="fw-bold text-dark">Kiểm tra định kỳ</a>
+                            </div>
+                        </div><!-- End activity item-->
+
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">3 giờ</div>
+                            <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+                            <div class="activity-content">
+                                Thêm học sinh mới vào lớp <a href="#" class="fw-bold text-dark">Tin học cơ bản</a>
+                            </div>
+                        </div><!-- End activity item-->
+
+                    </div>
+                </div>
+            </div><!-- End Recent Activity -->
+            <!-- Class Overview -->
+            <div class="card">
+                <div class="card-body pb-0">
+                    <h5 class="card-title">Lớp học <span>| Đang dạy</span></h5>
+                    <div class="news">
+                        <div class="post-item clearfix">
+                            <img src="~/assets/img/news-1.jpg" alt="">
+                            <h4><a href="#">Tin học cơ bản</a></h4>
+                            <p class="small">50 học sinh<br>Thứ 2, 4, 6 - 8:00 AM</p>
+                        </div>
+
+                        <div class="post-item clearfix">
+                            <img src="~/assets/img/news-2.jpg" alt="">
+                            <h4><a href="#">Lập trình C++</a></h4>
+                            <p class="small">45 học sinh<br>Thứ 3, 5 - 10:00 AM</p>
+                        </div>
+
+                        <div class="post-item clearfix">
+                            <img src="~/assets/img/news-3.jpg" alt="">
+                            <h4><a href="#">Cấu trúc dữ liệu</a></h4>
+                            <p class="small">50 học sinh<br>Thứ 2, 4 - 2:00 PM</p>
+                        </div>
+
+                        <div class="post-item clearfix">
+                            <img src="~/assets/img/news-4.jpg" alt="">
+                            <h4><a href="#">Cơ sở dữ liệu</a></h4>
+                            <p class="small">40 học sinh<br>Thứ 3, 5 - 3:00 PM</p>
+                        </div>
+                    </div><!-- End sidebar recent posts-->
+                </div>
+            </div><!-- End Class Overview -->
+
+        </div><!-- End Right side columns -->
+
+    </div>
+</section>
