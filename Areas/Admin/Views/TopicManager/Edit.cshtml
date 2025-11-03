@@ -27,32 +27,11 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
                         <input type="hidden" asp-for="TopicId" />
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="TopicCode" class="form-label">
-                                    <i class="bi bi-tag"></i> Mã chủ đề <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="TopicCode" class="form-control" readonly style="background-color: #f8f9fa;" />
-                                <small class="text-muted">Mã chủ đề không thể thay đổi</small>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label asp-for="Status" class="form-label">
-                                    <i class="bi bi-toggle-on"></i> Trạng thái
-                                </label>
-                                <select asp-for="Status" class="form-select">
-                                    <option value="active">Hoạt động</option>
-                                    <option value="inactive">Ngừng hoạt động</option>
-                                </select>
-                                <span asp-validation-for="Status" class="text-danger"></span>
-                            </div>
-                        </div>
-
                         <div class="mb-3">
                             <label asp-for="TopicName" class="form-label">
                                 <i class="bi bi-bookmark"></i> Tên chủ đề <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="TopicName" class="form-control" placeholder="Nhập tên chủ đề" />
+                            <input asp-for="TopicName" class="form-control" placeholder="Nhập tên chủ đề" autofocus />
                             <span asp-validation-for="TopicName" class="text-danger"></span>
                         </div>
 
@@ -62,6 +41,17 @@
                             </label>
                             <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả chi tiết về chủ đề"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">
+                                <i class="bi bi-toggle-on"></i> Trạng thái
+                            </label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="active">Hoạt động</option>
+                                <option value="inactive">Ngừng hoạt động</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="row">
@@ -89,10 +79,15 @@
                     <div class="alert alert-info">
                         <h6><i class="bi bi-info-circle"></i> Lưu ý</h6>
                         <ul class="mb-0">
-                            <li>Mã chủ đề không thể thay đổi sau khi tạo</li>
-                            <li>Tên chủ đề và mô tả có thể cập nhật</li>
+                            <li>Cập nhật tên chủ đề để dễ dàng quản lý</li>
+                            <li>Mô tả giúp giáo viên hiểu rõ hơn về chủ đề</li>
                             <li>Thay đổi trạng thái sẽ ảnh hưởng đến việc tạo đề thi</li>
                         </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-exclamation-triangle"></i> Cảnh báo</h6>
+                        <p class="mb-0 small">Nếu đặt trạng thái "Ngừng hoạt động", chủ đề này sẽ không hiển thị khi tạo đề thi mới.</p>
                     </div>
                 </div>
             </div>

@@ -13,9 +13,6 @@ namespace TinhocOnline.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int QuestionId { get; set; }
 
-        [Required]
-        public int SubjectId { get; set; }
-
         // Câu hỏi thuộc chủ đề nào
         [Required]
         public int TopicId { get; set; }
@@ -35,10 +32,6 @@ namespace TinhocOnline.Models
         public string Status { get; set; } = "active";
 
         // Navigation properties
-        [ValidateNever]
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; }
-
         [ValidateNever]
         [ForeignKey("TopicId")]
         public virtual Topic Topic { get; set; }

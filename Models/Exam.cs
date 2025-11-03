@@ -14,9 +14,6 @@ namespace TinhocOnline.Models
         public int ExamId { get; set; }
 
         [Required]
-        public int SubjectId { get; set; }
-
-        [Required]
         [StringLength(200)]
         public string ExamName { get; set; }
 
@@ -41,10 +38,6 @@ namespace TinhocOnline.Models
         public string Status { get; set; } = "draft";
 
         // Navigation properties
-        [ValidateNever]
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; }
-
         [ValidateNever]
         [ForeignKey("CreatedBy")]
         public virtual User Creator { get; set; }

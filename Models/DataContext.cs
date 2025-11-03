@@ -10,7 +10,6 @@ namespace TinhocOnline.Models
 
         // DbSets
         public DbSet<User> Users { get; set; }
-        public DbSet<Subject> Subjects { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
@@ -31,12 +30,6 @@ namespace TinhocOnline.Models
 
             // Question configurations
             modelBuilder.Entity<Question>()
-                .HasOne(q => q.Subject)
-                .WithMany(s => s.Questions)
-                .HasForeignKey(q => q.SubjectId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Question>()
                 .HasOne(q => q.Topic)
                 .WithMany(t => t.Questions)
                 .HasForeignKey(q => q.TopicId)
@@ -56,12 +49,6 @@ namespace TinhocOnline.Models
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Exam configurations
-            modelBuilder.Entity<Exam>()
-                .HasOne(e => e.Subject)
-                .WithMany(s => s.Exams)
-                .HasForeignKey(e => e.SubjectId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Exam>()
                 .HasOne(e => e.Creator)
                 .WithMany(u => u.Exams)
@@ -112,11 +99,6 @@ namespace TinhocOnline.Models
                 .WithMany()
                 .HasForeignKey(sa => sa.AnswerId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // Topic configurations
-            modelBuilder.Entity<Topic>()
-                .HasIndex(t => t.TopicCode)
-                .IsUnique();
 
             // ExamTopic configurations
             modelBuilder.Entity<ExamTopic>()

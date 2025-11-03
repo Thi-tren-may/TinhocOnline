@@ -41,65 +41,16 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // GET: Admin/TopicManager/Create
         public IActionResult Create()
         {
-            // Lấy mã chủ đề cuối cùng để tạo mã mới
-            var lastTopic = _context.Topics
-                .OrderByDescending(t => t.TopicCode)
-                .FirstOrDefault();
-            
-            string nextTopicCode = "A";
-            if (lastTopic != null && !string.IsNullOrEmpty(lastTopic.TopicCode))
-            {
-                char lastChar = lastTopic.TopicCode[0];
-                if (lastChar < 'Z')
-                {
-                    nextTopicCode = ((char)(lastChar + 1)).ToString();
-                }
-                else
-                {
-                    nextTopicCode = "AA"; // hoặc có thể return error
-                }
-            }
-            
-            ViewBag.NextTopicCode = nextTopicCode;
-            
-            var topic = new Topic { TopicCode = nextTopicCode };
-            return View(topic);
+            return View();
         }
 
         // POST: Admin/TopicManager/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TopicCode,TopicName,Description,Status")] Topic topic)
+        public async Task<IActionResult> Create([Bind("TopicName,Description,Status")] Topic topic)
         {
-            // Đảm bảo TopicCode được tạo tự động nếu trống
-            if (string.IsNullOrEmpty(topic.TopicCode))
-            {
-                var lastTopic = _context.Topics
-                    .OrderByDescending(t => t.TopicCode)
-                    .FirstOrDefault();
-
-                string nextTopicCode = "A";
-                if (lastTopic != null && !string.IsNullOrEmpty(lastTopic.TopicCode))
-                {
-                    char lastChar = lastTopic.TopicCode[0];
-                    if (lastChar < 'Z')
-                    {
-                        nextTopicCode = ((char)(lastChar + 1)).ToString();
-                    }
-                    else
-                    {
-                        nextTopicCode = "AA";
-                    }
-                }
-
-                topic.TopicCode = nextTopicCode;
-            }
-            
-            // chuyển về chữ thường
             topic.Status = topic.Status.ToLower();
-            
+
             if (ModelState.IsValid)
             {
                 _context.Add(topic);
@@ -107,7 +58,6 @@ namespace TinhocOnline.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            ViewBag.NextTopicCode = topic.TopicCode;
             return View(topic);
         }
 
@@ -128,11 +78,9 @@ namespace TinhocOnline.Areas.Admin.Controllers
         }
 
         // POST: Admin/TopicManager/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TopicId,TopicCode,TopicName,Description,Status")] Topic topic)
+        public async Task<IActionResult> Edit(int id, [Bind("TopicId,TopicName,Description,Status")] Topic topic)
         {
             if (id != topic.TopicId)
             {
@@ -188,7 +136,9 @@ namespace TinhocOnline.Areas.Admin.Controllers
             var topic = await _context.Topics.FindAsync(id);
             if (topic != null)
             {
-                _context.Topics.Remove(topic);
+                // Chuyển status về inactive thay vì xóa
+                topic.Status = "inactive";
+                _context.Update(topic);
             }
 
             await _context.SaveChangesAsync();

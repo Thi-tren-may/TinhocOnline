@@ -13,10 +13,6 @@ namespace TinhocOnline.Models
         public int TopicId { get; set; }
 
         [Required]
-        [StringLength(10)]
-        public string TopicCode { get; set; } // A, B, C, D, E, F, G
-
-        [Required]
         [StringLength(200)]
         public string TopicName { get; set; }
 

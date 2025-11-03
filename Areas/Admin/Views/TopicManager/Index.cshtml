@@ -21,7 +21,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                        <h5 class="card-title">Danh sách chủ đề (A-G)</h5>
+                        <h5 class="card-title">Danh sách chủ đề Tin học</h5>
                         <a asp-action="Create" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i> Thêm chủ đề
                         </a>
@@ -30,7 +30,7 @@
                     <!-- Alert Info -->
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
                         <i class="bi bi-info-circle me-1"></i>
-                        Hệ thống có 7 chủ đề theo chương trình Tin học phổ thông (A-G).
+                        Quản lý các chủ đề theo chương trình Tin học phổ thông.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
@@ -39,19 +39,20 @@
                         <table class="table table-hover table-striped" id="topicTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col" class="text-center" style="width: 8%;">Mã</th>
-                                    <th scope="col" style="width: 30%;">Tên chủ đề</th>
-                                    <th scope="col" style="width: 40%;">Mô tả</th>
-                                    <th scope="col" class="text-center" style="width: 12%;">Trạng thái</th>
-                                    <th scope="col" class="text-center" style="width: 10%;">Hành động</th>
+                                    <th scope="col" class="text-center" style="width: 5%;">#</th>
+                                    <th scope="col" style="width: 35%;">Tên chủ đề</th>
+                                    <th scope="col" style="width: 45%;">Mô tả</th>
+                                    <th scope="col" class="text-center" style="width: 10%;">Trạng thái</th>
+                                    <th scope="col" class="text-center" style="width: 5%;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.OrderBy(t => t.TopicCode))
+                                @{int index = 1;}
+                                @foreach (var item in Model)
                                 {
                                     <tr>
                                         <td class="text-center">
-                                            <span class="badge bg-primary fs-6">@item.TopicCode</span>
+                                            <span class="badge bg-secondary">@index</span>
                                         </td>
                                         <td>
                                             <strong>@item.TopicName</strong>
@@ -90,6 +91,7 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    index++;
                                 }
                             </tbody>
                         </table>
@@ -98,6 +100,15 @@
                     @if (!Model.Any())
                     {
                         <div class="alert alert-warning text-center" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Chưa có chủ đề nào. Hãy thêm chủ đề mới!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
                             <i class="bi bi-exclamation-triangle"></i> Chưa có chủ đề nào trong hệ thống. Vui lòng thêm mới!
                         </div>
                     }
