@@ -15,8 +15,9 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
 
     <!-- Vendor CSS Files -->
     <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +31,7 @@
     <!-- Template Main CSS File -->
     <link href="~/assets/css/style.css" rel="stylesheet">
 
-
+    @RenderSection("Styles", required: false)
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
     * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -276,11 +277,19 @@
 
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "" : "collapsed")"
-                   href="@Url.Action("Index", "Dashboard")">
+                    href="@Url.Action("Index", "Dashboard")">
                     <i class="bi bi-grid"></i>
                     <span>Tổng quan</span>
                 </a>
             </li><!-- End Dashboard Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "QuestionManager" ? "" : "collapsed")"
+                    href="@Url.Action("Index", "QuestionManager")">
+                    <i class="bi bi-grid"></i>
+                    <span>Ngân hàng câu hỏi</span>
+                </a>
+            </li><!-- End Question Nav -->
 
         </ul>
 
@@ -322,7 +331,7 @@
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="~/assets/js/main.js"></script>
 
-
+    @RenderSection("Scripts", required: false)
 </body>
 
 </html>

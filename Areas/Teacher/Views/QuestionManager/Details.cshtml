@@ -1,0 +1,137 @@
+﻿@model TinhocOnline.Models.Question
+
+@{
+    ViewData["Title"] = "Chi tiết Câu hỏi";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Chi tiết Câu hỏi</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Câu hỏi</a></li>
+            <li class="breadcrumb-item active">Chi tiết</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin Câu hỏi</h5>
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 25%;">Nội dung Câu hỏi:</th>
+                                <td>@Model.QuestionText</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Chủ đề:</th>
+                                <td>@Model.Topic.TopicName</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Độ khó:</th>
+                                <td>
+                                    @if (Model.DifficultyLevel == "easy")
+                                    {
+                                        <span class="badge bg-success">Dễ</span>
+                                    }
+                                    else if (Model.DifficultyLevel == "medium")
+                                    {
+                                        <span class="badge bg-warning">Trung bình</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Khó</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Trạng thái:</th>
+                                <td>
+                                    @if (Model.Status == "active")
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Người tạo:</th>
+                                <td>@Model.Creator.FullName (@Model.Creator.Email)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-3">
+                        <a asp-action="Edit" asp-route-id="@Model.QuestionId" class="btn btn-warning">
+                            <i class="bi bi-pencil me-1"></i> Chỉnh sửa
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-list me-1"></i> Về danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card hiển thị đáp án -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-card-checklist"></i> Danh sách Đáp án
+                    </h5>
+
+                    @if (Model.Answers != null && Model.Answers.Any())
+                    {
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 10%;">Thứ tự</th>
+                                    <th scope="col">Nội dung Đáp án</th>
+                                    <th scope="col" style="width: 15%;">Đúng/Sai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var answer in Model.Answers.OrderBy(a => a.AnswerOrder))
+                                {
+                                    <tr class="@(answer.IsCorrect ? "table-success" : "")">
+                                        <td><strong>@answer.AnswerOrder</strong></td>
+                                        <td>@answer.AnswerText</td>
+                                        <td>
+                                            @if (answer.IsCorrect)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> Đúng
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-x-circle"></i> Sai
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Câu hỏi này chưa có đáp án. Vui lòng thêm đáp án cho câu hỏi.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

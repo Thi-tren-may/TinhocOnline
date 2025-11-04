@@ -1,0 +1,176 @@
+﻿@model TinhocOnline.Models.ViewModels.QuestionWithAnswersViewModel
+
+@{
+    ViewData["Title"] = "Thêm Câu hỏi";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Thêm Câu hỏi Mới</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Câu hỏi</a></li>
+            <li class="breadcrumb-item active">Thêm mới</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin Câu hỏi</h5>
+
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <label asp-for="TopicId" class="col-sm-3 col-form-label">Chủ đề <span class="text-danger">*</span></label>
+                            <div class="col-sm-9">
+                                <select asp-for="TopicId" class="form-select" asp-items="ViewBag.TopicId">
+                                    <option value="">-- Chọn chủ đề --</option>
+                                </select>
+                                <span asp-validation-for="TopicId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="QuestionText" class="col-sm-3 col-form-label">Nội dung Câu hỏi <span class="text-danger">*</span></label>
+                            <div class="col-sm-9">
+                                <textarea asp-for="QuestionText" class="form-control" rows="4" placeholder="Nhập nội dung câu hỏi..." autofocus></textarea>
+                                <span asp-validation-for="QuestionText" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="DifficultyLevel" class="col-sm-3 col-form-label">Độ khó <span class="text-danger">*</span></label>
+                            <div class="col-sm-9">
+                                <select asp-for="DifficultyLevel" class="form-select">
+                                    <option value="">-- Chọn độ khó --</option>
+                                    <option value="easy">Dễ</option>
+                                    <option value="medium">Trung bình</option>
+                                    <option value="hard">Khó</option>
+                                </select>
+                                <span asp-validation-for="DifficultyLevel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="CreatedBy" class="col-sm-3 col-form-label">Người tạo <span class="text-danger">*</span></label>
+                            <div class="col-sm-9">
+                                <select asp-for="CreatedBy" class="form-select" asp-items="ViewBag.CreatedBy">
+                                    <option value="">-- Chọn giáo viên --</option>
+                                </select>
+                                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="Status" class="col-sm-3 col-form-label">Trạng thái</label>
+                            <div class="col-sm-9">
+                                <select asp-for="Status" class="form-select">
+                                    <option value="active" selected>Hoạt động</option>
+                                    <option value="inactive">Không hoạt động</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3"><i class="bi bi-card-checklist"></i> Đáp án (Bắt buộc nhập đủ 4 đáp án)</h5>
+
+                        <div class="row mb-3">
+                            <label asp-for="AnswerA" class="col-sm-2 col-form-label">Đáp án A <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="AnswerA" class="form-control" placeholder="Nhập đáp án A" />
+                                <span asp-validation-for="AnswerA" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check">
+                                    <input type="radio" asp-for="CorrectAnswer" value="A" class="form-check-input" id="correctAnswerA" />
+                                    <label class="form-check-label" for="correctAnswerA">Đúng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="AnswerB" class="col-sm-2 col-form-label">Đáp án B <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="AnswerB" class="form-control" placeholder="Nhập đáp án B" />
+                                <span asp-validation-for="AnswerB" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check">
+                                    <input type="radio" asp-for="CorrectAnswer" value="B" class="form-check-input" id="correctAnswerB" />
+                                    <label class="form-check-label" for="correctAnswerB">Đúng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="AnswerC" class="col-sm-2 col-form-label">Đáp án C <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="AnswerC" class="form-control" placeholder="Nhập đáp án C" />
+                                <span asp-validation-for="AnswerC" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check">
+                                    <input type="radio" asp-for="CorrectAnswer" value="C" class="form-check-input" id="correctAnswerC" />
+                                    <label class="form-check-label" for="correctAnswerC">Đúng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label asp-for="AnswerD" class="col-sm-2 col-form-label">Đáp án D <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="AnswerD" class="form-control" placeholder="Nhập đáp án D" />
+                                <span asp-validation-for="AnswerD" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check">
+                                    <input type="radio" asp-for="CorrectAnswer" value="D" class="form-check-input" id="correctAnswerD" />
+                                    <label class="form-check-label" for="correctAnswerD">Đúng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> Nhập đầy đủ 4 đáp án và chọn 1 đáp án đúng.
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Lưu
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- Card hướng dẫn -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-info-circle text-info"></i> Hướng dẫn
+                    </h5>
+                    <ul>
+                        <li>Nội dung câu hỏi nên rõ ràng, dễ hiểu</li>
+                        <li>Chọn độ khó phù hợp với nội dung câu hỏi</li>
+                        <li><strong>Bắt buộc nhập đủ 4 đáp án (A, B, C, D)</strong></li>
+                        <li><strong>Phải chọn 1 đáp án đúng</strong></li>
+                        <li>Mỗi câu hỏi chỉ có 1 đáp án đúng duy nhất</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

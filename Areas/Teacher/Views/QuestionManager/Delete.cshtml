@@ -1,0 +1,93 @@
+﻿@model TinhocOnline.Models.Question
+
+@{
+    ViewData["Title"] = "Xóa Câu hỏi";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Xóa Câu hỏi</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Câu hỏi</a></li>
+            <li class="breadcrumb-item active">Xóa</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Cảnh báo!</h4>
+                <p>Bạn có chắc chắn muốn xóa câu hỏi này không?</p>
+                <hr>
+                <p class="mb-0">Hành động này sẽ chuyển trạng thái câu hỏi về <strong>Không hoạt động</strong>.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin Câu hỏi</h5>
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 25%;">Nội dung Câu hỏi:</th>
+                                <td>@Model.QuestionText</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Chủ đề:</th>
+                                <td>@Model.Topic.TopicName</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Độ khó:</th>
+                                <td>
+                                    @if (Model.DifficultyLevel == "easy")
+                                    {
+                                        <span class="badge bg-success">Dễ</span>
+                                    }
+                                    else if (Model.DifficultyLevel == "medium")
+                                    {
+                                        <span class="badge bg-warning">Trung bình</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Khó</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Trạng thái:</th>
+                                <td>
+                                    @if (Model.Status == "active")
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Người tạo:</th>
+                                <td>@Model.Creator.FullName (@Model.Creator.Email)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="QuestionId" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i> Xác nhận Xóa
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Hủy
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
