@@ -39,6 +39,7 @@
                                 <th class="text-center">#</th>
                                 <th>Nội dung Câu hỏi</th>
                                 <th>Chủ đề</th>
+                                <th>Lớp</th>
                                 <th>Độ khó</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -65,6 +66,16 @@
                                         }
                                     </td>
                                     <td>@item.Topic?.TopicName</td>
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(item.GradeLevel))
+                                        {
+                                            <span class="badge bg-info">Lớp @item.GradeLevel</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
                                     <td>
                                         @if (item.DifficultyLevel == "easy")
                                         {

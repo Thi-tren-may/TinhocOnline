@@ -79,6 +79,19 @@
                             </div>
 
                             <div class="row mb-3">
+                                <label asp-for="GradeLevel" class="col-sm-3 col-form-label">Lớp</label>
+                                <div class="col-sm-9">
+                                    <select asp-for="GradeLevel" class="form-select">
+                                        <option value="">-- Chọn lớp --</option>
+                                        <option value="10">Lớp 10</option>
+                                        <option value="11">Lớp 11</option>
+                                        <option value="12">Lớp 12</option>
+                                    </select>
+                                    <span asp-validation-for="GradeLevel" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
                                 <label asp-for="Status" class="col-sm-3 col-form-label">Trạng thái</label>
                                 <div class="col-sm-9">
                                     <select asp-for="Status" class="form-select">

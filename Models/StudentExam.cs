@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TinhocOnline.Models
 {
-    [Table("Student_Exams")]
+    [Table("StudentExams")]
     public class StudentExam
     {
         [Key]
@@ -22,6 +22,10 @@ namespace TinhocOnline.Models
         public DateTime StartTime { get; set; }
 
         public DateTime? EndTime { get; set; }
+
+        public DateTime? SubmittedAt { get; set; } // Thời điểm nộp bài
+
+        public int? DurationTaken { get; set; } // Thời gian làm bài thực tế (phút)
 
         [Column(TypeName = "decimal(5,2)")]
         public decimal? Score { get; set; }

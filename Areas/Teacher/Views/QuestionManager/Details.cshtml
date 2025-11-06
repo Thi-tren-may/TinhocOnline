@@ -51,6 +51,19 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th scope="row">Lớp:</th>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(Model.GradeLevel))
+                                    {
+                                        <span class="badge bg-info">Lớp @Model.GradeLevel</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa phân lớp</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
                                 <th scope="row">Trạng thái:</th>
                                 <td>
                                     @if (Model.Status == "active")

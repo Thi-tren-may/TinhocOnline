@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TinhocOnline.Models;
 
@@ -11,9 +12,11 @@ using TinhocOnline.Models;
 namespace TinhocOnline.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20251106182851_AddExamTypeTable")]
+    partial class AddExamTypeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +144,7 @@ namespace TinhocOnline.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("ExamQuestions");
+                    b.ToTable("Exam_Questions");
                 });
 
             modelBuilder.Entity("TinhocOnline.Models.ExamTopic", b =>
@@ -286,7 +289,7 @@ namespace TinhocOnline.Migrations
 
                     b.HasIndex("StudentExamId");
 
-                    b.ToTable("StudentAnswers");
+                    b.ToTable("Student_Answers");
                 });
 
             modelBuilder.Entity("TinhocOnline.Models.StudentExam", b =>
@@ -329,7 +332,7 @@ namespace TinhocOnline.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentExams");
+                    b.ToTable("Student_Exams");
                 });
 
             modelBuilder.Entity("TinhocOnline.Models.Topic", b =>

@@ -3,29 +3,30 @@
 -- Mỗi topic có 9 câu hỏi: 3 easy, 3 medium, 3 hard
 -- Mỗi câu hỏi có 4 đáp án (A, B, C, D)
 -- created_by = 1 (giả sử user_id của giáo viên là 1)
+-- grade_level = NULL hoặc '10', '11', '12'
 -- =============================================
 
 -- TOPIC 1: Máy tính và xã hội tri thức
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(1, N'Máy tính được sử dụng phổ biến nhất trong lĩnh vực nào sau đây?', 'easy', 1, 'active'),
-(1, N'Thành phần nào sau đây là bộ phận cơ bản của máy tính?', 'easy', 1, 'active'),
-(1, N'Phần mềm nào sau đây được dùng để soạn thảo văn bản?', 'easy', 1, 'active');
+(1, N'Máy tính được sử dụng phổ biến nhất trong lĩnh vực nào sau đây?', 'easy', '10', 1, 'active'),
+(1, N'Thành phần nào sau đây là bộ phận cơ bản của máy tính?', 'easy', '10', 1, 'active'),
+(1, N'Phần mềm nào sau đây được dùng để soạn thảo văn bản?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(1, N'Trí tuệ nhân tạo (AI) đang được ứng dụng trong lĩnh vực nào?', 'medium', 1, 'active'),
-(1, N'Công nghệ thông tin đã tác động đến giáo dục như thế nào?', 'medium', 1, 'active'),
-(1, N'Big Data là gì?', 'medium', 1, 'active');
+(1, N'Trí tuệ nhân tạo (AI) đang được ứng dụng trong lĩnh vực nào?', 'medium', '11', 1, 'active'),
+(1, N'Công nghệ thông tin đã tác động đến giáo dục như thế nào?', 'medium', '11', 1, 'active'),
+(1, N'Big Data là gì?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(1, N'Cuộc cách mạng công nghiệp 4.0 có đặc điểm chính nào?', 'hard', 1, 'active'),
-(1, N'Cloud Computing mang lại lợi ích gì cho doanh nghiệp?', 'hard', 1, 'active'),
-(1, N'IoT (Internet of Things) hoạt động dựa trên nguyên tắc nào?', 'hard', 1, 'active');
+(1, N'Cuộc cách mạng công nghiệp 4.0 có đặc điểm chính nào?', 'hard', '12', 1, 'active'),
+(1, N'Cloud Computing mang lại lợi ích gì cho doanh nghiệp?', 'hard', '12', 1, 'active'),
+(1, N'IoT (Internet of Things) hoạt động dựa trên nguyên tắc nào?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 1 (9 câu x 4 đáp án = 36 đáp án)
 -- Câu 1
@@ -95,25 +96,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 2: Mạng máy tính và Internet
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(2, N'WWW là viết tắt của cụm từ nào?', 'easy', 1, 'active'),
-(2, N'Địa chỉ IP có tác dụng gì?', 'easy', 1, 'active'),
-(2, N'Giao thức nào được sử dụng để gửi email?', 'easy', 1, 'active');
+(2, N'WWW là viết tắt của cụm từ nào?', 'easy', '10', 1, 'active'),
+(2, N'Địa chỉ IP có tác dụng gì?', 'easy', '10', 1, 'active'),
+(2, N'Giao thức nào được sử dụng để gửi email?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(2, N'Phân biệt mạng LAN và WAN?', 'medium', 1, 'active'),
-(2, N'Firewall có chức năng gì trong mạng?', 'medium', 1, 'active'),
-(2, N'DNS Server có vai trò gì?', 'medium', 1, 'active');
+(2, N'Phân biệt mạng LAN và WAN?', 'medium', '11', 1, 'active'),
+(2, N'Firewall có chức năng gì trong mạng?', 'medium', '11', 1, 'active'),
+(2, N'DNS Server có vai trò gì?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(2, N'VPN hoạt động theo nguyên tắc nào?', 'hard', 1, 'active'),
-(2, N'Phân biệt IPv4 và IPv6?', 'hard', 1, 'active'),
-(2, N'Mô hình OSI có bao nhiêu tầng và chức năng của từng tầng?', 'hard', 1, 'active');
+(2, N'VPN hoạt động theo nguyên tắc nào?', 'hard', '12', 1, 'active'),
+(2, N'Phân biệt IPv4 và IPv6?', 'hard', '12', 1, 'active'),
+(2, N'Mô hình OSI có bao nhiêu tầng và chức năng của từng tầng?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 2
 -- Câu 10
@@ -183,25 +184,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 3: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(3, N'Đơn vị nhỏ nhất để lưu trữ thông tin trong máy tính là gì?', 'easy', 1, 'active'),
-(3, N'1 GB bằng bao nhiêu MB?', 'easy', 1, 'active'),
-(3, N'File có đuôi .docx là loại file gì?', 'easy', 1, 'active');
+(3, N'Đơn vị nhỏ nhất để lưu trữ thông tin trong máy tính là gì?', 'easy', '10', 1, 'active'),
+(3, N'1 GB bằng bao nhiêu MB?', 'easy', '10', 1, 'active'),
+(3, N'File có đuôi .docx là loại file gì?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(3, N'Cloud storage có ưu điểm gì so với lưu trữ cục bộ?', 'medium', 1, 'active'),
-(3, N'Cơ sở dữ liệu quan hệ (RDBMS) là gì?', 'medium', 1, 'active'),
-(3, N'Metadata là gì?', 'medium', 1, 'active');
+(3, N'Cloud storage có ưu điểm gì so với lưu trữ cục bộ?', 'medium', '11', 1, 'active'),
+(3, N'Cơ sở dữ liệu quan hệ (RDBMS) là gì?', 'medium', '11', 1, 'active'),
+(3, N'Metadata là gì?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(3, N'Phân biệt SQL và NoSQL?', 'hard', 1, 'active'),
-(3, N'Thuật toán tìm kiếm Binary Search hoạt động như thế nào?', 'hard', 1, 'active'),
-(3, N'Blockchain lưu trữ dữ liệu theo cơ chế nào?', 'hard', 1, 'active');
+(3, N'Phân biệt SQL và NoSQL?', 'hard', '12', 1, 'active'),
+(3, N'Thuật toán tìm kiếm Binary Search hoạt động như thế nào?', 'hard', '12', 1, 'active'),
+(3, N'Blockchain lưu trữ dữ liệu theo cơ chế nào?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 3
 -- Câu 19
@@ -271,25 +272,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 4: Đạo đức, pháp luật và văn hóa trong môi trường số
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(4, N'Hành vi nào sau đây là vi phạm bản quyền phần mềm?', 'easy', 1, 'active'),
-(4, N'Cyberbullying là gì?', 'easy', 1, 'active'),
-(4, N'Nên làm gì khi nhận được email lạ yêu cầu cung cấp mật khẩu?', 'easy', 1, 'active');
+(4, N'Hành vi nào sau đây là vi phạm bản quyền phần mềm?', 'easy', '10', 1, 'active'),
+(4, N'Cyberbullying là gì?', 'easy', '10', 1, 'active'),
+(4, N'Nên làm gì khi nhận được email lạ yêu cầu cung cấp mật khẩu?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(4, N'GDPR (General Data Protection Regulation) là gì?', 'medium', 1, 'active'),
-(4, N'Fake news gây hại như thế nào?', 'medium', 1, 'active'),
-(4, N'Quyền riêng tư trực tuyến cần được bảo vệ như thế nào?', 'medium', 1, 'active');
+(4, N'GDPR (General Data Protection Regulation) là gì?', 'medium', '11', 1, 'active'),
+(4, N'Fake news gây hại như thế nào?', 'medium', '11', 1, 'active'),
+(4, N'Quyền riêng tư trực tuyến cần được bảo vệ như thế nào?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(4, N'Luật An ninh mạng Việt Nam quy định về trách nhiệm của doanh nghiệp công nghệ?', 'hard', 1, 'active'),
-(4, N'Digital footprint là gì và tại sao cần quan tâm?', 'hard', 1, 'active'),
-(4, N'Creative Commons license có các loại nào?', 'hard', 1, 'active');
+(4, N'Luật An ninh mạng Việt Nam quy định về trách nhiệm của doanh nghiệp công nghệ?', 'hard', '12', 1, 'active'),
+(4, N'Digital footprint là gì và tại sao cần quan tâm?', 'hard', '12', 1, 'active'),
+(4, N'Creative Commons license có các loại nào?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 4
 -- Câu 28
@@ -359,25 +360,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 5: Ứng dụng tin học
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(5, N'Phần mềm nào dùng để tạo bảng tính?', 'easy', 1, 'active'),
-(5, N'PowerPoint dùng để làm gì?', 'easy', 1, 'active'),
-(5, N'Photoshop là phần mềm gì?', 'easy', 1, 'active');
+(5, N'Phần mềm nào dùng để tạo bảng tính?', 'easy', '10', 1, 'active'),
+(5, N'PowerPoint dùng để làm gì?', 'easy', '10', 1, 'active'),
+(5, N'Photoshop là phần mềm gì?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(5, N'Google Workspace bao gồm những ứng dụng nào?', 'medium', 1, 'active'),
-(5, N'Trello được sử dụng để làm gì?', 'medium', 1, 'active'),
-(5, N'Zoom, Microsoft Teams thuộc nhóm ứng dụng nào?', 'medium', 1, 'active');
+(5, N'Google Workspace bao gồm những ứng dụng nào?', 'medium', '11', 1, 'active'),
+(5, N'Trello được sử dụng để làm gì?', 'medium', '11', 1, 'active'),
+(5, N'Zoom, Microsoft Teams thuộc nhóm ứng dụng nào?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(5, N'AutoCAD được ứng dụng trong lĩnh vực nào?', 'hard', 1, 'active'),
-(5, N'Phần mềm ERP (Enterprise Resource Planning) có chức năng gì?', 'hard', 1, 'active'),
-(5, N'Machine Learning được ứng dụng như thế nào trong y tế?', 'hard', 1, 'active');
+(5, N'AutoCAD được ứng dụng trong lĩnh vực nào?', 'hard', '12', 1, 'active'),
+(5, N'Phần mềm ERP (Enterprise Resource Planning) có chức năng gì?', 'hard', '12', 1, 'active'),
+(5, N'Machine Learning được ứng dụng như thế nào trong y tế?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 5
 -- Câu 37
@@ -447,25 +448,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 6: Giải quyết vấn đề với sự trợ giúp của máy tính
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(6, N'Thuật toán là gì?', 'easy', 1, 'active'),
-(6, N'Lưu đồ (flowchart) dùng để làm gì?', 'easy', 1, 'active'),
-(6, N'Ngôn ngữ lập trình nào phổ biến cho người mới học?', 'easy', 1, 'active');
+(6, N'Thuật toán là gì?', 'easy', '10', 1, 'active'),
+(6, N'Lưu đồ (flowchart) dùng để làm gì?', 'easy', '10', 1, 'active'),
+(6, N'Ngôn ngữ lập trình nào phổ biến cho người mới học?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(6, N'Tư duy thuật toán (Computational Thinking) bao gồm những yếu tố nào?', 'medium', 1, 'active'),
-(6, N'Debugging là gì?', 'medium', 1, 'active'),
-(6, N'Vòng lặp (loop) được sử dụng khi nào?', 'medium', 1, 'active');
+(6, N'Tư duy thuật toán (Computational Thinking) bao gồm những yếu tố nào?', 'medium', '11', 1, 'active'),
+(6, N'Debugging là gì?', 'medium', '11', 1, 'active'),
+(6, N'Vòng lặp (loop) được sử dụng khi nào?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(6, N'Phân biệt thuật toán đệ quy và vòng lặp?', 'hard', 1, 'active'),
-(6, N'Big O notation dùng để đánh giá điều gì?', 'hard', 1, 'active'),
-(6, N'Thuật toán sắp xếp nào có độ phức tạp O(n log n)?', 'hard', 1, 'active');
+(6, N'Phân biệt thuật toán đệ quy và vòng lặp?', 'hard', '12', 1, 'active'),
+(6, N'Big O notation dùng để đánh giá điều gì?', 'hard', '12', 1, 'active'),
+(6, N'Thuật toán sắp xếp nào có độ phức tạp O(n log n)?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 6
 -- Câu 46
@@ -535,25 +536,25 @@ INSERT INTO Answers (QuestionId, AnswerText, IsCorrect, AnswerOrder) VALUES
 -- TOPIC 7: Hướng nghiệp với tin học
 -- =============================================
 -- Easy Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(7, N'Nghề lập trình viên cần kỹ năng nào?', 'easy', 1, 'active'),
-(7, N'Web Developer làm công việc gì?', 'easy', 1, 'active'),
-(7, N'IT Support là gì?', 'easy', 1, 'active');
+(7, N'Nghề lập trình viên cần kỹ năng nào?', 'easy', '10', 1, 'active'),
+(7, N'Web Developer làm công việc gì?', 'easy', '10', 1, 'active'),
+(7, N'IT Support là gì?', 'easy', '10', 1, 'active');
 
 -- Medium Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(7, N'Data Scientist cần có kiến thức gì?', 'medium', 1, 'active'),
-(7, N'DevOps Engineer làm gì?', 'medium', 1, 'active'),
-(7, N'UI/UX Designer khác nhau như thế nào?', 'medium', 1, 'active');
+(7, N'Data Scientist cần có kiến thức gì?', 'medium', '11', 1, 'active'),
+(7, N'DevOps Engineer làm gì?', 'medium', '11', 1, 'active'),
+(7, N'UI/UX Designer khác nhau như thế nào?', 'medium', '11', 1, 'active');
 
 -- Hard Questions
-INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, CreatedBy, Status)
+INSERT INTO Questions (TopicId, QuestionText, DifficultyLevel, GradeLevel, CreatedBy, Status)
 VALUES 
-(7, N'Cloud Architect cần có kỹ năng và chứng chỉ nào?', 'hard', 1, 'active'),
-(7, N'Cybersecurity Specialist bảo vệ hệ thống như thế nào?', 'hard', 1, 'active'),
-(7, N'AI/ML Engineer cần nắm vững kiến thức gì?', 'hard', 1, 'active');
+(7, N'Cloud Architect cần có kỹ năng và chứng chỉ nào?', 'hard', '12', 1, 'active'),
+(7, N'Cybersecurity Specialist bảo vệ hệ thống như thế nào?', 'hard', '12', 1, 'active'),
+(7, N'AI/ML Engineer cần nắm vững kiến thức gì?', 'hard', '12', 1, 'active');
 
 -- Answers cho Topic 7
 -- Câu 55

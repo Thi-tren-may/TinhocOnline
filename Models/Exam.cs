@@ -31,6 +31,18 @@ namespace TinhocOnline.Models
         [Column(TypeName = "decimal(5,2)")]
         public decimal HardPercentage { get; set; } = 10;
 
+        [StringLength(10)]
+        public string? GradeLevel { get; set; } // "10", "11", "12"
+
+        public int? ExamTypeId { get; set; } // FK to ExamTypes
+
+        public bool ShuffleQuestions { get; set; } = false; // Trộn câu hỏi
+
+        public bool ShuffleAnswers { get; set; } = false; // Trộn đáp án
+
+        [Column(TypeName = "decimal(4,2)")]
+        public decimal PassingScore { get; set; } = 5.0M; // Điểm đạt (mặc định 5/10)
+
         [Required]
         public int CreatedBy { get; set; }
 
@@ -38,6 +50,10 @@ namespace TinhocOnline.Models
         public string Status { get; set; } = "draft";
 
         // Navigation properties
+        [ValidateNever]
+        [ForeignKey("ExamTypeId")]
+        public virtual ExamType? ExamType { get; set; }
+
         [ValidateNever]
         [ForeignKey("CreatedBy")]
         public virtual User Creator { get; set; }

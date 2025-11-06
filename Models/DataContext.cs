@@ -14,6 +14,7 @@ namespace TinhocOnline.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamType> ExamTypes { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
         public DbSet<ExamTopic> ExamTopics { get; set; }
         public DbSet<StudentExam> StudentExams { get; set; }
@@ -29,6 +30,10 @@ namespace TinhocOnline.Models
                 .IsUnique();
 
             // Question configurations
+            modelBuilder.Entity<Question>()
+                .ToTable(t => t.HasCheckConstraint("CK_Questions_GradeLevel", 
+                    "[GradeLevel] IS NULL OR [GradeLevel] IN ('10', '11', '12')"));
+
             modelBuilder.Entity<Question>()
                 .HasOne(q => q.Topic)
                 .WithMany(t => t.Questions)
@@ -50,10 +55,29 @@ namespace TinhocOnline.Models
 
             // Exam configurations
             modelBuilder.Entity<Exam>()
+                .ToTable(t => t.HasCheckConstraint("CK_Exams_GradeLevel", 
+                    "[GradeLevel] IS NULL OR [GradeLevel] IN ('10', '11', '12')"));
+
+            modelBuilder.Entity<Exam>()
+                .ToTable(t => t.HasCheckConstraint("CK_Exams_PassingScore", 
+                    "[PassingScore] >= 0 AND [PassingScore] <= 10"));
+
+            modelBuilder.Entity<Exam>()
+                .HasOne(e => e.ExamType)
+                .WithMany(et => et.Exams)
+                .HasForeignKey(e => e.ExamTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Exam>()
                 .HasOne(e => e.Creator)
                 .WithMany(u => u.Exams)
                 .HasForeignKey(e => e.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ExamType configurations
+            modelBuilder.Entity<ExamType>()
+                .HasIndex(et => et.TypeCode)
+                .IsUnique();
 
             // ExamQuestion configurations
             modelBuilder.Entity<ExamQuestion>()

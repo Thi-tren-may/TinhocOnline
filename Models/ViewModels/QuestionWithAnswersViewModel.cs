@@ -14,6 +14,10 @@ namespace TinhocOnline.Models.ViewModels
         [Required(ErrorMessage = "Vui lòng chọn độ khó")]
         public string DifficultyLevel { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Vui lòng chọn lớp")]
+
+        public string? GradeLevel { get; set; } // "10", "11", "12"
+
         [Required(ErrorMessage = "Vui lòng chọn người tạo")]
         public int CreatedBy { get; set; }
 

@@ -25,6 +25,9 @@ namespace TinhocOnline.Models
         [StringLength(20)]
         public string DifficultyLevel { get; set; }
 
+        [StringLength(10)]
+        public string? GradeLevel { get; set; } // "10", "11", "12"
+
         [Required]
         public int CreatedBy { get; set; }
 

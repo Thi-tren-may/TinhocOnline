@@ -85,6 +85,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     TopicId = model.TopicId,
                     QuestionText = model.QuestionText,
                     DifficultyLevel = model.DifficultyLevel,
+                    GradeLevel = model.GradeLevel,
                     CreatedBy = model.CreatedBy,
                     Status = model.Status
                 };
@@ -163,7 +164,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("QuestionId,TopicId,QuestionText,DifficultyLevel,CreatedBy,Status")] Question question)
+        public async Task<IActionResult> Edit(int id, [Bind("QuestionId,TopicId,QuestionText,DifficultyLevel,GradeLevel,CreatedBy,Status")] Question question)
         {
             if (id != question.QuestionId)
             {

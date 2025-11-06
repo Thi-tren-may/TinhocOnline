@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TinhocOnline.Models
 {
-    [Table("Exam_Questions")]
+    [Table("ExamQuestions")]
     public class ExamQuestion
     {
         [Key]
