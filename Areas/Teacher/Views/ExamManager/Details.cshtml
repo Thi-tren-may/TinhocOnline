@@ -1,0 +1,211 @@
+@model TinhocOnline.Models.Exam
+
+@{
+    ViewData["Title"] = "Chi tiết Đề thi";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Chi tiết Đề thi</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Đề thi</a></li>
+            <li class="breadcrumb-item active">Chi tiết</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-10">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Thông tin đề thi -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin Đề thi</h5>
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 25%;">Tên đề thi:</th>
+                                <td><strong>@Model.ExamName</strong></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Loại đề:</th>
+                                <td>@Model.ExamType?.TypeName</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Lớp:</th>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(Model.GradeLevel))
+                                    {
+                                        <span class="badge bg-info">Lớp @Model.GradeLevel</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Tất cả lớp</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tổng số câu:</th>
+                                <td>@Model.TotalQuestions câu</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Thời gian:</th>
+                                <td>@Model.Duration phút</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ma trận độ khó:</th>
+                                <td>
+                                    <span class="badge bg-success">Dễ: @Model.EasyPercentage%</span>
+                                    <span class="badge bg-warning">TB: @Model.MediumPercentage%</span>
+                                    <span class="badge bg-danger">Khó: @Model.HardPercentage%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Điểm đạt:</th>
+                                <td>@Model.PassingScore điểm</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tùy chọn:</th>
+                                <td>
+                                    @if (Model.ShuffleQuestions)
+                                    {
+                                        <span class="badge bg-primary">Trộn câu hỏi</span>
+                                    }
+                                    @if (Model.ShuffleAnswers)
+                                    {
+                                        <span class="badge bg-primary">Trộn đáp án</span>
+                                    }
+                                    @if (!Model.ShuffleQuestions && !Model.ShuffleAnswers)
+                                    {
+                                        <span class="text-muted">Không có</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Trạng thái:</th>
+                                <td>
+                                    @if (Model.Status == "published")
+                                    {
+                                        <span class="badge bg-success">Đã xuất bản</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Nháp</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Người tạo:</th>
+                                <td>@Model.Creator?.FullName</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-3">
+                        @if (Model.Status == "draft")
+                        {
+                            <form asp-action="Publish" asp-route-id="@Model.ExamId" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Xuất bản đề thi này?')">
+                                    <i class="bi bi-check-circle me-1"></i> Xuất bản
+                                </button>
+                            </form>
+                        }
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-list me-1"></i> Về danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ma trận chủ đề -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ma trận Chủ đề</h5>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Chủ đề</th>
+                                <th class="text-center">Số câu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var examTopic in Model.ExamTopics.OrderBy(et => et.Topic.TopicName))
+                            {
+                                <tr>
+                                    <td>@examTopic.Topic.TopicName</td>
+                                    <td class="text-center">@examTopic.QuestionCount câu</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Danh sách câu hỏi -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Danh sách Câu hỏi (@Model.ExamQuestions.Count câu)</h5>
+
+                    @foreach (var examQuestion in Model.ExamQuestions.OrderBy(eq => eq.QuestionOrder))
+                    {
+                        var question = examQuestion.Question;
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <strong>Câu @examQuestion.QuestionOrder:</strong>
+                                @if (question.DifficultyLevel == "easy")
+                                {
+                                    <span class="badge bg-success float-end">Dễ</span>
+                                }
+                                else if (question.DifficultyLevel == "medium")
+                                {
+                                    <span class="badge bg-warning float-end">Trung bình</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger float-end">Khó</span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-2">@question.QuestionText</p>
+
+                                @{
+                                    var answerLabels = new[] { "A", "B", "C", "D" };
+                                    var answersList = question.Answers.ToList();
+                                }
+                                @for (int i = 0; i < answersList.Count && i < 4; i++)
+                                {
+                                    var answer = answersList[i];
+                                    var label = answerLabels[i];
+                                    
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" disabled 
+                                               @(answer.IsCorrect ? "checked" : "") />
+                                        <label class="form-check-label @(answer.IsCorrect ? "text-success fw-bold" : "")">
+                                            @label. @answer.AnswerText
+                                            @if (answer.IsCorrect)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

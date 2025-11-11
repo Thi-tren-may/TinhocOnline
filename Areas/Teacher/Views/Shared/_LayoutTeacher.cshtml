@@ -286,10 +286,18 @@
             <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "QuestionManager" ? "" : "collapsed")"
                     href="@Url.Action("Index", "QuestionManager")">
-                    <i class="bi bi-grid"></i>
+                    <i class="bi bi-question-circle"></i>
                     <span>Ngân hàng câu hỏi</span>
                 </a>
             </li><!-- End Question Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ExamManager" ? "" : "collapsed")"
+                    href="@Url.Action("Index", "ExamManager")">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Quản lý Đề thi</span>
+                </a>
+            </li><!-- End Exam Nav -->
 
         </ul>
 

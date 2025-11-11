@@ -130,18 +130,24 @@
                             <fieldset id="fieldsetAnswers">
                                 <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
 
-                                @foreach (var answer in Model.Answers.OrderBy(a => a.AnswerOrder))
+                                @{
+                                    var answerLabels = new[] { "A", "B", "C", "D" };
+                                    var answersList = Model.Answers.ToList();
+                                }
+                                @for (int i = 0; i < answersList.Count && i < 4; i++)
                                 {
-                                    <input type="hidden" name="Answers[@answer.AnswerOrder].AnswerId" value="@answer.AnswerId" />
-                                    <input type="hidden" name="Answers[@answer.AnswerOrder].QuestionId" value="@answer.QuestionId" />
-                                    <input type="hidden" name="Answers[@answer.AnswerOrder].AnswerOrder" value="@answer.AnswerOrder" />
+                                    var answer = answersList[i];
+                                    var label = answerLabels[i];
+                                    
+                                    <input type="hidden" name="Answers[@label].AnswerId" value="@answer.AnswerId" />
+                                    <input type="hidden" name="Answers[@label].QuestionId" value="@answer.QuestionId" />
 
                                     <div class="row mb-3">
                                         <label class="col-sm-2 col-form-label">
-                                            <strong>Đáp án @answer.AnswerOrder</strong>
+                                            <strong>Đáp án @label</strong>
                                         </label>
                                         <div class="col-sm-8">
-                                            <input type="text" name="Answers[@answer.AnswerOrder].AnswerText" 
+                                            <input type="text" name="Answers[@label].AnswerText" 
                                                    value="@answer.AnswerText" 
                                                    class="form-control" 
                                                    required />
@@ -150,17 +156,17 @@
                                             <div class="form-check">
                                                 <input type="radio" 
                                                        name="CorrectAnswer" 
-                                                       value="@answer.AnswerOrder"
+                                                       value="@label"
                                                        class="form-check-input answer-radio" 
-                                                       id="answer@(answer.AnswerOrder)Correct"
+                                                       id="answer@(label)Correct"
                                                        @(answer.IsCorrect ? "checked" : "") />
-                                                <label class="form-check-label" for="answer@(answer.AnswerOrder)Correct">
+                                                <label class="form-check-label" for="answer@(label)Correct">
                                                     Đúng
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="hidden" name="Answers[@answer.AnswerOrder].IsCorrect" value="false" class="answer-iscorrect" data-order="@answer.AnswerOrder" />
+                                    <input type="hidden" name="Answers[@label].IsCorrect" value="false" class="answer-iscorrect" data-order="@label" />
                                 }
 
                                 <div class="alert alert-info" role="alert">

@@ -1,0 +1,81 @@
+@model TinhocOnline.Models.ViewModels.CreateExamViewModel
+
+<div class="row mb-3">
+    <label asp-for="ExamName" class="col-sm-3 col-form-label">Tên đề thi <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <input asp-for="ExamName" class="form-control" placeholder="VD: Đề kiểm tra giữa kỳ 1" />
+        <span asp-validation-for="ExamName" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="ExamTypeId" class="col-sm-3 col-form-label">Loại đề thi <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <select asp-for="ExamTypeId" class="form-select" asp-items="ViewBag.ExamTypes">
+            <option value="">-- Chọn loại đề --</option>
+        </select>
+        <span asp-validation-for="ExamTypeId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="GradeLevel" class="col-sm-3 col-form-label">Lớp</label>
+    <div class="col-sm-9">
+        <select asp-for="GradeLevel" class="form-select">
+            <option value="">-- Tất cả lớp --</option>
+            <option value="10">Lớp 10</option>
+            <option value="11">Lớp 11</option>
+            <option value="12">Lớp 12</option>
+        </select>
+        <span asp-validation-for="GradeLevel" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="TotalQuestions" class="col-sm-3 col-form-label">Tổng số câu <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <input asp-for="TotalQuestions" class="form-control" type="number" />
+        <span asp-validation-for="TotalQuestions" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="Duration" class="col-sm-3 col-form-label">Thời gian (phút) <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <input asp-for="Duration" class="form-control" type="number" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="PassingScore" class="col-sm-3 col-form-label">Điểm đạt</label>
+    <div class="col-sm-9">
+        <input asp-for="PassingScore" class="form-control" type="number" step="0.1" />
+        <span asp-validation-for="PassingScore" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label class="col-sm-3 col-form-label">Tùy chọn</label>
+    <div class="col-sm-9">
+        <div class="form-check">
+            <input asp-for="ShuffleQuestions" class="form-check-input" />
+            <label asp-for="ShuffleQuestions" class="form-check-label">Trộn câu hỏi</label>
+        </div>
+        <div class="form-check">
+            <input asp-for="ShuffleAnswers" class="form-check-input" />
+            <label asp-for="ShuffleAnswers" class="form-check-label">Trộn đáp án</label>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="Status" class="col-sm-3 col-form-label">Trạng thái</label>
+    <div class="col-sm-9">
+        <select asp-for="Status" class="form-select">
+            <option value="draft">Nháp (chưa công bố)</option>
+            <option value="published">Xuất bản ngay</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>

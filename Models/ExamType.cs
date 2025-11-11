@@ -33,8 +33,6 @@ namespace TinhocOnline.Models
         [StringLength(20)]
         public string Status { get; set; } = "active";
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         // Navigation properties
         [ValidateNever]
         public virtual ICollection<Exam> Exams { get; set; }

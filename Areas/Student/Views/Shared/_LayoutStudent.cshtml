@@ -283,6 +283,14 @@
                 </a>
             </li><!-- End Dashboard Nav -->
 
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Exam" ? "" : "collapsed")"
+                   href="@Url.Action("Index", "Exam")">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Đề thi</span>
+                </a>
+            </li><!-- End Exam Nav -->
+
         </ul>
 
     </aside><!-- End Sidebar-->
@@ -315,6 +323,8 @@
 
     <!-- Template Main JS File -->
     <script src="@Url.Content("~/assets/js/main.js")"></script>
+    @RenderSection("Scripts", required: false)
+
 
 </body>
 

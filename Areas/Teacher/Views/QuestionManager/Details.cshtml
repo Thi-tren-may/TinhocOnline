@@ -112,10 +112,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var answer in Model.Answers.OrderBy(a => a.AnswerOrder))
+                                @{
+                                    var answerLabels = new[] { "A", "B", "C", "D" };
+                                    var answersList = Model.Answers.ToList();
+                                }
+                                @for (int i = 0; i < answersList.Count && i < 4; i++)
                                 {
+                                    var answer = answersList[i];
+                                    var label = answerLabels[i];
+                                    
                                     <tr class="@(answer.IsCorrect ? "table-success" : "")">
-                                        <td><strong>@answer.AnswerOrder</strong></td>
+                                        <td><strong>@label</strong></td>
                                         <td>@answer.AnswerText</td>
                                         <td>
                                             @if (answer.IsCorrect)

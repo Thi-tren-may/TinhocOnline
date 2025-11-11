@@ -21,10 +21,6 @@ namespace TinhocOnline.Models
         [Required]
         public bool IsCorrect { get; set; }
 
-        [Required]
-        [StringLength(1)]
-        public string AnswerOrder { get; set; }
-
         // Navigation properties
         [ValidateNever]
         [ForeignKey("QuestionId")]

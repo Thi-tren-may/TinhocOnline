@@ -13,7 +13,7 @@
 - **Backend:** ASP.NET Core 8.0 MVC
 - **ORM:** Entity Framework Core
 - **Database:** SQL Server 2022
-- **Frontend:** Razor Pages, Bootstrap 5, jQuery
+- **Frontend:** Razor Pages, Bootstrap 5
 - **Auth:** ASP.NET Identity (Role-based)
 - **Template:** NiceAdmin (Bootstrap theme)
 

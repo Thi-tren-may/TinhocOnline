@@ -100,29 +100,25 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     {
                         QuestionId = question.QuestionId,
                         AnswerText = model.AnswerA,
-                        IsCorrect = model.CorrectAnswer == "A",
-                        AnswerOrder = "A"
+                        IsCorrect = model.CorrectAnswer == "A"
                     },
                     new Answer
                     {
                         QuestionId = question.QuestionId,
                         AnswerText = model.AnswerB,
-                        IsCorrect = model.CorrectAnswer == "B",
-                        AnswerOrder = "B"
+                        IsCorrect = model.CorrectAnswer == "B"
                     },
                     new Answer
                     {
                         QuestionId = question.QuestionId,
                         AnswerText = model.AnswerC,
-                        IsCorrect = model.CorrectAnswer == "C",
-                        AnswerOrder = "C"
+                        IsCorrect = model.CorrectAnswer == "C"
                     },
                     new Answer
                     {
                         QuestionId = question.QuestionId,
                         AnswerText = model.AnswerD,
-                        IsCorrect = model.CorrectAnswer == "D",
-                        AnswerOrder = "D"
+                        IsCorrect = model.CorrectAnswer == "D"
                     }
                 };
 

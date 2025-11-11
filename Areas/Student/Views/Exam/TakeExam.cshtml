@@ -1,0 +1,55 @@
+@model TinhocOnline.Models.Exam
+
+@{
+    ViewData["Title"] = "Làm bài thi";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Làm bài thi</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Đề thi</a></li>
+            <li class="breadcrumb-item active">Làm bài</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.ExamName</h5>
+
+                    <div class="alert alert-info">
+                        <strong>Thời gian:</strong> @Model.Duration phút |
+                        <strong>Số câu:</strong> @Model.TotalQuestions câu |
+                        <strong>Điểm đạt:</strong> @Model.PassingScore
+                    </div>
+
+                    <div class="alert alert-warning text-center">
+                        <h4><i class="bi bi-tools"></i> Chức năng làm bài đang được phát triển</h4>
+                        <p>Tính năng làm bài thi trực tuyến với timer, auto-save và chấm điểm tự động sẽ được cập nhật trong phiên bản tiếp theo.</p>
+                    </div>
+
+                    <!-- TODO: Implement exam taking interface with:
+                    - Timer countdown
+                    - Question navigation
+                    - Answer selection
+                    - Auto-save every 30s
+                    - Submit button
+                    - Auto-submit when time's up
+                    -->
+
+                    <div class="text-center mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
