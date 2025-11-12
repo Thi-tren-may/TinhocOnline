@@ -1,0 +1,122 @@
+@model TinhocOnline.Models.ViewModels.CreateExamViewModel
+
+@{
+    ViewData["Title"] = "Tạo Đề thi Nhanh";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+    var topics = ViewBag.Topics as List<TinhocOnline.Models.Topic>;
+}
+
+<div class="pagetitle">
+    <h1><i class="bi bi-lightning-fill"></i> Tạo Đề thi Nhanh</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Đề thi</a></li>
+            <li class="breadcrumb-item active">Tạo nhanh</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tạo đề thi tự động</h5>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Tạo nhanh:</strong> Hệ thống tự động phân bổ câu hỏi đều cho các chủ đề đã chọn với tỷ lệ độ khó tùy chỉnh.
+                    </div>
+
+                    <form asp-action="CreateQuick" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mt-3" role="alert"></div>
+                        <input type="hidden" asp-for="CreateMode" value="quick" />
+                        <input type="hidden" asp-for="CreatedBy" />
+
+                        <!-- Chọn chủ đề -->
+                        <div class="mt-3">
+                            <h6><i class="bi bi-collection"></i> Chọn Chủ đề</h6>
+                            @if (topics != null)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-sm-12">
+                                        @foreach (var topic in topics)
+                                        {
+                                            <div class="form-check mb-2">
+                                                <input type="checkbox" name="SelectedTopicIds" value="@topic.TopicId"
+                                                    class="form-check-input" id="topic@(topic.TopicId)" checked />
+                                                <label class="form-check-label" for="topic@(topic.TopicId)">
+                                                    @topic.TopicName
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Thông tin cơ bản -->
+                        @await Html.PartialAsync("_BasicExamSettings")
+
+                        <!-- Nút submit -->
+                        <div class="row mb-3">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Tạo đề thi
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tính tổng tỷ lệ độ khó
+            const easyInput = document.querySelector('input[name="EasyPercentage"]');
+            const mediumInput = document.querySelector('input[name="MediumPercentage"]');
+            const hardInput = document.querySelector('input[name="HardPercentage"]');
+            const totalDifficultySpan = document.getElementById('totalDifficulty');
+
+            function updateTotalDifficulty() {
+                if (!totalDifficultySpan) return;
+
+                const easy = parseFloat(easyInput.value) || 0;
+                const medium = parseFloat(mediumInput.value) || 0;
+                const hard = parseFloat(hardInput.value) || 0;
+                const total = easy + medium + hard;
+                totalDifficultySpan.textContent = total.toFixed(2);
+
+                if (total !== 100) {
+                    totalDifficultySpan.classList.add('text-danger');
+                } else {
+                    totalDifficultySpan.classList.remove('text-danger');
+                }
+            }
+
+            if (easyInput) easyInput.addEventListener('input', updateTotalDifficulty);
+            if (mediumInput) mediumInput.addEventListener('input', updateTotalDifficulty);
+            if (hardInput) hardInput.addEventListener('input', updateTotalDifficulty);
+        });
+    </script>
+}

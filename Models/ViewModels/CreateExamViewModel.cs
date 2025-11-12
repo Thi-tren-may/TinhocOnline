@@ -50,5 +50,8 @@ namespace TinhocOnline.Models.ViewModels
 
         // Chế độ tạo đề
         public string CreateMode { get; set; } = "quick"; // "quick" hoặc "custom"
+
+        // Custom mode: Danh sách câu hỏi được chọn thủ công
+        public List<int> SelectedQuestionIds { get; set; } = new List<int>();
     }
 }

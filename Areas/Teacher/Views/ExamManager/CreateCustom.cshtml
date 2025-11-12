@@ -1,0 +1,347 @@
+@model TinhocOnline.Models.ViewModels.CreateExamViewModel
+
+@{
+    ViewData["Title"] = "Tạo Đề thi Tùy chỉnh";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+    var topics = ViewBag.Topics as List<TinhocOnline.Models.Topic>;
+}
+
+<div class="pagetitle">
+    <h1><i class="bi bi-gear-fill"></i> Tạo Đề thi Tùy chỉnh</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Đề thi</a></li>
+            <li class="breadcrumb-item active">Tạo tùy chỉnh</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Chọn câu hỏi thủ công</h5>
+
+                    <form asp-action="CreateCustom" method="post" id="createExamForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mt-3" role="alert"></div>
+                        <input type="hidden" asp-for="CreateMode" value="custom" />
+                        <input type="hidden" asp-for="CreatedBy" />
+
+                        <!-- Layout 2 cột -->
+                        <div class="row">
+                            <!-- Cột trái: Thông tin đề thi -->
+                            <div class="col-md-6">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0"><i class="bi bi-file-earmark-text"></i> Thông tin đề thi</h6>
+                                    </div>
+                                    <div class="card-body mt-2">
+                                        @await Html.PartialAsync("_BasicExamSettings")
+
+                                        <!-- Hiển thị danh sách câu đã chọn -->
+                                        <hr class="my-3">
+                                        <h6><i class="bi bi-check2-square"></i> Câu hỏi đã chọn</h6>
+                                        <div id="selectedQuestionsContainer" class="border rounded p-3"
+                                            style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+                                            <p class="text-muted text-center">Chưa có câu hỏi nào được chọn</p>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                Tổng số câu đã chọn: <strong id="selectedCount">0</strong>
+                                                <span id="selectedWarning" class="text-danger ms-2" style="display: none;">
+                                                    <i class="bi bi-exclamation-circle"></i> Không khớp với số câu yêu cầu
+                                                </span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cột phải: Danh sách câu hỏi -->
+                            <div class="col-md-6">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="bi bi-list-check"></i> Ngân hàng câu hỏi</h6>
+                                    </div>
+                                    <div class="card-body mt-2">
+                                        <!-- Bộ lọc -->
+                                        <div class="mb-3">
+                                            <label class="form-label">Lọc theo chủ đề</label>
+                                            <select id="filterTopic" class="form-select form-select-sm">
+                                                <option value="">-- Tất cả chủ đề --</option>
+                                                @if (topics != null)
+                                                {
+                                                    @foreach (var topic in topics)
+                                                    {
+                                                        <option value="@topic.TopicId">@topic.TopicName</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Lọc theo độ khó</label>
+                                            <select id="filterDifficulty" class="form-select form-select-sm">
+                                                <option value="">-- Tất cả độ khó --</option>
+                                                <option value="easy">Dễ</option>
+                                                <option value="medium">Trung bình</option>
+                                                <option value="hard">Khó</option>
+                                            </select>
+                                        </div>
+
+                                        <button type="button" id="btnLoadQuestions"
+                                            class="btn btn-sm btn-primary w-100 mb-3">
+                                            <i class="bi bi-search"></i> Tải câu hỏi
+                                        </button>
+
+                                        <!-- Danh sách câu hỏi -->
+                                        <div id="questionsContainer"
+                                            style="max-height: 500px; overflow-y: auto;">
+                                            <p class="text-muted text-center">Nhấn "Tải câu hỏi" để xem danh sách</p>
+                                        </div>
+
+                                        <!-- Loading spinner -->
+                                        <div id="loadingSpinner" class="text-center" style="display: none;">
+                                            <div class="spinner-border spinner-border-sm text-primary"
+                                                role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="text-muted mt-2">Đang tải câu hỏi...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút submit -->
+                        <div class="row mb-3 mt-3">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Tạo đề thi
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mảng lưu trữ câu hỏi đã chọn
+            let selectedQuestions = [];
+
+            // Lấy các phần tử DOM
+            const btnLoadQuestions = document.getElementById('btnLoadQuestions');
+            const filterTopic = document.getElementById('filterTopic');
+            const filterDifficulty = document.getElementById('filterDifficulty');
+            const questionsContainer = document.getElementById('questionsContainer');
+            const selectedQuestionsContainer = document.getElementById('selectedQuestionsContainer');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedWarning = document.getElementById('selectedWarning');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const totalQuestionsInput = document.querySelector('input[name="TotalQuestions"]');
+
+            // Hàm load câu hỏi từ server
+            async function loadQuestions() {
+                const topicId = filterTopic.value;
+                const difficulty = filterDifficulty.value;
+
+                // Hiển thị loading
+                questionsContainer.style.display = 'none';
+                loadingSpinner.style.display = 'block';
+
+                try {
+                    // Gọi API để lấy danh sách câu hỏi
+                    let url = '/Teacher/ExamManager/GetQuestions?';
+                    if (topicId) url += `topicId=${topicId}&`;
+                    if (difficulty) url += `difficulty=${difficulty}`;
+
+                    const response = await fetch(url);
+                    const questions = await response.json();
+
+                    // Hiển thị danh sách câu hỏi
+                    displayQuestions(questions);
+
+                } catch (error) {
+                    console.error('Lỗi khi tải câu hỏi:', error);
+                    questionsContainer.innerHTML = '<p class="text-danger text-center">Có lỗi xảy ra khi tải câu hỏi</p>';
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                    questionsContainer.style.display = 'block';
+                }
+            }
+
+            // Hàm hiển thị danh sách câu hỏi
+            function displayQuestions(questions) {
+                if (questions.length === 0) {
+                    questionsContainer.innerHTML = '<p class="text-muted text-center">Không có câu hỏi nào</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                questions.forEach(q => {
+                    const isSelected = selectedQuestions.some(sq => sq.questionId === q.questionId);
+                    const badgeClass = q.difficultyLevel === 'easy' ? 'success' :
+                        q.difficultyLevel === 'medium' ? 'warning' : 'danger';
+                    const difficultyText = q.difficultyLevel === 'easy' ? 'Dễ' :
+                        q.difficultyLevel === 'medium' ? 'TB' : 'Khó';
+
+                    html += `
+                        <div class="list-group-item ${isSelected ? 'list-group-item-success' : ''}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1 me-2">
+                                    <h6 class="mb-1">${q.questionText}</h6>
+                                    <small class="text-muted">
+                                        <span class="badge bg-${badgeClass}">${difficultyText}</span>
+                                        <span class="badge bg-secondary">${q.topicName}</span>
+                                        ${q.gradeLevel ? '<span class="badge bg-info">Lớp ' + q.gradeLevel + '</span>' : ''}
+                                    </small>
+                                </div>
+                                <button type="button" class="btn btn-sm ${isSelected ? 'btn-danger' : 'btn-primary'}" 
+                                        onclick="toggleQuestion(${q.questionId}, '${q.questionText.replace(/'/g, "\\'")}', '${q.difficultyLevel}', '${q.topicName}')">
+                                    ${isSelected ? '<i class="bi bi-x"></i> Bỏ' : '<i class="bi bi-plus"></i> Chọn'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+
+                questionsContainer.innerHTML = html;
+            }
+
+            // Hàm toggle chọn/bỏ chọn câu hỏi
+            window.toggleQuestion = function (questionId, questionText, difficulty, topicName) {
+                const index = selectedQuestions.findIndex(q => q.questionId === questionId);
+                const totalRequired = parseInt(totalQuestionsInput?.value) || 0;
+
+                if (index > -1) {
+                    // Bỏ chọn
+                    selectedQuestions.splice(index, 1);
+                } else {
+                    // Kiểm tra số lượng trước khi chọn thêm
+                    if (totalRequired > 0 && selectedQuestions.length >= totalRequired) {
+                        alert(`Bạn chỉ được chọn tối đa ${totalRequired} câu hỏi!`);
+                        return;
+                    }
+
+                    // Chọn thêm
+                    selectedQuestions.push({
+                        questionId: questionId,
+                        questionText: questionText,
+                        difficulty: difficulty,
+                        topicName: topicName
+                    });
+                }
+
+                updateSelectedQuestions();
+                loadQuestions(); // Reload để cập nhật trạng thái button
+            }
+
+            // Hàm cập nhật hiển thị câu hỏi đã chọn
+            function updateSelectedQuestions() {
+                if (!selectedCount) return;
+
+                selectedCount.textContent = selectedQuestions.length;
+
+                // Kiểm tra số lượng câu
+                const totalRequired = parseInt(totalQuestionsInput?.value) || 0;
+                if (selectedWarning) {
+                    if (totalRequired > 0 && selectedQuestions.length !== totalRequired) {
+                        selectedWarning.style.display = 'inline';
+                    } else {
+                        selectedWarning.style.display = 'none';
+                    }
+                }
+
+                if (!selectedQuestionsContainer) return;
+
+                if (selectedQuestions.length === 0) {
+                    selectedQuestionsContainer.innerHTML = '<p class="text-muted text-center">Chưa có câu hỏi nào được chọn</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group list-group-flush">';
+                selectedQuestions.forEach((q, index) => {
+                    const badgeClass = q.difficulty === 'easy' ? 'success' :
+                        q.difficulty === 'medium' ? 'warning' : 'danger';
+                    const difficultyText = q.difficulty === 'easy' ? 'Dễ' :
+                        q.difficulty === 'medium' ? 'TB' : 'Khó';
+
+                    html += `
+                        <div class="list-group-item p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <small><strong>${index + 1}.</strong> ${q.questionText.substring(0, 60)}...</small>
+                                    <br>
+                                    <small>
+                                        <span class="badge bg-${badgeClass}">${difficultyText}</span>
+                                        <span class="badge bg-secondary">${q.topicName}</span>
+                                    </small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="toggleQuestion(${q.questionId}, '', '', '')">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+
+                selectedQuestionsContainer.innerHTML = html;
+            }
+
+            // Event listeners
+            if (btnLoadQuestions) {
+                btnLoadQuestions.addEventListener('click', loadQuestions);
+            }
+
+            // Cập nhật số lượng câu khi thay đổi
+            if (totalQuestionsInput) {
+                totalQuestionsInput.addEventListener('input', updateSelectedQuestions);
+            }
+
+            // Xử lý submit form
+            const createExamForm = document.getElementById('createExamForm');
+            createExamForm.addEventListener('submit', function (e) {
+                // Thêm danh sách câu hỏi đã chọn vào form
+                if (selectedQuestions.length > 0) {
+                    // Xóa các input cũ (nếu có)
+                    const oldInputs = createExamForm.querySelectorAll('input[name="SelectedQuestionIds"]');
+                    oldInputs.forEach(input => input.remove());
+
+                    // Thêm các input mới
+                    selectedQuestions.forEach(q => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'SelectedQuestionIds';
+                        input.value = q.questionId;
+                        createExamForm.appendChild(input);
+                    });
+                }
+            });
+        });
+    </script>
+}

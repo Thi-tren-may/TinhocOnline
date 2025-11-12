@@ -37,6 +37,277 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             return View(exams);
         }
 
+        // ============================================
+        // Tạo đề nhanh (Quick Mode)
+        // ============================================
+        
+        // GET: Teacher/ExamManager/CreateQuick
+        public async Task<IActionResult> CreateQuick()
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            // Load danh sách loại đề thi
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+
+            // Load danh sách chủ đề
+            var topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+            ViewBag.Topics = topics;
+
+            // Khởi tạo model với giá trị mặc định
+            var model = new CreateExamViewModel
+            {
+                CreatedBy = teacherId.Value,
+                TotalQuestions = 50,
+                EasyPercentage = 40,
+                MediumPercentage = 30,
+                HardPercentage = 30,
+                Duration = 45,
+                PassingScore = 5.0M,
+                CreateMode = "quick"
+            };
+
+            return View(model);
+        }
+
+        // POST: Teacher/ExamManager/CreateQuick
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateQuick(CreateExamViewModel model)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            model.CreateMode = "quick";
+
+            // Validate tổng tỷ lệ độ khó = 100%
+            var totalDifficulty = model.EasyPercentage + model.MediumPercentage + model.HardPercentage;
+            if (totalDifficulty != 100)
+            {
+                ModelState.AddModelError("", $"Tổng tỷ lệ độ khó phải bằng 100% (hiện tại: {totalDifficulty}%)");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Tạo Exam
+                    var exam = new Exam
+                    {
+                        ExamName = model.ExamName,
+                        ExamTypeId = model.ExamTypeId,
+                        GradeLevel = model.GradeLevel,
+                        Duration = model.Duration,
+                        TotalQuestions = model.TotalQuestions,
+                        EasyPercentage = model.EasyPercentage,
+                        MediumPercentage = model.MediumPercentage,
+                        HardPercentage = model.HardPercentage,
+                        ShuffleQuestions = model.ShuffleQuestions,
+                        ShuffleAnswers = model.ShuffleAnswers,
+                        PassingScore = model.PassingScore,
+                        CreatedBy = teacherId.Value,
+                        Status = model.Status
+                    };
+
+                    _context.Exams.Add(exam);
+                    await _context.SaveChangesAsync();
+
+                    // Tự động phân bổ câu hỏi từ các chủ đề đã chọn
+                    var selectedTopicIds = model.SelectedTopicIds ?? new List<int>();
+                    if (!selectedTopicIds.Any())
+                    {
+                        // Nếu không chọn chủ đề nào, lấy tất cả
+                        selectedTopicIds = await _context.Topics
+                            .Where(t => t.Status == "active")
+                            .Select(t => t.TopicId)
+                            .ToListAsync();
+                    }
+
+                    var topicMatrix = new Dictionary<int, decimal>();
+                    decimal percentage = Math.Round(100m / selectedTopicIds.Count, 2);
+
+                    foreach (var topicId in selectedTopicIds)
+                    {
+                        topicMatrix[topicId] = percentage;
+                    }
+
+                    bool success = await GenerateExamQuestions(exam.ExamId, topicMatrix, model);
+
+                    if (!success)
+                    {
+                        // Xóa exam nếu không thành công
+                        _context.Exams.Remove(exam);
+                        await _context.SaveChangesAsync();
+
+                        TempData["ErrorMessage"] = "Không thể tạo đề thi. Vui lòng kiểm tra lại số lượng câu hỏi trong ngân hàng.";
+
+                        ViewBag.ExamTypes = new SelectList(
+                            await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                            "ExamTypeId",
+                            "TypeName"
+                        );
+                        ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+
+                        return View(model);
+                    }
+
+                    TempData["SuccessMessage"] = "Tạo đề thi nhanh thành công!";
+                    return RedirectToAction(nameof(Details), new { id = exam.ExamId });
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Lỗi: {ex.Message}");
+                }
+            }
+
+            // Reload data nếu validation fail
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+            ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+
+            return View(model);
+        }
+
+        // ============================================
+        // Tạo đề tùy chỉnh (Custom Mode)
+        // ============================================
+
+        // GET: Teacher/ExamManager/CreateCustom
+        public async Task<IActionResult> CreateCustom()
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            // Load danh sách loại đề thi
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+
+            // Load danh sách chủ đề
+            var topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+            ViewBag.Topics = topics;
+
+            // Khởi tạo model với giá trị mặc định
+            var model = new CreateExamViewModel
+            {
+                CreatedBy = teacherId.Value,
+                TotalQuestions = 10,
+                Duration = 45,
+                PassingScore = 5.0M,
+                CreateMode = "custom"
+            };
+
+            return View(model);
+        }
+
+        // POST: Teacher/ExamManager/CreateCustom
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCustom(CreateExamViewModel model)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            model.CreateMode = "custom";
+
+            // Validate danh sách câu hỏi đã chọn
+            if (model.SelectedQuestionIds == null || !model.SelectedQuestionIds.Any())
+            {
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 câu hỏi");
+            }
+            else if (model.SelectedQuestionIds.Count != model.TotalQuestions)
+            {
+                ModelState.AddModelError("", $"Số câu hỏi đã chọn ({model.SelectedQuestionIds.Count}) không khớp với tổng số câu ({model.TotalQuestions})");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Tạo Exam
+                    var exam = new Exam
+                    {
+                        ExamName = model.ExamName,
+                        ExamTypeId = model.ExamTypeId,
+                        GradeLevel = model.GradeLevel,
+                        Duration = model.Duration,
+                        TotalQuestions = model.TotalQuestions,
+                        ShuffleQuestions = model.ShuffleQuestions,
+                        ShuffleAnswers = model.ShuffleAnswers,
+                        PassingScore = model.PassingScore,
+                        CreatedBy = teacherId.Value,
+                        Status = model.Status
+                    };
+
+                    _context.Exams.Add(exam);
+                    await _context.SaveChangesAsync();
+
+                    // Sử dụng câu hỏi đã chọn thủ công
+                    bool success = await GenerateExamQuestionsFromSelectedIds(exam.ExamId, model.SelectedQuestionIds, model);
+
+                    if (!success)
+                    {
+                        // Xóa exam nếu không thành công
+                        _context.Exams.Remove(exam);
+                        await _context.SaveChangesAsync();
+
+                        TempData["ErrorMessage"] = "Không thể tạo đề thi. Vui lòng thử lại.";
+
+                        ViewBag.ExamTypes = new SelectList(
+                            await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                            "ExamTypeId",
+                            "TypeName"
+                        );
+                        ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+
+                        return View(model);
+                    }
+
+                    TempData["SuccessMessage"] = "Tạo đề thi tùy chỉnh thành công!";
+                    return RedirectToAction(nameof(Details), new { id = exam.ExamId });
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Lỗi: {ex.Message}");
+                }
+            }
+
+            // Reload data nếu validation fail
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+            ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+
+            return View(model);
+        }
+
+        // ============================================
+        // Tạo đề thi (Old - Deprecated)
+        // ============================================
+
         // GET: Teacher/ExamManager/Create
         public async Task<IActionResult> Create()
         {
@@ -82,17 +353,27 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 return RedirectToAction("Login", "Auth", new { area = "" });
             }
 
-            // Validate tổng tỷ lệ độ khó = 100%
-            var totalDifficulty = model.EasyPercentage + model.MediumPercentage + model.HardPercentage;
-            if (totalDifficulty != 100)
+            // Validate theo chế độ tạo đề
+            if (model.CreateMode == "quick")
             {
-                ModelState.AddModelError("", $"Tổng tỷ lệ độ khó phải bằng 100% (hiện tại: {totalDifficulty}%)");
+                // Quick mode: Validate tổng tỷ lệ độ khó = 100%
+                var totalDifficulty = model.EasyPercentage + model.MediumPercentage + model.HardPercentage;
+                if (totalDifficulty != 100)
+                {
+                    ModelState.AddModelError("", $"Tổng tỷ lệ độ khó phải bằng 100% (hiện tại: {totalDifficulty}%)");
+                }
             }
-
-            // Validate phải chọn ít nhất 1 topic trong chế độ custom
-            if (model.CreateMode == "custom" && (model.SelectedTopicIds == null || !model.SelectedTopicIds.Any()))
+            else if (model.CreateMode == "custom")
             {
-                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 chủ đề");
+                // Custom mode: Validate danh sách câu hỏi đã chọn
+                if (model.SelectedQuestionIds == null || !model.SelectedQuestionIds.Any())
+                {
+                    ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 câu hỏi");
+                }
+                else if (model.SelectedQuestionIds.Count != model.TotalQuestions)
+                {
+                    ModelState.AddModelError("", $"Số câu hỏi đã chọn ({model.SelectedQuestionIds.Count}) không khớp với tổng số câu ({model.TotalQuestions})");
+                }
             }
 
             if (ModelState.IsValid)
@@ -120,46 +401,35 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
 
-                    // Xử lý ma trận chủ đề
-                    Dictionary<int, decimal> topicMatrix;
-                    
+                    bool success;
+
                     if (model.CreateMode == "quick")
                     {
-                        // Chế độ nhanh: Phân đều theo tất cả topics
+                        // Chế độ nhanh: Tự động phân bổ câu hỏi
                         var activeTopics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
-                        topicMatrix = new Dictionary<int, decimal>();
+                        var topicMatrix = new Dictionary<int, decimal>();
                         decimal percentage = Math.Round(100m / activeTopics.Count, 2);
                         
                         foreach (var topic in activeTopics)
                         {
                             topicMatrix[topic.TopicId] = percentage;
                         }
+
+                        success = await GenerateExamQuestions(exam.ExamId, topicMatrix, model);
                     }
                     else
                     {
-                        // Chế độ custom: Phân đều theo topics đã chọn
-                        topicMatrix = new Dictionary<int, decimal>();
-                        if (model.SelectedTopicIds != null && model.SelectedTopicIds.Any())
-                        {
-                            decimal percentage = Math.Round(100m / model.SelectedTopicIds.Count, 2);
-                            
-                            foreach (var topicId in model.SelectedTopicIds)
-                            {
-                                topicMatrix[topicId] = percentage;
-                            }
-                        }
+                        // Chế độ custom: Sử dụng câu hỏi đã chọn thủ công
+                        success = await GenerateExamQuestionsFromSelectedIds(exam.ExamId, model.SelectedQuestionIds, model);
                     }
-
-                    // Sinh câu hỏi cho đề thi
-                    var success = await GenerateExamQuestions(exam.ExamId, topicMatrix, model);
 
                     if (!success)
                     {
-                        // Xóa exam nếu không đủ câu hỏi
+                        // Xóa exam nếu không thành công
                         _context.Exams.Remove(exam);
                         await _context.SaveChangesAsync();
                         
-                        TempData["ErrorMessage"] = "Không đủ câu hỏi trong ngân hàng để tạo đề thi. Vui lòng giảm số câu hoặc thêm câu hỏi mới.";
+                        TempData["ErrorMessage"] = "Không thể tạo đề thi. Vui lòng thử lại.";
                         
                         ViewBag.ExamTypes = new SelectList(
                             await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
@@ -359,6 +629,70 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             return View(exam);
         }
 
+        // Tạo đề thi từ danh sách câu hỏi đã chọn thủ công (Custom mode)
+        private async Task<bool> GenerateExamQuestionsFromSelectedIds(int examId, List<int> selectedQuestionIds, CreateExamViewModel model)
+        {
+            try
+            {
+                // Lấy thông tin các câu hỏi đã chọn
+                var questions = await _context.Questions
+                    .Include(q => q.Topic)
+                    .Where(q => selectedQuestionIds.Contains(q.QuestionId) && q.Status == "active")
+                    .ToListAsync();
+
+                if (questions.Count != selectedQuestionIds.Count)
+                {
+                    return false; // Có câu hỏi không tồn tại hoặc không active
+                }
+
+                // Tạo ExamQuestions với thứ tự theo danh sách đã chọn
+                var examQuestions = new List<ExamQuestion>();
+                for (int i = 0; i < selectedQuestionIds.Count; i++)
+                {
+                    examQuestions.Add(new ExamQuestion
+                    {
+                        ExamId = examId,
+                        QuestionId = selectedQuestionIds[i],
+                        QuestionOrder = i + 1
+                    });
+                }
+
+                // Trộn câu hỏi nếu được yêu cầu
+                if (model.ShuffleQuestions)
+                {
+                    var shuffled = examQuestions.OrderBy(q => Guid.NewGuid()).ToList();
+                    for (int i = 0; i < shuffled.Count; i++)
+                    {
+                        shuffled[i].QuestionOrder = i + 1;
+                    }
+                    examQuestions = shuffled;
+                }
+
+                // Lưu ExamQuestions
+                _context.ExamQuestions.AddRange(examQuestions);
+
+                // Tạo ExamTopics từ các câu hỏi đã chọn (nhóm theo topic)
+                var topicGroups = questions.GroupBy(q => q.TopicId);
+                foreach (var group in topicGroups)
+                {
+                    var examTopic = new ExamTopic
+                    {
+                        ExamId = examId,
+                        TopicId = group.Key,
+                        QuestionCount = group.Count()
+                    };
+                    _context.ExamTopics.Add(examTopic);
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         // POST: Teacher/ExamManager/Publish/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -408,6 +742,52 @@ namespace TinhocOnline.Areas.Teacher.Controllers
 
             TempData["SuccessMessage"] = "Xóa đề thi thành công!";
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Teacher/ExamManager/GetQuestions
+        // API để lấy danh sách câu hỏi (dùng cho Custom mode)
+        [HttpGet]
+        public async Task<IActionResult> GetQuestions(int? topicId, string difficulty)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return Json(new { error = "Unauthorized" });
+            }
+
+            // Query câu hỏi
+            var query = _context.Questions
+                .Include(q => q.Topic)
+                .Where(q => q.Status == "active");
+
+            // Lọc theo chủ đề nếu có
+            if (topicId.HasValue && topicId.Value > 0)
+            {
+                query = query.Where(q => q.TopicId == topicId.Value);
+            }
+
+            // Lọc theo độ khó nếu có
+            if (!string.IsNullOrEmpty(difficulty))
+            {
+                query = query.Where(q => q.DifficultyLevel == difficulty);
+            }
+
+            // Lấy danh sách và map sang DTO
+            var questions = await query
+                .OrderBy(q => q.TopicId)
+                .ThenBy(q => q.QuestionId)
+                .Select(q => new
+                {
+                    questionId = q.QuestionId,
+                    questionText = q.QuestionText,
+                    difficultyLevel = q.DifficultyLevel,
+                    gradeLevel = q.GradeLevel,
+                    topicId = q.TopicId,
+                    topicName = q.Topic.TopicName
+                })
+                .ToListAsync();
+
+            return Json(questions);
         }
     }
 }
