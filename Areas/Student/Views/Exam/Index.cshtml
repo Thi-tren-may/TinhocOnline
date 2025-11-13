@@ -5,84 +5,252 @@
     Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
 }
 
-<div class="pagetitle">
-    <h1>Danh sách Đề thi</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
-            <li class="breadcrumb-item active">Đề thi</li>
-        </ol>
-    </nav>
+<!-- Page Header với gradient -->
+<div class="page-header">
+    <h1><i class="bi bi-file-earmark-text-fill me-2"></i>Danh sách Đề thi</h1>
+    <p>Chọn bài thi phù hợp để bắt đầu kiểm tra kiến thức của bạn</p>
 </div>
 
-<section class="section">
-    <div class="row">
-        <div class="col-lg-12">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
+<!-- Thông báo -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 16px; border-left: 5px solid var(--success-color);">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 16px; border-left: 5px solid var(--danger-color);">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <h5 class="card-title mb-0">Đề thi đã được xuất bản</h5>
-                        <a asp-action="CreatePractice" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> Tạo đề ôn tập
-                        </a>
-                    </div>
-
-                    <div class="row">
-                        @foreach (var item in Model)
-                        {
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title">@item.ExamName</h5>
-                                        <p class="card-text">
-                                            <small class="text-muted">
-                                                <i class="bi bi-person"></i> @item.Creator?.FullName<br/>
-                                                <i class="bi bi-collection"></i> @item.ExamType?.TypeName
-                                            </small>
-                                        </p>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-list-ol"></i> <strong>@item.TotalQuestions</strong> câu</li>
-                                            <li><i class="bi bi-clock"></i> <strong>@item.Duration</strong> phút</li>
-                                            @if (!string.IsNullOrEmpty(item.GradeLevel))
-                                            {
-                                                <li><i class="bi bi-mortarboard"></i> Lớp <strong>@item.GradeLevel</strong></li>
-                                            }
-                                            <li><i class="bi bi-trophy"></i> Điểm đạt: <strong>@item.PassingScore</strong></li>
-                                        </ul>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a asp-action="TakeExam" asp-route-id="@item.ExamId" class="btn btn-success btn-sm w-100">
-                                            <i class="bi bi-pencil-square"></i> Làm bài
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    @if (!Model.Any())
-                    {
-                        <div class="alert alert-info text-center">
-                            <i class="bi bi-info-circle"></i> Chưa có đề thi nào được xuất bản.
-                        </div>
-                    }
-                </div>
-            </div>
+<!-- Phần tìm kiếm và lọc -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="input-group input-group-lg shadow-sm" style="border-radius: 16px; overflow: hidden;">
+            <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-primary"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="searchInput" 
+                   placeholder="Tìm kiếm đề thi theo tên...">
         </div>
     </div>
-</section>
+    <div class="col-md-4">
+        <select class="form-select form-select-lg shadow-sm" id="filterType" style="border-radius: 16px;">
+            <option value="">Tất cả loại đề</option>
+            <option value="required">Bài thi bắt buộc</option>
+            <option value="optional">Bài thi tự chọn</option>
+        </select>
+    </div>
+</div>
+
+<!-- Kiểm tra có đề thi không -->
+@if (!Model.Any())
+{
+    <div class="card-modern text-center" style="padding: 4rem 2rem;">
+        <i class="bi bi-inbox" style="font-size: 4rem; color: var(--text-muted);"></i>
+        <h4 class="mt-3 mb-2">Chưa có đề thi nào</h4>
+        <p class="text-muted">Hiện tại chưa có đề thi nào được công bố. Vui lòng quay lại sau!</p>
+        <a asp-action="CreatePractice" class="btn btn-student-primary mt-3">
+            <i class="bi bi-plus-circle me-2"></i>Tạo đề ôn tập
+        </a>
+    </div>
+}
+else
+{
+    <!-- Phần bài thi bắt buộc -->
+    var requiredExams = Model.Where(e => e.ExamType?.TypeName?.Contains("Bắt buộc") == true || 
+                                         e.ExamType?.TypeName?.Contains("Required") == true).ToList();
+    var optionalExams = Model.Except(requiredExams).ToList();
+
+    @if (requiredExams.Any())
+    {
+        <div class="mb-5">
+            <h3 class="mb-4" style="color: var(--danger-color); font-weight: 700;">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>Bài thi bắt buộc
+            </h3>
+            <div class="row g-4">
+                @foreach (var exam in requiredExams)
+                {
+                    <div class="col-md-6 col-lg-4 exam-item" data-type="required" data-name="@exam.ExamName">
+                        <div class="exam-card required">
+                            <div class="card-body">
+                                <!-- Badge bắt buộc -->
+                                <span class="exam-badge badge-required">
+                                    <i class="bi bi-star-fill me-1"></i>BẮT BUỘC
+                                </span>
+
+                                <!-- Tên đề thi -->
+                                <h5>@exam.ExamName</h5>
+
+                                <!-- Thông tin đề thi -->
+                                <div class="exam-info">
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-clock-fill"></i>
+                                        <strong>@exam.Duration phút</strong>
+                                    </div>
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-list-ol"></i>
+                                        <strong>@exam.TotalQuestions câu</strong>
+                                    </div>
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-award-fill"></i>
+                                        <strong>Đạt: @exam.PassingScore</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Mô tả -->
+                                @if (!string.IsNullOrEmpty(exam.ExamType?.TypeName))
+                                {
+                                    <p class="text-muted mb-3">
+                                        <i class="bi bi-tag-fill me-1"></i>@exam.ExamType.TypeName
+                                    </p>
+                                }
+
+                                <!-- Nút hành động -->
+                                <div class="d-grid gap-2">
+                                    <a asp-action="BeforeExam" asp-route-id="@exam.ExamId" 
+                                       class="btn btn-student-primary">
+                                        <i class="bi bi-play-circle-fill me-2"></i>Vào thi
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Phần bài thi tự chọn -->
+    @if (optionalExams.Any())
+    {
+        <div>
+            <h3 class="mb-4" style="color: var(--primary-color); font-weight: 700;">
+                <i class="bi bi-journal-text me-2"></i>Bài thi tự chọn
+            </h3>
+            <div class="row g-4">
+                @foreach (var exam in optionalExams)
+                {
+                    <div class="col-md-6 col-lg-4 exam-item" data-type="optional" data-name="@exam.ExamName">
+                        <div class="exam-card">
+                            <div class="card-body">
+                                <!-- Badge tự chọn -->
+                                <span class="exam-badge badge-optional">
+                                    <i class="bi bi-check-circle-fill me-1"></i>TỰ CHỌN
+                                </span>
+
+                                <!-- Tên đề thi -->
+                                <h5>@exam.ExamName</h5>
+
+                                <!-- Thông tin đề thi -->
+                                <div class="exam-info">
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-clock-fill"></i>
+                                        <strong>@exam.Duration phút</strong>
+                                    </div>
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-list-ol"></i>
+                                        <strong>@exam.TotalQuestions câu</strong>
+                                    </div>
+                                    <div class="exam-info-item">
+                                        <i class="bi bi-award-fill"></i>
+                                        <strong>Đạt: @exam.PassingScore</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Mô tả -->
+                                @if (!string.IsNullOrEmpty(exam.ExamType?.TypeName))
+                                {
+                                    <p class="text-muted mb-3">
+                                        <i class="bi bi-tag-fill me-1"></i>@exam.ExamType.TypeName
+                                    </p>
+                                }
+
+                                <!-- Nút hành động -->
+                                <div class="d-grid gap-2">
+                                    <a asp-action="BeforeExam" asp-route-id="@exam.ExamId" 
+                                       class="btn btn-student-primary">
+                                        <i class="bi bi-play-circle-fill me-2"></i>Vào thi
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+<script>
+    // Tìm kiếm đề thi theo tên
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        filterExams(searchTerm, document.getElementById('filterType').value);
+    });
+
+    // Lọc theo loại đề thi
+    document.getElementById('filterType').addEventListener('change', function(e) {
+        const filterType = e.target.value;
+        filterExams(document.getElementById('searchInput').value.toLowerCase(), filterType);
+    });
+
+    // Hàm lọc đề thi
+    function filterExams(searchTerm, filterType) {
+        const examItems = document.querySelectorAll('.exam-item');
+        let visibleCount = 0;
+        
+        examItems.forEach(item => {
+            const examName = item.getAttribute('data-name').toLowerCase();
+            const examType = item.getAttribute('data-type');
+            
+            const matchSearch = examName.includes(searchTerm);
+            const matchType = !filterType || examType === filterType;
+            
+            if (matchSearch && matchType) {
+                item.style.display = 'block';
+                // Hiệu ứng fade in
+                item.style.animation = 'fadeInUp 0.5s ease';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Hiển thị thông báo nếu không tìm thấy
+        if (visibleCount === 0 && searchTerm) {
+            showNoResultsMessage();
+        } else {
+            hideNoResultsMessage();
+        }
+    }
+
+    // Hiển thị thông báo không tìm thấy
+    function showNoResultsMessage() {
+        if (!document.getElementById('noResults')) {
+            const message = document.createElement('div');
+            message.id = 'noResults';
+            message.className = 'card-modern text-center p-5';
+            message.innerHTML = `
+                <i class="bi bi-search" style="font-size: 3rem; color: var(--text-muted);"></i>
+                <h5 class="mt-3">Không tìm thấy đề thi</h5>
+                <p class="text-muted">Thử tìm kiếm với từ khóa khác</p>
+            `;
+            document.querySelector('.row.g-4:last-of-type').appendChild(message);
+        }
+    }
+
+    // Ẩn thông báo không tìm thấy
+    function hideNoResultsMessage() {
+        const message = document.getElementById('noResults');
+        if (message) {
+            message.remove();
+        }
+    }
+</script>
+}

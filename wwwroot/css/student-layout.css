@@ -1,0 +1,814 @@
+/* ========================================
+   Student Layout CSS - Giao diện học sinh
+   ======================================== */
+
+/* ========================================
+   Biến CSS - Màu sắc chủ đạo (Gradient Xanh)
+======================================== */
+:root {
+    /* Gradient xanh đậm → xanh nhạt */
+    --primary-color: #0052A2;
+    --primary-light: #66CCFF;
+    --primary-dark: #003D7A;
+    --secondary-color: #00B4D8;
+    --accent-color: #FFA500;
+    --success-color: #28A745;
+    --warning-color: #FFC107;
+    --danger-color: #DC3545;
+    
+    /* Background & Text */
+    --bg-gradient: linear-gradient(135deg, #0052A2 0%, #66CCFF 100%);
+    --bg-light: #F0F8FF;
+    --bg-white: #FFFFFF;
+    --text-dark: #1A2332;
+    --text-muted: #6C757D;
+    --text-light: #FFFFFF;
+    
+    /* Borders & Shadows */
+    --border-color: #E0E7FF;
+    --shadow-sm: 0 2px 8px rgba(0, 82, 162, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 82, 162, 0.15);
+    --shadow-lg: 0 8px 32px rgba(0, 82, 162, 0.2);
+    --shadow-xl: 0 12px 48px rgba(0, 82, 162, 0.25);
+}
+
+/* ========================================
+   Reset & Global Styles
+======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Hiệu ứng transition mượt mà cho tất cả elements */
+a, button, .card, .nav-link, .btn, input, select, textarea {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   Topbar / Navbar - Gradient xanh đậm → nhạt
+======================================== */
+.student-navbar {
+    background: var(--bg-gradient);
+    box-shadow: var(--shadow-md);
+    padding: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.student-navbar .navbar-brand {
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.student-navbar .navbar-brand:hover {
+    color: var(--text-light);
+    transform: scale(1.05);
+}
+
+.student-navbar .navbar-brand i {
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Menu navigation với hiệu ứng mượt */
+.student-navbar .nav-link {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    position: relative;
+    border-radius: 10px;
+    margin: 0 0.25rem;
+}
+
+.student-navbar .nav-link:hover {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.student-navbar .nav-link.active {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Hiệu ứng gạch chân cho menu active */
+.student-navbar .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 3px;
+    background: var(--text-light);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* User dropdown với hiệu ứng gradient */
+.student-navbar .dropdown-toggle {
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.student-navbar .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.student-navbar .dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-xl);
+    border-radius: 16px;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    animation: dropdownSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-white);
+}
+
+/* Hiệu ứng dropdown trượt xuống mượt */
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.student-navbar .dropdown-item {
+    padding: 0.875rem 1.25rem;
+    color: var(--text-dark);
+    border-radius: 10px;
+    margin: 0.25rem 0;
+    font-weight: 500;
+}
+
+.student-navbar .dropdown-item:hover {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: var(--text-light);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-sm);
+}
+
+.student-navbar .dropdown-item i {
+    width: 20px;
+    margin-right: 0.5rem;
+}
+
+/* ========================================
+   Main Content Area - Background gradient nhẹ
+======================================== */
+.main-content {
+    margin-top: 80px;
+    padding: 2.5rem 0;
+    min-height: calc(100vh - 160px);
+    background: linear-gradient(180deg, var(--bg-light) 0%, rgba(102, 204, 255, 0.05) 100%);
+    animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content .container {
+    max-width: 1280px;
+}
+
+/* Page header với gradient background */
+.page-header {
+    background: var(--bg-gradient);
+    color: var(--text-light);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-size: cover;
+    background-position: bottom;
+    opacity: 0.3;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0;
+}
+
+/* Breadcrumb hiện đại */
+.breadcrumb-custom {
+    background: var(--bg-white);
+    padding: 1.25rem 1.75rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.breadcrumb-custom .breadcrumb {
+    margin-bottom: 0;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-custom .breadcrumb-item a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* ========================================
+   Cards - Exam Cards với gradient & hover effect
+======================================== */
+.card-modern {
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-white);
+    position: relative;
+}
+
+.card-modern:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-8px) scale(1.02);
+}
+
+.card-modern .card-header {
+    background: var(--bg-gradient);
+    color: var(--text-light);
+    padding: 1.5rem 2rem;
+    border: none;
+    font-weight: 600;
+    font-size: 1.2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-modern .card-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { right: -100%; }
+    100% { right: 100%; }
+}
+
+.card-modern .card-body {
+    padding: 2rem;
+}
+
+/* Exam Card - Card đề thi */
+.exam-card {
+    border: none;
+    border-radius: 20px;
+    background: var(--bg-white);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-left: 5px solid var(--primary-color);
+}
+
+.exam-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-10px);
+    border-left-color: var(--primary-light);
+}
+
+.exam-card.required {
+    border-left-color: var(--danger-color);
+    background: linear-gradient(135deg, #fff 0%, #ffe5e5 100%);
+}
+
+.exam-card .card-body {
+    padding: 1.75rem;
+}
+
+.exam-card .exam-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.exam-badge.badge-required {
+    background: linear-gradient(135deg, #DC3545 0%, #FF6B7A 100%);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.exam-badge.badge-optional {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+}
+
+.exam-card h5 {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.exam-card .exam-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 12px;
+}
+
+.exam-card .exam-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.exam-card .exam-info-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.exam-card .exam-info-item strong {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+/* ========================================
+   Buttons - Gradient & Hover Effects
+======================================== */
+.btn-student-primary {
+    background: var(--bg-gradient);
+    color: var(--text-light);
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-student-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-student-primary:hover::before {
+    left: 100%;
+}
+
+.btn-student-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: var(--text-light);
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-3px) scale(1.05);
+}
+
+.btn-student-secondary {
+    background: var(--bg-white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.btn-student-secondary:hover {
+    background: var(--bg-gradient);
+    color: var(--text-light);
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-start-exam {
+    background: linear-gradient(135deg, var(--success-color) 0%, #48D597 100%);
+    color: white;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    border: none;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(40, 167, 69, 0.6);
+    }
+}
+
+.btn-start-exam:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 32px rgba(40, 167, 69, 0.5);
+}
+
+/* ========================================
+   Stats Cards - Thống kê Dashboard
+======================================== */
+.stats-card {
+    background: var(--bg-white);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 5px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: var(--bg-gradient);
+    opacity: 0.1;
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.stats-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stats-card .stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: white;
+    font-size: 1.8rem;
+}
+
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stats-card p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Timer - Đồng hồ đếm ngược
+======================================== */
+.exam-timer {
+    position: fixed;
+    top: 90px;
+    right: 30px;
+    background: var(--bg-gradient);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    z-index: 999;
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.exam-timer.warning {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #FF6B7A 100%);
+    animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.exam-timer h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.exam-timer .time-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+}
+
+/* ========================================
+   Question Progress - Thanh tiến trình
+======================================== */
+.question-progress {
+    background: var(--bg-white);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+.progress-bar-custom {
+    height: 12px;
+    border-radius: 10px;
+    background: var(--bg-light);
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.progress-bar-custom .progress-fill {
+    height: 100%;
+    background: var(--bg-gradient);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-bar-custom .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* ========================================
+   Answer Options - Lựa chọn đáp án
+======================================== */
+.answer-option {
+    background: var(--bg-white);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.answer-option:hover {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(0, 82, 162, 0.05) 0%, rgba(102, 204, 255, 0.05) 100%);
+    transform: translateX(10px);
+}
+
+.answer-option.selected {
+    border-color: var(--primary-color);
+    background: var(--bg-gradient);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+.answer-option .option-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.answer-option.selected .option-label {
+    background: white;
+    color: var(--primary-color);
+}
+
+.answer-option .option-text {
+    flex: 1;
+    font-size: 1.05rem;
+}
+
+/* ========================================
+   Footer
+======================================== */
+.student-footer {
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+}
+
+.student-footer .footer-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.student-footer .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin: 0 1rem;
+    font-size: 0.9rem;
+}
+
+.student-footer .footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* ========================================
+   Scrollbar Custom
+======================================== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
+/* ========================================
+   Loading Animation
+======================================== */
+.loading-spinner {
+    border: 3px solid var(--bg-light);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Fade In Animation cho page load
+======================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   Ripple Animation cho buttons
+======================================== */
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ========================================
+   Responsive Design
+======================================== */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem 0;
+        margin-top: 60px;
+    }
+
+    .student-navbar .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .card-modern {
+        border-radius: 12px;
+    }
+
+    .breadcrumb-custom {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .student-footer .footer-links {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+
+    .student-footer .footer-links a {
+        display: block;
+        margin: 0.5rem 0;
+    }
+}

@@ -1,257 +1,540 @@
 @model TinhocOnline.Models.ViewModels.CreateExamViewModel
 
 @{
-    ViewData["Title"] = "Tạo Đề ôn tập";
+    ViewData["Title"] = "Tạo Đề Ôn Tập";
     Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
     var topics = ViewBag.Topics as List<TinhocOnline.Models.Topic>;
 }
 
-<div class="pagetitle">
-    <h1>Tạo Đề ôn tập</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a asp-action="Index">Đề thi</a></li>
-            <li class="breadcrumb-item active">Tạo đề ôn tập</li>
-        </ol>
-    </nav>
+<!-- Page Header với Gradient -->
+<div class="page-header">
+    <h1>
+        <i class="bi bi-plus-circle-fill me-2"></i>Tạo Đề Ôn Tập
+    </h1>
+    <p class="page-description">Tự động tạo đề thi ôn tập từ ngân hàng câu hỏi</p>
 </div>
 
-<section class="section">
-    <div class="row">
-        <div class="col-lg-10">
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <form asp-action="CreatePractice" method="post" id="createExamForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="Status" value="draft" />
+            <input type="hidden" asp-for="ExamName" value="Đề ôn tập" />
+
+            <!-- Card 1: Thông tin cơ bản -->
+            <div class="card-modern mb-4 p-4">
+                <div class="card-modern-header">
+                    <h3 class="card-modern-title">
+                        <i class="bi bi-info-circle me-2"></i>Thông tin cơ bản
+                    </h3>
                 </div>
-            }
+                <div class="card-modern-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label asp-for="ExamTypeId" class="form-label">
+                                <i class="bi bi-tag-fill text-primary me-2"></i>Loại đề thi 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="ExamTypeId" class="form-select form-select-modern" asp-items="ViewBag.ExamTypes">
+                                <option value="">-- Chọn loại đề --</option>
+                            </select>
+                            <span asp-validation-for="ExamTypeId" class="text-danger"></span>
+                        </div>
 
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Cấu hình đề ôn tập</h5>
+                        <div class="col-md-6">
+                            <label asp-for="GradeLevel" class="form-label">
+                                <i class="bi bi-mortarboard-fill text-primary me-2"></i>Khối lớp
+                            </label>
+                            <select asp-for="GradeLevel" class="form-select form-select-modern">
+                                <option value="">-- Tất cả khối lớp --</option>
+                                <option value="10">Lớp 10</option>
+                                <option value="11">Lớp 11</option>
+                                <option value="12">Lớp 12</option>
+                            </select>
+                        </div>
 
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> 
-                        <strong>Lưu ý:</strong> Đề ôn tập được tạo tự động từ ngân hàng câu hỏi. Bạn có thể làm bài ngay sau khi tạo.
+                        <div class="col-md-6">
+                            <label asp-for="TotalQuestions" class="form-label">
+                                <i class="bi bi-list-ol text-primary me-2"></i>Số câu hỏi 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="TotalQuestions" class="form-control form-control-modern" 
+                                   type="number" min="1" max="100" value="20" placeholder="Nhập số câu hỏi" />
+                            <span asp-validation-for="TotalQuestions" class="text-danger"></span>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Đề nghị: 20-50 câu
+                            </small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Duration" class="form-label">
+                                <i class="bi bi-clock-fill text-primary me-2"></i>Thời gian (phút) 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Duration" class="form-control form-control-modern" 
+                                   type="number" min="5" max="180" value="30" placeholder="Nhập thời gian" />
+                            <span asp-validation-for="Duration" class="text-danger"></span>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Đề nghị: 30-60 phút
+                            </small>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Tabs -->
-                    <ul class="nav nav-tabs" id="createModeTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="quick-tab" data-bs-toggle="tab" data-bs-target="#quick-mode" 
-                                    type="button" role="tab">
-                                <i class="bi bi-lightning-fill"></i> Tạo nhanh
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="custom-tab" data-bs-toggle="tab" data-bs-target="#custom-mode" 
-                                    type="button" role="tab">
-                                <i class="bi bi-gear-fill"></i> Tùy chỉnh
-                            </button>
-                        </li>
-                    </ul>
-
-                    <form asp-action="CreatePractice" method="post" id="createExamForm">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mt-3" role="alert"></div>
-                        <input type="hidden" asp-for="CreateMode" id="createModeInput" value="quick" />
-                        <input type="hidden" asp-for="CreatedBy" />
-                        <input type="hidden" asp-for="Status" value="draft" />
-                        <input type="hidden" asp-for="ExamName" value="Đề ôn tập" />
-
-                        <!-- Chọn Chủ đề (áp dụng cho cả 2 chế độ) -->
-                        <div class="mt-3">
-                            <h6><i class="bi bi-collection"></i> Chọn Chủ đề</h6>
-                            @if (topics != null)
+            <!-- Card 2: Chọn chủ đề -->
+            <div class="card-modern mb-4 p-4">
+                <div class="card-modern-header">
+                    <h3 class="card-modern-title">
+                        <i class="bi bi-collection me-2"></i>Chọn chủ đề
+                    </h3>
+                </div>
+                <div class="card-modern-body">
+                    @if (topics != null && topics.Any())
+                    {
+                        <div class="topics-grid">
+                            @foreach (var topic in topics)
                             {
-                                <div class="row mb-3">
-                                    <div class="col-sm-12">
-                                        @foreach (var topic in topics)
-                                        {
-                                            <div class="form-check mb-2">
-                                                <input type="checkbox" name="SelectedTopicIds" value="@topic.TopicId" 
-                                                       class="form-check-input" id="topic@(topic.TopicId)" checked />
-                                                <label class="form-check-label" for="topic@(topic.TopicId)">
-                                                    @topic.TopicName
-                                                </label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="alert alert-info">
-                                    <small><i class="bi bi-info-circle"></i> Các chủ đề được chọn sẽ được phân bổ đều số lượng câu hỏi (mặc định là tất cả)</small>
+                                <div class="topic-checkbox-card">
+                                    <input type="checkbox" name="SelectedTopicIds" value="@topic.TopicId" 
+                                           class="form-check-input topic-checkbox" id="topic@(topic.TopicId)" checked />
+                                    <label class="topic-label" for="topic@(topic.TopicId)">
+                                        <i class="bi bi-bookmark-fill topic-icon"></i>
+                                        <span class="topic-name">@topic.TopicName</span>
+                                    </label>
                                 </div>
                             }
                         </div>
-
-                        <div class="tab-content mt-3" id="createModeTabContent">
-                            <!-- Tab Tạo nhanh -->
-                            <div class="tab-pane fade show active" id="quick-mode" role="tabpanel">
-                                <div class="alert alert-info">
-                                    <i class="bi bi-info-circle"></i> 
-                                    <strong>Tạo nhanh:</strong> Hệ thống tự động phân bổ câu hỏi đều theo 7 chủ đề với tỷ lệ (40% Dễ, 30% TB, 30% Khó).
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="ExamTypeId" class="col-sm-3 col-form-label">Loại đề <span class="text-danger">*</span></label>
-                                    <div class="col-sm-9">
-                                        <select asp-for="ExamTypeId" class="form-select" asp-items="ViewBag.ExamTypes">
-                                            <option value="">-- Chọn loại đề --</option>
-                                        </select>
-                                        <span asp-validation-for="ExamTypeId" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="GradeLevel" class="col-sm-3 col-form-label">Lớp</label>
-                                    <div class="col-sm-9">
-                                        <select asp-for="GradeLevel" class="form-select">
-                                            <option value="">-- Tất cả lớp --</option>
-                                            <option value="10">Lớp 10</option>
-                                            <option value="11">Lớp 11</option>
-                                            <option value="12">Lớp 12</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="TotalQuestions" class="col-sm-3 col-form-label">Số câu hỏi</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="TotalQuestions" class="form-control" type="number" />
-                                        <span asp-validation-for="TotalQuestions" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="Duration" class="col-sm-3 col-form-label">Thời gian (phút)</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="Duration" class="form-control" type="number" />
-                                        <span asp-validation-for="Duration" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tab Tùy chỉnh -->
-                            <div class="tab-pane fade" id="custom-mode" role="tabpanel">
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle"></i> 
-                                    <strong>Tùy chỉnh:</strong> Tự cấu hình chủ đề và độ khó. Tổng tỷ lệ = 100%.
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="ExamTypeId" class="col-sm-3 col-form-label">Loại đề <span class="text-danger">*</span></label>
-                                    <div class="col-sm-9">
-                                        <select asp-for="ExamTypeId" class="form-select" asp-items="ViewBag.ExamTypes">
-                                            <option value="">-- Chọn loại đề --</option>
-                                        </select>
-                                        <span asp-validation-for="ExamTypeId" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="GradeLevel" class="col-sm-3 col-form-label">Lớp</label>
-                                    <div class="col-sm-9">
-                                        <select asp-for="GradeLevel" class="form-select">
-                                            <option value="">-- Tất cả lớp --</option>
-                                            <option value="10">Lớp 10</option>
-                                            <option value="11">Lớp 11</option>
-                                            <option value="12">Lớp 12</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="TotalQuestions" class="col-sm-3 col-form-label">Số câu hỏi</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="TotalQuestions" class="form-control" type="number" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label asp-for="Duration" class="col-sm-3 col-form-label">Thời gian (phút)</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="Duration" class="form-control" type="number" />
-                                    </div>
-                                </div>
-
-                                <hr class="my-3">
-                                <h6><i class="bi bi-sliders"></i> Độ khó</h6>
-
-                                <div class="row mb-3">
-                                    <label class="col-sm-3 col-form-label">Dễ (%)</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="EasyPercentage" class="form-control" type="number" step="0.01" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-sm-3 col-form-label">Trung bình (%)</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="MediumPercentage" class="form-control" type="number" step="0.01" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-sm-3 col-form-label">Khó (%)</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="HardPercentage" class="form-control" type="number" step="0.01" />
-                                        <small>Tổng = <span id="totalDifficulty">100</span>%</small>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-lightbulb-fill"></i>
+                            <strong>Gợi ý:</strong> Câu hỏi sẽ được phân bổ đều từ các chủ đề đã chọn
                         </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-9 offset-sm-3">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-play-circle me-1"></i> Tạo đề và Làm bài
-                                </button>
-                                <a asp-action="Index" class="btn btn-secondary">
-                                    <i class="bi bi-x-circle me-1"></i> Hủy
-                                </a>
-                            </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Chưa có chủ đề nào. Vui lòng liên hệ giáo viên!
                         </div>
-                    </form>
+                    }
                 </div>
             </div>
-        </div>
+
+            <!-- Card 3: Ma trận độ khó -->
+            <div class="card-modern mb-4 p-4">
+                <div class="card-modern-header">
+                    <h3 class="card-modern-title">
+                        <i class="bi bi-sliders me-2"></i>Ma trận độ khó
+                    </h3>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="enableCustomMatrix">
+                        <label class="form-check-label" for="enableCustomMatrix">
+                            Tùy chỉnh
+                        </label>
+                    </div>
+                </div>
+                <div class="card-modern-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Mặc định:</strong> Hệ thống tự động phân bổ <strong>40% Dễ</strong>, <strong>30% Trung bình</strong>, <strong>30% Khó</strong>
+                    </div>
+
+                    <div id="customMatrixPanel" style="display: none;">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="difficulty-card difficulty-easy">
+                                    <div class="difficulty-icon">
+                                        <i class="bi bi-emoji-smile-fill"></i>
+                                    </div>
+                                    <div class="difficulty-content">
+                                        <label class="difficulty-label">Câu Dễ (%)</label>
+                                        <div class="input-group">
+                                            <input asp-for="EasyPercentage" class="form-control difficulty-input" 
+                                                   type="number" min="0" max="100" step="1" value="40" 
+                                                   id="easyPercentage" />
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="difficulty-card difficulty-medium">
+                                    <div class="difficulty-icon">
+                                        <i class="bi bi-emoji-neutral-fill"></i>
+                                    </div>
+                                    <div class="difficulty-content">
+                                        <label class="difficulty-label">Câu Trung Bình (%)</label>
+                                        <div class="input-group">
+                                            <input asp-for="MediumPercentage" class="form-control difficulty-input" 
+                                                   type="number" min="0" max="100" step="1" value="30" 
+                                                   id="mediumPercentage" />
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="difficulty-card difficulty-hard">
+                                    <div class="difficulty-icon">
+                                        <i class="bi bi-emoji-frown-fill"></i>
+                                    </div>
+                                    <div class="difficulty-content">
+                                        <label class="difficulty-label">Câu Khó (%)</label>
+                                        <div class="input-group">
+                                            <input asp-for="HardPercentage" class="form-control difficulty-input" 
+                                                   type="number" min="0" max="100" step="1" value="30" 
+                                                   id="hardPercentage" />
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <div class="total-percentage" id="totalPercentageDisplay">
+                                <span class="total-label">Tổng:</span>
+                                <span class="total-value" id="totalPercentage">100</span>%
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-exclamation-circle"></i> Tổng tỷ lệ phải bằng 100%
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="text-center mb-4">
+                <button type="submit" class="btn btn-student-primary btn-lg px-5">
+                    <i class="bi bi-magic me-2"></i>Tạo đề ôn tập
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg px-5 ms-2">
+                    <i class="bi bi-x-circle me-2"></i>Hủy bỏ
+                </a>
+            </div>
+        </form>
     </div>
-</section>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const quickTab = document.getElementById('quick-tab');
-            const customTab = document.getElementById('custom-tab');
-            const createModeInput = document.getElementById('createModeInput');
+            // Toggle custom matrix panel
+            const enableCustomMatrix = document.getElementById('enableCustomMatrix');
+            const customMatrixPanel = document.getElementById('customMatrixPanel');
+            const easyInput = document.getElementById('easyPercentage');
+            const mediumInput = document.getElementById('mediumPercentage');
+            const hardInput = document.getElementById('hardPercentage');
+            const totalPercentage = document.getElementById('totalPercentage');
+            const totalDisplay = document.getElementById('totalPercentageDisplay');
 
-            quickTab.addEventListener('click', function() {
-                createModeInput.value = 'quick';
+            enableCustomMatrix.addEventListener('change', function() {
+                if (this.checked) {
+                    customMatrixPanel.style.display = 'block';
+                    // Enable inputs
+                    easyInput.disabled = false;
+                    mediumInput.disabled = false;
+                    hardInput.disabled = false;
+                } else {
+                    customMatrixPanel.style.display = 'none';
+                    // Reset to default values and disable
+                    easyInput.value = 40;
+                    mediumInput.value = 30;
+                    hardInput.value = 30;
+                    easyInput.disabled = true;
+                    mediumInput.disabled = true;
+                    hardInput.disabled = true;
+                    updateTotal();
+                }
             });
 
-            customTab.addEventListener('click', function() {
-                createModeInput.value = 'custom';
-            });
-
-            // Calculate totals
-            const easyInput = document.querySelector('input[name="EasyPercentage"]');
-            const mediumInput = document.querySelector('input[name="MediumPercentage"]');
-            const hardInput = document.querySelector('input[name="HardPercentage"]');
-            const totalDifficultySpan = document.getElementById('totalDifficulty');
-
-            function updateTotalDifficulty() {
-                if (!easyInput || !mediumInput || !hardInput) return;
-                const total = (parseFloat(easyInput.value) || 0) + (parseFloat(mediumInput.value) || 0) + (parseFloat(hardInput.value) || 0);
-                totalDifficultySpan.textContent = total.toFixed(2);
-                totalDifficultySpan.classList.toggle('text-danger', total !== 100);
+            // Calculate total percentage
+            function updateTotal() {
+                const easy = parseFloat(easyInput.value) || 0;
+                const medium = parseFloat(mediumInput.value) || 0;
+                const hard = parseFloat(hardInput.value) || 0;
+                const total = easy + medium + hard;
+                
+                totalPercentage.textContent = total.toFixed(0);
+                
+                // Change color based on validity
+                if (total === 100) {
+                    totalDisplay.classList.remove('total-invalid');
+                    totalDisplay.classList.add('total-valid');
+                } else {
+                    totalDisplay.classList.remove('total-valid');
+                    totalDisplay.classList.add('total-invalid');
+                }
             }
 
-            if (easyInput) easyInput.addEventListener('input', updateTotalDifficulty);
-            if (mediumInput) mediumInput.addEventListener('input', updateTotalDifficulty);
-            if (hardInput) hardInput.addEventListener('input', updateTotalDifficulty);
+            // Attach listeners
+            easyInput.addEventListener('input', updateTotal);
+            mediumInput.addEventListener('input', updateTotal);
+            hardInput.addEventListener('input', updateTotal);
+
+            // Disable inputs initially
+            easyInput.disabled = true;
+            mediumInput.disabled = true;
+            hardInput.disabled = true;
+
+            // Form validation
+            const form = document.getElementById('createExamForm');
+            const topicCheckboxes = document.querySelectorAll('.topic-checkbox');
+            
+            form.addEventListener('submit', function(e) {
+                // Check if any topic is selected
+                const anyTopicSelected = Array.from(topicCheckboxes).some(cb => cb.checked);
+                if (!anyTopicSelected) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ít nhất một chủ đề!');
+                    return false;
+                }
+
+                // Check if custom matrix is enabled and total is 100
+                if (enableCustomMatrix.checked) {
+                    const total = parseFloat(totalPercentage.textContent);
+                    if (total !== 100) {
+                        e.preventDefault();
+                        alert('Tổng tỷ lệ độ khó phải bằng 100%!');
+                        return false;
+                    }
+                }
+            });
+
+            // Add animation to difficulty cards
+            const difficultyInputs = document.querySelectorAll('.difficulty-input');
+            difficultyInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.closest('.difficulty-card').classList.add('difficulty-card-focus');
+                });
+                input.addEventListener('blur', function() {
+                    this.closest('.difficulty-card').classList.remove('difficulty-card-focus');
+                });
+            });
         });
     </script>
+}
+
+@section Styles {
+<style>
+/* Form Controls Modern */
+.form-select-modern,
+.form-control-modern {
+    border: 2px solid rgba(0, 82, 162, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-select-modern:focus,
+.form-control-modern:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 82, 162, 0.15);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Topics Grid */
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.topic-checkbox-card {
+    position: relative;
+    height: 100%;
+}
+
+.topic-checkbox-card input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.topic-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(0, 82, 162, 0.03) 0%, rgba(102, 204, 255, 0.03) 100%);
+    border: 2px solid rgba(0, 82, 162, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    height: 100%;
+    min-height: 60px;
+}
+
+.topic-icon {
+    font-size: 20px;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.topic-name {
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+}
+
+.topic-checkbox-card input[type="checkbox"]:checked + .topic-label {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 82, 162, 0.2);
+}
+
+.topic-checkbox-card input[type="checkbox"]:checked + .topic-label .topic-icon,
+.topic-checkbox-card input[type="checkbox"]:checked + .topic-label .topic-name {
+    color: white;
+}
+
+.topic-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 82, 162, 0.15);
+}
+
+/* Difficulty Cards */
+.difficulty-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 2px solid rgba(0, 82, 162, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.difficulty-card-focus {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 82, 162, 0.15);
+}
+
+.difficulty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+}
+
+.difficulty-easy .difficulty-icon {
+    background: linear-gradient(135deg, #28A745 0%, #7FD893 100%);
+}
+
+.difficulty-medium .difficulty-icon {
+    background: linear-gradient(135deg, #FFC107 0%, #FFE082 100%);
+}
+
+.difficulty-hard .difficulty-icon {
+    background: linear-gradient(135deg, #DC3545 0%, #FF6B7A 100%);
+}
+
+.difficulty-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.difficulty-input {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    border: 2px solid rgba(0, 82, 162, 0.1);
+    border-radius: 8px;
+}
+
+.difficulty-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 82, 162, 0.15);
+}
+
+.difficulty-input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* Total Percentage Display */
+.total-percentage {
+    display: inline-block;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.total-label {
+    color: #6c757d;
+    margin-right: 8px;
+}
+
+.total-value {
+    font-size: 32px;
+}
+
+.total-valid {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(127, 216, 147, 0.1) 100%);
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    color: #28A745;
+}
+
+.total-invalid {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(255, 107, 122, 0.1) 100%);
+    border: 2px solid rgba(220, 53, 69, 0.3);
+    color: #DC3545;
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .topics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .difficulty-card {
+        padding: 16px;
+    }
+    
+    .difficulty-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+}
+</style>
 }
