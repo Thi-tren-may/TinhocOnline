@@ -1,0 +1,565 @@
+@model TinhocOnline.Models.Exam
+
+@{
+    ViewData["Title"] = "Chuẩn bị làm bài";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+    var isRequired = ViewBag.IsRequired as bool? ?? false;
+}
+
+<!-- Page Header với Gradient -->
+<div class="page-header">
+    <h1>
+        <i class="bi bi-clipboard-check me-2"></i>Chuẩn bị làm bài
+    </h1>
+    <p class="page-description">Vui lòng đọc kỹ thông tin trước khi bắt đầu</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Card thông tin đề thi -->
+        <div class="card-modern exam-info-card mb-4">
+            <div class="exam-info-header">
+                <div class="exam-badge-wrapper">
+                    @if (isRequired)
+                    {
+                        <span class="exam-badge exam-badge-required">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Bắt buộc
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="exam-badge exam-badge-optional">
+                            <i class="bi bi-pencil-square"></i>
+                            Tự do
+                        </span>
+                    }
+                </div>
+                <h2 class="exam-title">@Model.ExamName</h2>
+                <p class="exam-type">
+                    <i class="bi bi-tag-fill"></i>
+                    @Model.ExamType?.TypeName
+                </p>
+            </div>
+
+            <div class="exam-info-body">
+                <div class="row g-4">
+                    <!-- Thời gian -->
+                    <div class="col-md-3 col-6">
+                        <div class="info-item">
+                            <div class="info-icon info-icon-primary">
+                                <i class="bi bi-clock-fill"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Thời gian</div>
+                                <div class="info-value">@Model.Duration phút</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Số câu hỏi -->
+                    <div class="col-md-3 col-6">
+                        <div class="info-item">
+                            <div class="info-icon info-icon-success">
+                                <i class="bi bi-list-ol"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Số câu hỏi</div>
+                                <div class="info-value">@Model.TotalQuestions câu</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Điểm đạt -->
+                    <div class="col-md-3 col-6">
+                        <div class="info-item">
+                            <div class="info-icon info-icon-warning">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Điểm đạt</div>
+                                <div class="info-value">@Model.PassingScore</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khối lớp -->
+                    @if (!string.IsNullOrEmpty(Model.GradeLevel))
+                    {
+                        <div class="col-md-3 col-6">
+                            <div class="info-item">
+                                <div class="info-icon info-icon-info">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Khối lớp</div>
+                                    <div class="info-value">Lớp @Model.GradeLevel</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Ma trận độ khó -->
+                <div class="difficulty-matrix mt-4">
+                    <h5 class="matrix-title">
+                        <i class="bi bi-sliders me-2"></i>Ma trận độ khó
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="difficulty-bar difficulty-easy">
+                                <div class="difficulty-bar-header">
+                                    <span class="difficulty-label">
+                                        <i class="bi bi-emoji-smile-fill"></i> Dễ
+                                    </span>
+                                    <span class="difficulty-percent">@Model.EasyPercentage%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: @Model.EasyPercentage%" 
+                                         aria-valuenow="@Model.EasyPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="difficulty-bar difficulty-medium">
+                                <div class="difficulty-bar-header">
+                                    <span class="difficulty-label">
+                                        <i class="bi bi-emoji-neutral-fill"></i> Trung bình
+                                    </span>
+                                    <span class="difficulty-percent">@Model.MediumPercentage%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: @Model.MediumPercentage%" 
+                                         aria-valuenow="@Model.MediumPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="difficulty-bar difficulty-hard">
+                                <div class="difficulty-bar-header">
+                                    <span class="difficulty-label">
+                                        <i class="bi bi-emoji-frown-fill"></i> Khó
+                                    </span>
+                                    <span class="difficulty-percent">@Model.HardPercentage%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" 
+                                         style="width: @Model.HardPercentage%" 
+                                         aria-valuenow="@Model.HardPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chủ đề (chỉ hiện nếu không phải đề bắt buộc) -->
+                @if (!isRequired && Model.ExamTopics != null && Model.ExamTopics.Any())
+                {
+                    <div class="topics-section mt-4">
+                        <h5 class="topics-title">
+                            <i class="bi bi-bookmark-fill me-2"></i>Chủ đề kiểm tra
+                        </h5>
+                        <div class="topics-list">
+                            @foreach (var examTopic in Model.ExamTopics.OrderBy(et => et.Topic?.TopicName))
+                            {
+                                <div class="topic-tag">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>@examTopic.Topic?.TopicName</span>
+                                    <span class="topic-count">(@examTopic.QuestionCount câu)</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Card quy định -->
+        <div class="card-modern rules-card mb-4 p-4">
+            <div class="card-modern-header">
+                <h3 class="card-modern-title">
+                    <i class="bi bi-info-circle-fill me-2"></i>Quy định làm bài
+                </h3>
+            </div>
+            <div class="card-modern-body">
+                <ul class="rules-list">
+                    <li>
+                        <i class="bi bi-check2-circle text-success"></i>
+                        Thời gian làm bài được tính ngay khi bạn nhấn nút <strong>"Bắt đầu làm bài"</strong>
+                    </li>
+                    <li>
+                        <i class="bi bi-check2-circle text-success"></i>
+                        Bạn <strong>không thể tạm dừng</strong> trong quá trình làm bài
+                    </li>
+                    <li>
+                        <i class="bi bi-check2-circle text-success"></i>
+                        Hệ thống sẽ <strong>tự động nộp bài</strong> khi hết thời gian
+                    </li>
+                    <li>
+                        <i class="bi bi-check2-circle text-success"></i>
+                        Mỗi đề thi chỉ được làm <strong>một lần duy nhất</strong>
+                    </li>
+                    <li>
+                        <i class="bi bi-check2-circle text-success"></i>
+                        Vui lòng kiểm tra kết nối mạng ổn định trước khi bắt đầu
+                    </li>
+                    @if (Model.ShuffleQuestions)
+                    {
+                        <li>
+                            <i class="bi bi-shuffle text-primary"></i>
+                            Thứ tự câu hỏi được <strong>xáo trộn ngẫu nhiên</strong>
+                        </li>
+                    }
+                    @if (Model.ShuffleAnswers)
+                    {
+                        <li>
+                            <i class="bi bi-shuffle text-primary"></i>
+                            Thứ tự đáp án được <strong>xáo trộn ngẫu nhiên</strong>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-buttons">
+            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại
+            </a>
+            <a asp-action="TakeExam" asp-route-id="@Model.ExamId" class="btn btn-start-exam btn-lg">
+                <i class="bi bi-play-circle-fill me-2"></i>Bắt đầu làm bài
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+/* Exam Info Card */
+.exam-info-card {
+    overflow: hidden;
+}
+
+.exam-info-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    padding: 40px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.exam-info-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+}
+
+.exam-badge-wrapper {
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.exam-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+}
+
+.exam-badge-required {
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+}
+
+.exam-badge-optional {
+    background: rgba(23, 162, 184, 0.9);
+    color: white;
+}
+
+.exam-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.exam-type {
+    font-size: 16px;
+    opacity: 0.9;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.exam-info-body {
+    padding: 40px;
+}
+
+/* Info Items */
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(0, 82, 162, 0.03) 0%, rgba(102, 204, 255, 0.03) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 82, 162, 0.1);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 82, 162, 0.1);
+}
+
+.info-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.info-icon-primary {
+    background: linear-gradient(135deg, #0052A2 0%, #66CCFF 100%);
+}
+
+.info-icon-success {
+    background: linear-gradient(135deg, #28A745 0%, #7FD893 100%);
+}
+
+.info-icon-warning {
+    background: linear-gradient(135deg, #FFC107 0%, #FFE082 100%);
+}
+
+.info-icon-info {
+    background: linear-gradient(135deg, #17A2B8 0%, #7DD3DE 100%);
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Difficulty Matrix */
+.difficulty-matrix {
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(0, 82, 162, 0.02) 0%, rgba(102, 204, 255, 0.02) 100%);
+    border-radius: 12px;
+}
+
+.matrix-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.difficulty-bar {
+    padding: 16px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 82, 162, 0.1);
+}
+
+.difficulty-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.difficulty-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.difficulty-percent {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Topics Section */
+.topics-section {
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(0, 82, 162, 0.02) 0%, rgba(102, 204, 255, 0.02) 100%);
+    border-radius: 12px;
+}
+
+.topics-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.topics-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.topic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: white;
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.topic-tag:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 82, 162, 0.2);
+}
+
+.topic-count {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Rules Card */
+.rules-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.rules-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rules-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 15px;
+    color: #333;
+    border-bottom: 1px solid rgba(0, 82, 162, 0.1);
+}
+
+.rules-list li:last-child {
+    border-bottom: none;
+}
+
+.rules-list li i {
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+
+.btn-start-exam {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    padding: 16px 48px;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 82, 162, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: pulse 2s infinite;
+}
+
+.btn-start-exam:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 82, 162, 0.4);
+    color: white;
+}
+
+@@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(0, 82, 162, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(0, 82, 162, 0.5);
+    }
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .exam-info-header {
+        padding: 24px;
+    }
+    
+    .exam-title {
+        font-size: 24px;
+    }
+    
+    .exam-info-body {
+        padding: 24px;
+    }
+    
+    .info-item {
+        padding: 16px;
+    }
+    
+    .info-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .info-value {
+        font-size: 18px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+</style>
+}
