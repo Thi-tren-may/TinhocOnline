@@ -25,10 +25,11 @@ namespace TinhocOnline.Areas.Student.Controllers
                 return RedirectToAction("Login", "Auth", new { area = "" });
             }
 
+            // Lấy đề thi published HOẶC đề do chính học sinh tạo (draft/published)
             var exams = await _context.Exams
                 .Include(e => e.ExamType)
                 .Include(e => e.Creator)
-                .Where(e => e.Status == "published")
+                .Where(e => e.Status == "published" || e.CreatedBy == studentId.Value)
                 .OrderByDescending(e => e.ExamId)
                 .ToListAsync();
 
@@ -98,7 +99,7 @@ namespace TinhocOnline.Areas.Student.Controllers
             {
                 try
                 {
-                    model.ExamName = $"Đề ôn tập - {DateTime.Now:dd/MM/yyyy HH:mm}";
+                    model.ExamName = $"Đề ôn tập - {DateTime.Now:dd/MM/yyyy}";
                     model.Status = "draft"; // Force draft cho học sinh
                     model.CreatedBy = studentId.Value;
 
@@ -125,14 +126,14 @@ namespace TinhocOnline.Areas.Student.Controllers
 
                     // Xử lý ma trận chủ đề
                     Dictionary<int, decimal> topicMatrix;
-                    
+
                     if (model.CreateMode == "quick")
                     {
                         // Chế độ nhanh: Phân đều theo tất cả topics
                         var activeTopics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
                         topicMatrix = new Dictionary<int, decimal>();
                         decimal percentage = Math.Round(100m / activeTopics.Count, 2);
-                        
+
                         foreach (var topic in activeTopics)
                         {
                             topicMatrix[topic.TopicId] = percentage;
@@ -145,7 +146,7 @@ namespace TinhocOnline.Areas.Student.Controllers
                         if (model.SelectedTopicIds != null && model.SelectedTopicIds.Any())
                         {
                             decimal percentage = Math.Round(100m / model.SelectedTopicIds.Count, 2);
-                            
+
                             foreach (var topicId in model.SelectedTopicIds)
                             {
                                 topicMatrix[topicId] = percentage;
@@ -161,21 +162,21 @@ namespace TinhocOnline.Areas.Student.Controllers
                         // Xóa exam nếu không đủ câu hỏi
                         _context.Exams.Remove(exam);
                         await _context.SaveChangesAsync();
-                        
+
                         TempData["ErrorMessage"] = "Không đủ câu hỏi trong ngân hàng để tạo đề thi. Vui lòng giảm số câu hoặc chọn lại cấu hình.";
-                        
+
                         ViewBag.ExamTypes = new SelectList(
                             await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
                             "ExamTypeId",
                             "TypeName"
                         );
                         ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
-                        
+
                         return View(model);
                     }
 
-                    TempData["SuccessMessage"] = "Tạo đề ôn tập thành công! Bắt đầu làm bài ngay.";
-                    return RedirectToAction(nameof(TakeExam), new { id = exam.ExamId });
+                    TempData["SuccessMessage"] = "Tạo đề ôn tập thành công!";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
@@ -203,17 +204,17 @@ namespace TinhocOnline.Areas.Student.Controllers
             // Tính số câu cho từng topic trước (để xử lý làm tròn)
             var topicQuestionCounts = new Dictionary<int, int>();
             int totalAllocated = 0;
-            
+
             foreach (var topicEntry in topicMatrix.OrderByDescending(kv => kv.Value))
             {
                 var topicId = topicEntry.Key;
                 var topicPercentage = topicEntry.Value;
                 var questionsForTopic = (int)Math.Round(model.TotalQuestions * topicPercentage / 100);
-                
+
                 topicQuestionCounts[topicId] = questionsForTopic;
                 totalAllocated += questionsForTopic;
             }
-            
+
             // Điều chỉnh nếu tổng không khớp do làm tròn
             int difference = model.TotalQuestions - totalAllocated;
             if (difference != 0)
@@ -221,13 +222,13 @@ namespace TinhocOnline.Areas.Student.Controllers
                 // Phân bổ đều các câu dư vào các topic
                 var topicIds = topicMatrix.Keys.ToList();
                 int topicIndex = 0;
-                
+
                 // Nếu dư câu: thêm lần lượt vào từng topic
                 // Nếu thiếu câu: bớt lần lượt từ từng topic
                 while (difference != 0)
                 {
                     var topicId = topicIds[topicIndex % topicIds.Count];
-                    
+
                     if (difference > 0)
                     {
                         topicQuestionCounts[topicId]++;
@@ -238,9 +239,9 @@ namespace TinhocOnline.Areas.Student.Controllers
                         topicQuestionCounts[topicId]--;
                         difference++;
                     }
-                    
+
                     topicIndex++;
-                    
+
                     // Tránh vòng lặp vô hạn
                     if (topicIndex > topicIds.Count * 100) break;
                 }
@@ -287,8 +288,8 @@ namespace TinhocOnline.Areas.Student.Controllers
                     .Take(hardCount)
                     .ToListAsync();
 
-                if (easyQuestions.Count < easyCount || 
-                    mediumQuestions.Count < mediumCount || 
+                if (easyQuestions.Count < easyCount ||
+                    mediumQuestions.Count < mediumCount ||
                     hardQuestions.Count < hardCount)
                 {
                     return false;
@@ -327,6 +328,62 @@ namespace TinhocOnline.Areas.Student.Controllers
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        // GET: Student/Exam/BeforeExam/5 - Màn hình chuẩn bị thi
+        public async Task<IActionResult> BeforeExam(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var studentId = HttpContext.Session.GetInt32("UserId");
+            if (studentId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            // Lấy thông tin đề thi với các quan hệ cần thiết
+            var exam = await _context.Exams
+                .Include(e => e.ExamType)
+                .Include(e => e.Creator)
+                .Include(e => e.ExamTopics)
+                    .ThenInclude(et => et.Topic)
+                .Include(e => e.ExamQuestions)
+                .FirstOrDefaultAsync(e => e.ExamId == id);
+
+            if (exam == null)
+            {
+                return NotFound();
+            }
+
+            // Kiểm tra quyền xem đề thi
+            // Chỉ cho phép xem nếu: đề published HOẶC do chính học sinh tạo
+            if (exam.Status != "published" && exam.CreatedBy != studentId.Value)
+            {
+                TempData["ErrorMessage"] = "Bạn không có quyền truy cập đề thi này!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Kiểm tra đã làm bài chưa (chỉ với đề published/bắt buộc)
+            if (exam.Status == "published")
+            {
+                var existingAttempt = await _context.StudentExams
+                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId.Value);
+
+                if (existingAttempt != null)
+                {
+                    TempData["ErrorMessage"] = "Bạn đã làm bài thi này rồi!";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            // Truyền thông tin kiểm tra loại đề (bắt buộc hay không)
+            ViewBag.IsRequired = exam.ExamType?.TypeName?.Contains("Bắt buộc") == true ||
+                                 exam.ExamType?.TypeName?.Contains("Required") == true;
+
+            return View(exam);
         }
 
         // GET: Student/Exam/TakeExam/5 - Làm bài thi

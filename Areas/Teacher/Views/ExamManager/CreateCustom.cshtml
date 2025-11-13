@@ -109,15 +109,6 @@
                                             style="max-height: 500px; overflow-y: auto;">
                                             <p class="text-muted text-center">Nhấn "Tải câu hỏi" để xem danh sách</p>
                                         </div>
-
-                                        <!-- Loading spinner -->
-                                        <div id="loadingSpinner" class="text-center" style="display: none;">
-                                            <div class="spinner-border spinner-border-sm text-primary"
-                                                role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                            <p class="text-muted mt-2">Đang tải câu hỏi...</p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -159,23 +150,24 @@
             const selectedQuestionsContainer = document.getElementById('selectedQuestionsContainer');
             const selectedCount = document.getElementById('selectedCount');
             const selectedWarning = document.getElementById('selectedWarning');
-            const loadingSpinner = document.getElementById('loadingSpinner');
             const totalQuestionsInput = document.querySelector('input[name="TotalQuestions"]');
+            const gradeLevelSelect = document.querySelector('select[name="GradeLevel"]');
 
             // Hàm load câu hỏi từ server
             async function loadQuestions() {
                 const topicId = filterTopic.value;
                 const difficulty = filterDifficulty.value;
+                const gradeLevel = gradeLevelSelect ? gradeLevelSelect.value : '';
 
                 // Hiển thị loading
                 questionsContainer.style.display = 'none';
-                loadingSpinner.style.display = 'block';
 
                 try {
-                    // Gọi API để lấy danh sách câu hỏi
+                    // lấy danh sách câu hỏi
                     let url = '/Teacher/ExamManager/GetQuestions?';
                     if (topicId) url += `topicId=${topicId}&`;
-                    if (difficulty) url += `difficulty=${difficulty}`;
+                    if (difficulty) url += `difficulty=${difficulty}&`;
+                    if (gradeLevel) url += `gradeLevel=${gradeLevel}`;
 
                     const response = await fetch(url);
                     const questions = await response.json();
@@ -187,7 +179,6 @@
                     console.error('Lỗi khi tải câu hỏi:', error);
                     questionsContainer.innerHTML = '<p class="text-danger text-center">Có lỗi xảy ra khi tải câu hỏi</p>';
                 } finally {
-                    loadingSpinner.style.display = 'none';
                     questionsContainer.style.display = 'block';
                 }
             }

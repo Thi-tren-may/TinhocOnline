@@ -747,7 +747,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
         // GET: Teacher/ExamManager/GetQuestions
         // API để lấy danh sách câu hỏi (dùng cho Custom mode)
         [HttpGet]
-        public async Task<IActionResult> GetQuestions(int? topicId, string difficulty)
+        public async Task<IActionResult> GetQuestions(int? topicId, string difficulty, string gradeLevel)
         {
             var teacherId = HttpContext.Session.GetInt32("UserId");
             if (teacherId == null)
@@ -770,6 +770,12 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             if (!string.IsNullOrEmpty(difficulty))
             {
                 query = query.Where(q => q.DifficultyLevel == difficulty);
+            }
+
+            // Lọc theo lớp nếu có
+            if (!string.IsNullOrEmpty(gradeLevel))
+            {
+                query = query.Where(q => q.GradeLevel == gradeLevel);
             }
 
             // Lấy danh sách và map sang DTO
