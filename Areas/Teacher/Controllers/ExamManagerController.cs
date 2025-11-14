@@ -795,5 +795,175 @@ namespace TinhocOnline.Areas.Teacher.Controllers
 
             return Json(questions);
         }
+
+        // GET: Teacher/ExamManager/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            var exam = await _context.Exams
+                .Include(e => e.ExamQuestions)
+                    .ThenInclude(eq => eq.Question)
+                        .ThenInclude(q => q.Topic)
+                .FirstOrDefaultAsync(e => e.ExamId == id && e.CreatedBy == teacherId.Value);
+
+            if (exam == null)
+            {
+                return NotFound();
+            }
+
+            var model = new CreateExamViewModel
+            {
+                ExamName = exam.ExamName,
+                ExamTypeId = exam.ExamTypeId ?? 0,
+                GradeLevel = exam.GradeLevel,
+                Duration = exam.Duration,
+                TotalQuestions = exam.TotalQuestions,
+                EasyPercentage = exam.EasyPercentage,
+                MediumPercentage = exam.MediumPercentage,
+                HardPercentage = exam.HardPercentage,
+                ShuffleQuestions = exam.ShuffleQuestions,
+                ShuffleAnswers = exam.ShuffleAnswers,
+                PassingScore = exam.PassingScore,
+                Status = exam.Status,
+                CreatedBy = exam.CreatedBy,
+                CreateMode = "custom",
+                SelectedQuestionIds = exam.ExamQuestions.OrderBy(eq => eq.QuestionOrder).Select(eq => eq.QuestionId).ToList()
+            };
+
+            // Load ExamTypes and Topics
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+
+            var topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+            ViewBag.Topics = topics;
+
+            // Prepare selected questions data for client-side display
+            var selectedQuestions = exam.ExamQuestions
+                .OrderBy(eq => eq.QuestionOrder)
+                .Select(eq => new
+                {
+                    questionId = eq.QuestionId,
+                    questionText = eq.Question.QuestionText,
+                    difficulty = eq.Question.DifficultyLevel,
+                    topicName = eq.Question.Topic.TopicName
+                })
+                .ToList();
+
+            ViewBag.SelectedQuestionsJson = System.Text.Json.JsonSerializer.Serialize(selectedQuestions);
+            ViewBag.ExamId = exam.ExamId;
+
+            return View(model);
+        }
+
+        // POST: Teacher/ExamManager/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CreateExamViewModel model)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            var exam = await _context.Exams
+                .Include(e => e.ExamQuestions)
+                .Where(e => e.ExamId == id && e.CreatedBy == teacherId.Value)
+                .FirstOrDefaultAsync();
+
+            if (exam == null)
+            {
+                return NotFound();
+            }
+
+            model.CreateMode = "custom";
+
+            // Validate selected questions when custom mode
+            if (model.SelectedQuestionIds == null || !model.SelectedQuestionIds.Any())
+            {
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 câu hỏi");
+            }
+            else if (model.SelectedQuestionIds.Count != model.TotalQuestions)
+            {
+                ModelState.AddModelError("", $"Số câu hỏi đã chọn ({model.SelectedQuestionIds.Count}) không khớp với tổng số câu ({model.TotalQuestions})");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Update exam info
+                    exam.ExamName = model.ExamName;
+                    exam.ExamTypeId = model.ExamTypeId;
+                    exam.GradeLevel = model.GradeLevel;
+                    exam.Duration = model.Duration;
+                    exam.TotalQuestions = model.TotalQuestions;
+                    exam.EasyPercentage = model.EasyPercentage;
+                    exam.MediumPercentage = model.MediumPercentage;
+                    exam.HardPercentage = model.HardPercentage;
+                    exam.ShuffleQuestions = model.ShuffleQuestions;
+                    exam.ShuffleAnswers = model.ShuffleAnswers;
+                    exam.PassingScore = model.PassingScore;
+                    exam.Status = model.Status;
+
+                    // Remove existing exam questions & topics
+                    var existingQuestions = _context.ExamQuestions.Where(eq => eq.ExamId == exam.ExamId);
+                    var existingTopics = _context.ExamTopics.Where(et => et.ExamId == exam.ExamId);
+                    _context.ExamQuestions.RemoveRange(existingQuestions);
+                    _context.ExamTopics.RemoveRange(existingTopics);
+                    await _context.SaveChangesAsync();
+
+                    // Add new selected questions
+                    bool success = await GenerateExamQuestionsFromSelectedIds(exam.ExamId, model.SelectedQuestionIds, model);
+
+                    if (!success)
+                    {
+                        ModelState.AddModelError("", "Không thể cập nhật đề thi với danh sách câu hỏi đã chọn.");
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
+                        TempData["SuccessMessage"] = "Cập nhật đề thi thành công!";
+                        return RedirectToAction(nameof(Details), new { id = exam.ExamId });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Lỗi: {ex.Message}");
+                }
+            }
+
+            // Reload supporting data if validation failed
+            ViewBag.ExamTypes = new SelectList(
+                await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
+                "ExamTypeId",
+                "TypeName"
+            );
+            ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
+            ViewBag.ExamId = id;
+
+            // Prepare JSON for already selected questions (some may not be available)
+            var questions = await _context.Questions
+                .Include(q => q.Topic)
+                .Where(q => model.SelectedQuestionIds.Contains(q.QuestionId) && q.Status == "active")
+                .Select(q => new { questionId = q.QuestionId, questionText = q.QuestionText, difficulty = q.DifficultyLevel, topicName = q.Topic.TopicName })
+                .ToListAsync();
+            ViewBag.SelectedQuestionsJson = System.Text.Json.JsonSerializer.Serialize(questions);
+
+            return View(model);
+        }
     }
 }
