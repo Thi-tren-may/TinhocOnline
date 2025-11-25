@@ -19,6 +19,7 @@ namespace TinhocOnline.Models
         public DbSet<ExamTopic> ExamTopics { get; set; }
         public DbSet<StudentExam> StudentExams { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
+        public DbSet<StudentExamQuestion> StudentExamQuestions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

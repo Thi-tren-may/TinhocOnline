@@ -56,6 +56,24 @@
 </div>
 
 <div class="row mb-3">
+    <label asp-for="StartDate" class="col-sm-3 col-form-label">Thời gian bắt đầu</label>
+    <div class="col-sm-9">
+        <input asp-for="StartDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+        <small class="text-muted">Học sinh chỉ có thể vào thi sau thời gian này</small>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label asp-for="EndDate" class="col-sm-3 col-form-label">Thời gian kết thúc</label>
+    <div class="col-sm-9">
+        <input asp-for="EndDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+        <small class="text-muted">Học sinh không thể vào thi sau thời gian này</small>
+    </div>
+</div>
+
+<div class="row mb-3">
     <label class="col-sm-3 col-form-label">Tùy chọn</label>
     <div class="col-sm-9">
         <div class="form-check">

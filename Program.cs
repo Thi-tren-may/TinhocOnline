@@ -44,13 +44,17 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthorization();
+
+// Area routes
 app.MapControllerRoute(
-name: "areas",
-pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
 );
 
+// Default route - Home/Index (landing page)
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

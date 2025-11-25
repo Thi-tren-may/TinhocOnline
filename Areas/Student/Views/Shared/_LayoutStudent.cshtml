@@ -3,328 +3,347 @@
 
 <head>
     <meta charset="utf-8">
+    <title>@ViewData["Title"] - Hệ thống thi trực tuyến</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Thi trực tuyến, Học sinh" name="keywords">
+    <meta content="Hệ thống thi trực tuyến cho học sinh" name="description">
 
-    <title>Dashboard - NiceAdmin Bootstrap Template</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-
-    <!-- Favicons -->
-    <link href="@Url.Content("~/assets/img/favicon.png")" rel="icon">
-    <link href="@Url.Content("~/assets/img/apple-touch-icon.png")" rel="apple-touch-icon">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:slnt,wght@10..0,100..900&display=swap"
         rel="stylesheet">
 
-    <!-- Vendor CSS Files -->
-    <link href="@Url.Content("~/assets/vendor/bootstrap/css/bootstrap.min.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/bootstrap-icons/bootstrap-icons.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/boxicons/css/boxicons.min.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/quill/quill.snow.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/quill/quill.bubble.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/remixicon/remixicon.css")" rel="stylesheet">
-    <link href="@Url.Content("~/assets/vendor/simple-datatables/style.css")" rel="stylesheet">
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Template Main CSS File -->
-    <link href="@Url.Content("~/assets/css/style.css")" rel="stylesheet">
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="@Url.Content("~/public-assets/lib/animate/animate.min.css")" />
+    <link href="@Url.Content("~/public-assets/lib/lightbox/css/lightbox.min.css")" rel="stylesheet">
+    <link href="@Url.Content("~/public-assets/lib/owlcarousel/assets/owl.carousel.min.css")" rel="stylesheet">
 
 
-    <!-- =======================================================
-    * Template Name: NiceAdmin - v2.4.1
-    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-    * Author: BootstrapMade.com
-    * License: https://bootstrapmade.com/license/
-    ======================================================== -->
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="@Url.Content("~/public-assets/css/bootstrap.min.css")" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="@Url.Content("~/public-assets/css/style.css")" rel="stylesheet">
+
+    <!-- Custom Student Styles -->
+    <style>
+        /* Topbar with gradient */
+        .topbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        
+        .topbar .text-muted {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .topbar .border-primary {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .topbar .text-primary {
+            color: #ffd700 !important;
+        }
+        
+        .topbar .btn-outline-danger {
+            border-color: rgba(255, 255, 255, 0.8);
+            color: white;
+        }
+        
+        .topbar .btn-outline-danger:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        /* Navbar with slight background */
+        .nav-bar {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Counter Facts Section */
+        .counter-facts {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+        
+        .counter-facts::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .counter-facts .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .counter {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .counter:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .counter-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .counter-content h3 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .counter-value {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        /* Service Section Background */
+        .service {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+        }
+        
+        .service::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(102,126,234,0.1)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .service .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-item {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            z-index: 2;
+        }
+        
+        .service-item a,
+        .service-item button {
+            position: relative;
+            z-index: 3;
+            pointer-events: auto;
+        }
+
+        /* Blog section light background */
+        .blog {
+            background: #f8f9fa;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- ======= Header ======= -->
-    <header id="header" class="header fixed-top d-flex align-items-center">
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
 
-        <div class="d-flex align-items-center justify-content-between">
-            <a href="index.html" class="logo d-flex align-items-center">
-                <img src="@Url.Content("~/assets/img/logo.png")" alt="">
-                <span class="d-none d-lg-block">NiceAdmin</span>
-            </a>
-            <i class="bi bi-list toggle-sidebar-btn"></i>
-        </div><!-- End Logo -->
+    <!-- Topbar Start -->
+    <div class="container-fluid topbar px-0 px-lg-4 bg-light py-2 d-none d-lg-block">
+        <div class="container">
+            <div class="row gx-0 align-items-center">
+                <div class="col-lg-8 text-center text-lg-start mb-lg-0">
+                    <div class="d-flex flex-wrap">
+                        <div class="border-end border-primary pe-3">
+                            <span class="text-muted small"><i class="fas fa-user text-primary me-2"></i>Xin chào, @Context.Session.GetString("FullName")</span>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small"><i class="fas fa-graduation-cap text-primary me-2"></i>Học sinh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center text-lg-end">
+                    <div class="d-flex justify-content-end">
+                        <a asp-area="" asp-controller="Auth" asp-action="Logout" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-1"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
 
-        <div class="search-bar">
-            <form class="search-form d-flex align-items-center" method="POST" action="#">
-                <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-                <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-            </form>
-        </div><!-- End Search Bar -->
-
-        <nav class="header-nav ms-auto">
-            <ul class="d-flex align-items-center">
-
-                <li class="nav-item d-block d-lg-none">
-                    <a class="nav-link nav-icon search-bar-toggle " href="#">
-                        <i class="bi bi-search"></i>
-                    </a>
-                </li><!-- End Search Icon-->
-
-                <li class="nav-item dropdown">
-
-                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell"></i>
-                        <span class="badge bg-primary badge-number">4</span>
-                    </a><!-- End Notification Icon -->
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                        <li class="dropdown-header">
-                            You have 4 new notifications
-                            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-exclamation-circle text-warning"></i>
-                            <div>
-                                <h4>Lorem Ipsum</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>30 min. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-x-circle text-danger"></i>
-                            <div>
-                                <h4>Atque rerum nesciunt</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>1 hr. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <div>
-                                <h4>Sit rerum fuga</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>2 hrs. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="notification-item">
-                            <i class="bi bi-info-circle text-primary"></i>
-                            <div>
-                                <h4>Dicta reprehenderit</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>4 hrs. ago</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li class="dropdown-footer">
-                            <a href="#">Show all notifications</a>
-                        </li>
-
-                    </ul><!-- End Notification Dropdown Items -->
-
-                </li><!-- End Notification Nav -->
-
-                <li class="nav-item dropdown">
-
-                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-chat-left-text"></i>
-                        <span class="badge bg-success badge-number">3</span>
-                    </a><!-- End Messages Icon -->
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-                        <li class="dropdown-header">
-                            You have 3 new messages
-                            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="message-item">
-                            <a href="#">
-                                <img src="@Url.Content("~/assets/img/messages-1.jpg")" alt="" class="rounded-circle">
-                                <div>
-                                    <h4>Maria Hudson</h4>
-                                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                    <p>4 hrs. ago</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="message-item">
-                            <a href="#">
-                                <img src="@Url.Content("~/assets/img/messages-2.jpg")" alt="" class="rounded-circle">
-                                <div>
-                                    <h4>Anna Nelson</h4>
-                                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                    <p>6 hrs. ago</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="message-item">
-                            <a href="#">
-                                <img src="@Url.Content("~/assets/img/messages-3.jpg")" alt="" class="rounded-circle">
-                                <div>
-                                    <h4>David Muldon</h4>
-                                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                    <p>8 hrs. ago</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li class="dropdown-footer">
-                            <a href="#">Show all messages</a>
-                        </li>
-
-                    </ul><!-- End Messages Dropdown Items -->
-
-                </li><!-- End Messages Nav -->
-
-                <li class="nav-item dropdown pe-3">
-
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <img src="@Url.Content("~/assets/img/profile-img.jpg")" alt="Profile" class="rounded-circle">
-                        <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
-                    </a><!-- End Profile Iamge Icon -->
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                        <li class="dropdown-header">
-                            <h6>Kevin Anderson</h6>
-                            <span>Web Designer</span>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                                <i class="bi bi-person"></i>
-                                <span>My Profile</span>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                                <i class="bi bi-gear"></i>
-                                <span>Account Settings</span>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                                <i class="bi bi-question-circle"></i>
-                                <span>Need Help?</span>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>Sign Out</span>
-                            </a>
-                        </li>
-
-                    </ul><!-- End Profile Dropdown Items -->
-                </li><!-- End Profile Nav -->
-
-            </ul>
-        </nav><!-- End Icons Navigation -->
-
-    </header><!-- End Header -->
-    <!-- ======= Sidebar ======= -->
-    <aside id="sidebar" class="sidebar">
-
-        <ul class="sidebar-nav" id="sidebar-nav">
-
-            <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "" : "collapsed")"
-                   href="@Url.Action("Index", "Dashboard")">
-                    <i class="bi bi-grid"></i>
-                    <span>Tổng quan</span>
+    <!-- Navbar & Hero Start -->
+    <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a asp-area="Student" asp-controller="Home" asp-action="Index" class="navbar-brand p-0">
+                    <h1 class="text-primary mb-0"><i class="fas fa-graduation-cap me-2"></i> THI TRỰC TUYẾN</h1>
                 </a>
-            </li><!-- End Dashboard Nav -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav mx-0 mx-lg-auto">
+                        <a asp-area="Student" asp-controller="Statistics" asp-action="Index" class="nav-item nav-link">
+                            <i class="fas fa-chart-bar me-1"></i> Thống kê
+                        </a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="nav-item nav-link">
+                            <i class="fas fa-file-alt me-1"></i> Đề thi
+                        </a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice" class="nav-item nav-link">
+                            <i class="fas fa-plus-circle me-1"></i> Tạo đề ôn tập
+                        </a>
+                        <a asp-area="Student" asp-controller="History" asp-action="Index" class="nav-item nav-link">
+                            <i class="fas fa-history me-1"></i> Lịch sử
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar & Hero End -->
 
-            <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Exam" ? "" : "collapsed")"
-                   href="@Url.Action("Index", "Exam")">
-                    <i class="bi bi-journal-text"></i>
-                    <span>Đề thi</span>
-                </a>
-            </li><!-- End Exam Nav -->
 
-        </ul>
-
-    </aside><!-- End Sidebar-->
 
     <main id="main" class="main">
         @RenderBody()
     </main><!-- End #main -->
 
-    <!-- ======= Footer ======= -->
-    <footer id="footer" class="footer">
-        <div class="copyright">
-            Đây là footer
+
+    <!-- Footer Start -->
+    <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="footer-item">
+                        <a asp-area="Student" asp-controller="Home" asp-action="Index" class="p-0">
+                            <h3 class="text-white"><i class="fas fa-graduation-cap me-3"></i> THI TRỰC TUYẾN</h3>
+                        </a>
+                        <p class="text-white mb-4">Hệ thống thi trực tuyến dành cho học sinh. Thực hành, kiểm tra và nâng cao kiến thức của bạn.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="footer-item">
+                        <h4 class="text-white mb-4">Liên kết</h4>
+                        <a asp-area="Student" asp-controller="Statistics" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Thống kê</a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Đề thi</a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice"><i class="fas fa-angle-right me-2"></i> Tạo đề ôn tập</a>
+                        <a asp-area="Student" asp-controller="History" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Lịch sử làm bài</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="footer-item">
+                        <h4 class="text-white mb-4">Thông tin liên hệ</h4>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="btn-md-square bg-primary text-white rounded p-3 me-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p class="text-white mb-0">support@thitructuyen.edu.vn</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="btn-md-square bg-primary text-white rounded p-3 me-3">
+                                <i class="fa fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <p class="text-white mb-0">Hotline: 1900 xxxx</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    <!-- Footer End -->
 
-    </footer><!-- End Footer -->
+    <!-- Copyright Start -->
+    <div class="container-fluid copyright py-4">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-12 text-center">
+                    <span class="text-body">
+                        <i class="fas fa-copyright text-light me-2"></i>@DateTime.Now.Year Hệ thống thi trực tuyến. All rights reserved.
+                    </span>
+                </div>
 
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up-short"></i>
-    </a>
+            </div>
+        </div>
+    </div>
+    <!-- Copyright End -->
 
-    <!-- Vendor JS Files -->
-    <script src="@Url.Content("~/assets/vendor/apexcharts/apexcharts.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/chart.js/chart.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/echarts/echarts.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/quill/quill.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/simple-datatables/simple-datatables.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/tinymce/tinymce.min.js")"></script>
-    <script src="@Url.Content("~/assets/vendor/php-email-form/validate.js")"></script>
 
-    <!-- Template Main JS File -->
-    <script src="@Url.Content("~/assets/js/main.js")"></script>
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="@Url.Content("~/lib/jquery/jquery.min.js")"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="@Url.Content("~/public-assets/lib/wow/wow.min.js")"></script>
+    <script src="@Url.Content("~/public-assets/lib/easing/easing.min.js")"></script>
+    <script src="@Url.Content("~/public-assets/lib/waypoints/waypoints.min.js")"></script>
+    <script src="@Url.Content("~/public-assets/lib/counterup/counterup.min.js")"></script>
+    <script src="@Url.Content("~/public-assets/lib/lightbox/js/lightbox.min.js")"></script>
+    <script src="@Url.Content("~/public-assets/lib/owlcarousel/owl.carousel.min.js")"></script>
+
+
+    <!-- Template Javascript -->
+    <script src="@Url.Content("~/public-assets/js/main.js")"></script>
     @RenderSection("Scripts", required: false)
-
 
 </body>
 

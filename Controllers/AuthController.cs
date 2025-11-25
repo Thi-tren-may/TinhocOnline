@@ -45,7 +45,7 @@ namespace TinhocOnline.Controllers
                 return View();
             }
 
-            // Lưu thông tin user vào session
+            // Lưu vào Session - ĐƠN GIẢN NHẤT
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetString("FullName", user.FullName);
@@ -62,10 +62,10 @@ namespace TinhocOnline.Controllers
             }
             else if (user.Role == "student")
             {
-                return RedirectToAction("Index", "Dashboard", new { area = "Student" });
+                return RedirectToAction("Index", "Statistics", new { area = "Student" });
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home", new { area = "Student" });
         }
 
         // GET: Auth/Register

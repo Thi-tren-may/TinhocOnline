@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Thống kê - Học Sinh";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s"><i class="fas fa-chart-bar me-3"></i>Thống kê</h3>
+        <p class="text-white mb-0 wow fadeInDown" data-wow-delay="0.3s">Theo dõi tiến độ học tập và kết quả của bạn</p>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- Counter Facts Start -->
+<div class="container-fluid counter-facts py-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Đề thi khả dụng</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">5</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">+</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Đã hoàn thành</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">8</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">+</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Điểm trung bình</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">8.5</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">/10</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Giờ học tập</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">24</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">h</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Counter Facts End -->
+
+<!-- Recent Exams Start -->
+<div class="container-fluid blog py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+            <h1 class="display-5 text-capitalize mb-3">Đề thi gần đây</h1>
+            <p class="mb-0">Các bài kiểm tra bạn đã làm và đang làm gần đây</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="blog-item">
+                    <div class="blog-img">
+                        <img src="@Url.Content("~/public-assets/img/blog-1.png")" class="img-fluid rounded-top w-100" alt="">
+                        <div class="blog-categiry py-2 px-4">
+                            <span class="text-white bg-success">Hoàn thành</span>
+                        </div>
+                    </div>
+                    <div class="blog-content p-4">
+                        <div class="blog-comment d-flex justify-content-between mb-3">
+                            <div class="small"><span class="fa fa-user text-primary"></span> Nguyễn Văn A</div>
+                            <div class="small"><span class="fa fa-calendar text-primary"></span> 25/11/2025</div>
+                        </div>
+                        <a href="#" class="h4 d-inline-block mb-3">Kiểm tra giữa kỳ - Tin học</a>
+                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>50 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>60 phút</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-primary"><i class="fas fa-trophy me-2"></i>Điểm: <strong>8.5/10</strong></span>
+                            <a href="#" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="blog-item">
+                    <div class="blog-img">
+                        <img src="@Url.Content("~/public-assets/img/blog-2.png")" class="img-fluid rounded-top w-100" alt="">
+                        <div class="blog-categiry py-2 px-4">
+                            <span class="text-white bg-warning">Đang làm</span>
+                        </div>
+                    </div>
+                    <div class="blog-content p-4">
+                        <div class="blog-comment d-flex justify-content-between mb-3">
+                            <div class="small"><span class="fa fa-user text-primary"></span> Trần Thị B</div>
+                            <div class="small"><span class="fa fa-calendar text-primary"></span> 25/11/2025</div>
+                        </div>
+                        <a href="#" class="h4 d-inline-block mb-3">Bài tập tuần 5 - Lập trình</a>
+                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>30 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>45 phút</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted"><i class="fas fa-hourglass-half me-2"></i>Còn <strong>25 phút</strong></span>
+                            <a href="#" class="btn btn-warning rounded-pill text-white py-2 px-4">Tiếp tục</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="blog-item">
+                    <div class="blog-img">
+                        <img src="@Url.Content("~/public-assets/img/blog-3.png")" class="img-fluid rounded-top w-100" alt="">
+                        <div class="blog-categiry py-2 px-4">
+                            <span class="text-white bg-info">Khả dụng</span>
+                        </div>
+                    </div>
+                    <div class="blog-content p-4">
+                        <div class="blog-comment d-flex justify-content-between mb-3">
+                            <div class="small"><span class="fa fa-user text-primary"></span> Lê Văn C</div>
+                            <div class="small"><span class="fa fa-calendar text-primary"></span> 26/11/2025</div>
+                        </div>
+                        <a href="#" class="h4 d-inline-block mb-3">Kiểm tra định kỳ - CTDL</a>
+                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>40 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>90 phút</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i>Bắt đầu: <strong>26/11</strong></span>
+                            <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem đề</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Recent Exams End -->
+
+<!-- Quick Actions Start -->
+<div class="container-fluid service py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+            <h1 class="display-5 text-capitalize mb-3">Thao tác nhanh</h1>
+            <p class="mb-0">Truy cập nhanh các chức năng thường dùng</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item p-4 text-center">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-file-alt fa-2x text-white"></i>
+                    </div>
+                    <h5 class="mb-3">Xem đề thi</h5>
+                    <p class="mb-4">Truy cập danh sách các đề thi đã được xuất bản và sẵn sàng làm bài</p>
+                    <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem ngay</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item p-4 text-center">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-plus-circle fa-2x text-white"></i>
+                    </div>
+                    <h5 class="mb-3">Tạo đề ôn tập</h5>
+                    <p class="mb-4">Tự tạo đề thi riêng để ôn luyện với câu hỏi được sinh tự động</p>
+                    <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice" class="btn btn-primary rounded-pill text-white py-2 px-4">Tạo đề</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="service-item p-4 text-center">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-history fa-2x text-white"></i>
+                    </div>
+                    <h5 class="mb-3">Lịch sử làm bài</h5>
+                    <p class="mb-4">Xem lại các bài thi đã làm, điểm số và kết quả chi tiết</p>
+                    <a asp-area="Student" asp-controller="History" asp-action="Index" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem lịch sử</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Quick Actions End -->

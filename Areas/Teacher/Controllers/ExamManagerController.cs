@@ -101,7 +101,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             {
                 try
                 {
-                    // Tạo Exam
+                    // Tạo Exam (chỉ lưu cấu trúc, KHÔNG sinh câu hỏi)
                     var exam = new Exam
                     {
                         ExamName = model.ExamName,
@@ -115,6 +115,8 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                         ShuffleQuestions = model.ShuffleQuestions,
                         ShuffleAnswers = model.ShuffleAnswers,
                         PassingScore = model.PassingScore,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
                         CreatedBy = teacherId.Value,
                         Status = model.Status
                     };
@@ -122,7 +124,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
 
-                    // Tự động phân bổ câu hỏi từ các chủ đề đã chọn
+                    // Lưu ma trận chủ đề (ExamTopics) để sau này sinh câu hỏi cho từng học sinh
                     var selectedTopicIds = model.SelectedTopicIds ?? new List<int>();
                     if (!selectedTopicIds.Any())
                     {
@@ -133,35 +135,29 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                             .ToListAsync();
                     }
 
-                    var topicMatrix = new Dictionary<int, decimal>();
-                    decimal percentage = Math.Round(100m / selectedTopicIds.Count, 2);
+                    // Tính số câu cho mỗi topic với logic điều chỉnh để đảm bảo tổng đúng
+                    var topicCount = selectedTopicIds.Count;
+                    var baseQuestions = model.TotalQuestions / topicCount; // Số câu cơ bản cho mỗi topic
+                    var remainder = model.TotalQuestions % topicCount; // Số câu dư
 
-                    foreach (var topicId in selectedTopicIds)
+                    for (int i = 0; i < selectedTopicIds.Count; i++)
                     {
-                        topicMatrix[topicId] = percentage;
+                        var topicId = selectedTopicIds[i];
+                        // Các topic đầu tiên sẽ nhận thêm 1 câu từ phần dư
+                        var questionsForTopic = baseQuestions + (i < remainder ? 1 : 0);
+                        
+                        var examTopic = new ExamTopic
+                        {
+                            ExamId = exam.ExamId,
+                            TopicId = topicId,
+                            QuestionCount = questionsForTopic
+                        };
+                        _context.ExamTopics.Add(examTopic);
                     }
 
-                    bool success = await GenerateExamQuestions(exam.ExamId, topicMatrix, model);
+                    await _context.SaveChangesAsync();
 
-                    if (!success)
-                    {
-                        // Xóa exam nếu không thành công
-                        _context.Exams.Remove(exam);
-                        await _context.SaveChangesAsync();
-
-                        TempData["ErrorMessage"] = "Không thể tạo đề thi. Vui lòng kiểm tra lại số lượng câu hỏi trong ngân hàng.";
-
-                        ViewBag.ExamTypes = new SelectList(
-                            await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
-                            "ExamTypeId",
-                            "TypeName"
-                        );
-                        ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
-
-                        return View(model);
-                    }
-
-                    TempData["SuccessMessage"] = "Tạo đề thi nhanh thành công!";
+                    TempData["SuccessMessage"] = "Tạo cấu trúc đề thi thành công! Câu hỏi sẽ được sinh tự động khi học sinh vào làm bài.";
                     return RedirectToAction(nameof(Details), new { id = exam.ExamId });
                 }
                 catch (Exception ex)
@@ -231,21 +227,17 @@ namespace TinhocOnline.Areas.Teacher.Controllers
 
             model.CreateMode = "custom";
 
-            // Validate danh sách câu hỏi đã chọn
-            if (model.SelectedQuestionIds == null || !model.SelectedQuestionIds.Any())
+            // Validate chủ đề đã chọn
+            if (model.SelectedTopicIds == null || !model.SelectedTopicIds.Any())
             {
-                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 câu hỏi");
-            }
-            else if (model.SelectedQuestionIds.Count != model.TotalQuestions)
-            {
-                ModelState.AddModelError("", $"Số câu hỏi đã chọn ({model.SelectedQuestionIds.Count}) không khớp với tổng số câu ({model.TotalQuestions})");
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 chủ đề");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Tạo Exam
+                    // Tạo Exam (chỉ lưu cấu trúc)
                     var exam = new Exam
                     {
                         ExamName = model.ExamName,
@@ -253,9 +245,14 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                         GradeLevel = model.GradeLevel,
                         Duration = model.Duration,
                         TotalQuestions = model.TotalQuestions,
+                        EasyPercentage = model.EasyPercentage,
+                        MediumPercentage = model.MediumPercentage,
+                        HardPercentage = model.HardPercentage,
                         ShuffleQuestions = model.ShuffleQuestions,
                         ShuffleAnswers = model.ShuffleAnswers,
                         PassingScore = model.PassingScore,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
                         CreatedBy = teacherId.Value,
                         Status = model.Status
                     };
@@ -263,28 +260,29 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
 
-                    // Sử dụng câu hỏi đã chọn thủ công
-                    bool success = await GenerateExamQuestionsFromSelectedIds(exam.ExamId, model.SelectedQuestionIds, model);
+                    // Lưu ma trận chủ đề theo lựa chọn của giáo viên với logic điều chỉnh
+                    var topicCount = model.SelectedTopicIds.Count;
+                    var baseQuestions = model.TotalQuestions / topicCount; // Số câu cơ bản cho mỗi topic
+                    var remainder = model.TotalQuestions % topicCount; // Số câu dư
 
-                    if (!success)
+                    for (int i = 0; i < model.SelectedTopicIds.Count; i++)
                     {
-                        // Xóa exam nếu không thành công
-                        _context.Exams.Remove(exam);
-                        await _context.SaveChangesAsync();
-
-                        TempData["ErrorMessage"] = "Không thể tạo đề thi. Vui lòng thử lại.";
-
-                        ViewBag.ExamTypes = new SelectList(
-                            await _context.ExamTypes.Where(et => et.Status == "active").ToListAsync(),
-                            "ExamTypeId",
-                            "TypeName"
-                        );
-                        ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
-
-                        return View(model);
+                        var topicId = model.SelectedTopicIds[i];
+                        // Các topic đầu tiên sẽ nhận thêm 1 câu từ phần dư
+                        var questionsForTopic = baseQuestions + (i < remainder ? 1 : 0);
+                        
+                        var examTopic = new ExamTopic
+                        {
+                            ExamId = exam.ExamId,
+                            TopicId = topicId,
+                            QuestionCount = questionsForTopic
+                        };
+                        _context.ExamTopics.Add(examTopic);
                     }
 
-                    TempData["SuccessMessage"] = "Tạo đề thi tùy chỉnh thành công!";
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Tạo cấu trúc đề thi thành công!";
                     return RedirectToAction(nameof(Details), new { id = exam.ExamId });
                 }
                 catch (Exception ex)
@@ -811,9 +809,8 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             }
 
             var exam = await _context.Exams
-                .Include(e => e.ExamQuestions)
-                    .ThenInclude(eq => eq.Question)
-                        .ThenInclude(q => q.Topic)
+                .Include(e => e.ExamTopics)
+                    .ThenInclude(et => et.Topic)
                 .FirstOrDefaultAsync(e => e.ExamId == id && e.CreatedBy == teacherId.Value);
 
             if (exam == null)
@@ -834,10 +831,12 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 ShuffleQuestions = exam.ShuffleQuestions,
                 ShuffleAnswers = exam.ShuffleAnswers,
                 PassingScore = exam.PassingScore,
+                StartDate = exam.StartDate,
+                EndDate = exam.EndDate,
                 Status = exam.Status,
                 CreatedBy = exam.CreatedBy,
                 CreateMode = "custom",
-                SelectedQuestionIds = exam.ExamQuestions.OrderBy(eq => eq.QuestionOrder).Select(eq => eq.QuestionId).ToList()
+                SelectedTopicIds = exam.ExamTopics.Select(et => et.TopicId).ToList()
             };
 
             // Load ExamTypes and Topics
@@ -849,20 +848,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
 
             var topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
             ViewBag.Topics = topics;
-
-            // Prepare selected questions data for client-side display
-            var selectedQuestions = exam.ExamQuestions
-                .OrderBy(eq => eq.QuestionOrder)
-                .Select(eq => new
-                {
-                    questionId = eq.QuestionId,
-                    questionText = eq.Question.QuestionText,
-                    difficulty = eq.Question.DifficultyLevel,
-                    topicName = eq.Question.Topic.TopicName
-                })
-                .ToList();
-
-            ViewBag.SelectedQuestionsJson = System.Text.Json.JsonSerializer.Serialize(selectedQuestions);
             ViewBag.ExamId = exam.ExamId;
 
             return View(model);
@@ -891,14 +876,10 @@ namespace TinhocOnline.Areas.Teacher.Controllers
 
             model.CreateMode = "custom";
 
-            // Validate selected questions when custom mode
-            if (model.SelectedQuestionIds == null || !model.SelectedQuestionIds.Any())
+            // Validate chủ đề đã chọn
+            if (model.SelectedTopicIds == null || !model.SelectedTopicIds.Any())
             {
-                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 câu hỏi");
-            }
-            else if (model.SelectedQuestionIds.Count != model.TotalQuestions)
-            {
-                ModelState.AddModelError("", $"Số câu hỏi đã chọn ({model.SelectedQuestionIds.Count}) không khớp với tổng số câu ({model.TotalQuestions})");
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 1 chủ đề");
             }
 
             if (ModelState.IsValid)
@@ -917,28 +898,36 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                     exam.ShuffleQuestions = model.ShuffleQuestions;
                     exam.ShuffleAnswers = model.ShuffleAnswers;
                     exam.PassingScore = model.PassingScore;
+                    exam.StartDate = model.StartDate;
+                    exam.EndDate = model.EndDate;
                     exam.Status = model.Status;
 
-                    // Remove existing exam questions & topics
-                    var existingQuestions = _context.ExamQuestions.Where(eq => eq.ExamId == exam.ExamId);
+                    // Remove existing exam topics (không có ExamQuestions nữa)
                     var existingTopics = _context.ExamTopics.Where(et => et.ExamId == exam.ExamId);
-                    _context.ExamQuestions.RemoveRange(existingQuestions);
                     _context.ExamTopics.RemoveRange(existingTopics);
+
+                    // Thêm lại ExamTopics mới với logic đảm bảo tổng đúng
+                    var topicCount = model.SelectedTopicIds.Count;
+                    var baseQuestions = model.TotalQuestions / topicCount;
+                    var remainder = model.TotalQuestions % topicCount;
+
+                    for (int i = 0; i < model.SelectedTopicIds.Count; i++)
+                    {
+                        var topicId = model.SelectedTopicIds[i];
+                        var questionsForTopic = baseQuestions + (i < remainder ? 1 : 0);
+                        
+                        var examTopic = new ExamTopic
+                        {
+                            ExamId = exam.ExamId,
+                            TopicId = topicId,
+                            QuestionCount = questionsForTopic
+                        };
+                        _context.ExamTopics.Add(examTopic);
+                    }
+
                     await _context.SaveChangesAsync();
-
-                    // Add new selected questions
-                    bool success = await GenerateExamQuestionsFromSelectedIds(exam.ExamId, model.SelectedQuestionIds, model);
-
-                    if (!success)
-                    {
-                        ModelState.AddModelError("", "Không thể cập nhật đề thi với danh sách câu hỏi đã chọn.");
-                    }
-                    else
-                    {
-                        await _context.SaveChangesAsync();
-                        TempData["SuccessMessage"] = "Cập nhật đề thi thành công!";
-                        return RedirectToAction(nameof(Details), new { id = exam.ExamId });
-                    }
+                    TempData["SuccessMessage"] = "Cập nhật cấu trúc đề thi thành công!";
+                    return RedirectToAction(nameof(Details), new { id = exam.ExamId });
                 }
                 catch (Exception ex)
                 {
@@ -954,14 +943,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             );
             ViewBag.Topics = await _context.Topics.Where(t => t.Status == "active").ToListAsync();
             ViewBag.ExamId = id;
-
-            // Prepare JSON for already selected questions (some may not be available)
-            var questions = await _context.Questions
-                .Include(q => q.Topic)
-                .Where(q => model.SelectedQuestionIds.Contains(q.QuestionId) && q.Status == "active")
-                .Select(q => new { questionId = q.QuestionId, questionText = q.QuestionText, difficulty = q.DifficultyLevel, topicName = q.Topic.TopicName })
-                .ToListAsync();
-            ViewBag.SelectedQuestionsJson = System.Text.Json.JsonSerializer.Serialize(questions);
 
             return View(model);
         }

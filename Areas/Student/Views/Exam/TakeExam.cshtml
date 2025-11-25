@@ -9,7 +9,7 @@
     <h1>Làm bài thi</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
             <li class="breadcrumb-item"><a asp-action="Index">Đề thi</a></li>
             <li class="breadcrumb-item active">Làm bài</li>
         </ol>
@@ -29,25 +29,75 @@
                         <strong>Điểm đạt:</strong> @Model.PassingScore
                     </div>
 
-                    <div class="alert alert-warning text-center">
-                        <h4><i class="bi bi-tools"></i> Chức năng làm bài đang được phát triển</h4>
-                        <p>Tính năng làm bài thi trực tuyến với timer, auto-save và chấm điểm tự động sẽ được cập nhật trong phiên bản tiếp theo.</p>
-                    </div>
+                    @{
+                        var studentExam = Model.StudentExams.FirstOrDefault();
+                        var questions = studentExam?.StudentExamQuestions.OrderBy(seq => seq.QuestionOrder).ToList();
+                    }
 
-                    <!-- TODO: Implement exam taking interface with:
-                    - Timer countdown
-                    - Question navigation
-                    - Answer selection
-                    - Auto-save every 30s
-                    - Submit button
-                    - Auto-submit when time's up
-                    -->
+                    @if (questions != null && questions.Any())
+                    {
+                        <form method="post" asp-action="SubmitExam">
+                            <input type="hidden" name="studentExamId" value="@ViewBag.StudentExamId" />
 
-                    <div class="text-center mt-4">
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
-                        </a>
-                    </div>
+                            @for (int i = 0; i < questions.Count; i++)
+                            {
+                                var seq = questions[i];
+                                var question = seq.Question;
+                                var questionNumber = i + 1;
+
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="text-primary">Câu @questionNumber:</h6>
+                                        <p class="mb-3">@Html.Raw(question.QuestionText)</p>
+
+                                        @if (question.Answers != null && question.Answers.Any())
+                                        {
+                                            var answers = question.Answers.ToList();
+                                            if (Model.ShuffleAnswers)
+                                            {
+                                                answers = answers.OrderBy(a => Guid.NewGuid()).ToList();
+                                            }
+
+                                            <div class="ms-3">
+                                                @foreach (var answer in answers)
+                                                {
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input" type="radio" 
+                                                               name="answer_@seq.StudentExamQuestionId" 
+                                                               id="answer_@answer.AnswerId" 
+                                                               value="@answer.AnswerId">
+                                                        <label class="form-check-label" for="answer_@answer.AnswerId">
+                                                            @Html.Raw(answer.AnswerText)
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-1"></i> Nộp bài
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">
+                                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning text-center">
+                            <p>Không thể tải câu hỏi. Vui lòng thử lại.</p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

@@ -1,24 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TinhocOnline.Controllers;
-
-public class HomeController : Controller
+namespace TinhocOnline.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
+        // GET: Home/Index - Trang chủ công khai (không cần đăng nhập)
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
-
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
 }

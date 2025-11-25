@@ -41,5 +41,7 @@ namespace TinhocOnline.Models
         public virtual User Student { get; set; }
 
         public virtual ICollection<StudentAnswer> StudentAnswers { get; set; }
+
+        public virtual ICollection<StudentExamQuestion> StudentExamQuestions { get; set; }
     }
 }

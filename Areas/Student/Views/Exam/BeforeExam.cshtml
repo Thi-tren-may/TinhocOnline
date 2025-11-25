@@ -1,0 +1,97 @@
+@model TinhocOnline.Models.Exam
+
+@{
+    ViewData["Title"] = "Chuẩn bị thi";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+}
+
+<div class="pagetitle">
+    <h1>Chuẩn bị làm bài thi</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Đề thi</a></li>
+            <li class="breadcrumb-item active">Chuẩn bị thi</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">@Model.ExamName</h5>
+
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle me-2"></i>Thông tin đề thi</h6>
+                        <ul class="list-unstyled mb-0 ms-3">
+                            <li><strong>Loại đề:</strong> @Model.ExamType?.TypeName</li>
+                            <li><strong>Khối:</strong> @Model.GradeLevel</li>
+                            <li><strong>Số câu hỏi:</strong> @Model.TotalQuestions câu</li>
+                            <li><strong>Thời gian:</strong> @Model.Duration phút</li>
+                            <li><strong>Điểm đạt:</strong> @Model.PassingScore</li>
+                            @if (Model.StartDate.HasValue)
+                            {
+                                <li><strong>Thời gian bắt đầu:</strong> @Model.StartDate.Value.ToString("dd/MM/yyyy HH:mm")</li>
+                            }
+                            @if (Model.EndDate.HasValue)
+                            {
+                                <li><strong>Thời gian kết thúc:</strong> @Model.EndDate.Value.ToString("dd/MM/yyyy HH:mm")</li>
+                            }
+                        </ul>
+                    </div>
+
+                    @if (Model.ExamTopics != null && Model.ExamTopics.Any())
+                    {
+                        <div class="alert alert-light">
+                            <h6><i class="bi bi-list-task me-2"></i>Cấu trúc đề thi</h6>
+                            <ul class="mb-0 ms-3">
+                                @foreach (var examTopic in Model.ExamTopics)
+                                {
+                                    <li><strong>@examTopic.Topic?.TopicName:</strong> @examTopic.QuestionCount câu</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="alert alert-light">
+                        <h6><i class="bi bi-pie-chart me-2"></i>Độ khó</h6>
+                        <ul class="mb-0 ms-3">
+                            <li><strong>Dễ:</strong> @Model.EasyPercentage%</li>
+                            <li><strong>Trung bình:</strong> @Model.MediumPercentage%</li>
+                            <li><strong>Khó:</strong> @Model.HardPercentage%</li>
+                        </ul>
+                    </div>
+
+                    @if (ViewBag.IsRequired)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Lưu ý:</strong> Đây là bài thi bắt buộc. Bạn chỉ có một lần làm bài.
+                        </div>
+                    }
+
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-exclamation-circle me-2"></i>Quy định</h6>
+                        <ul class="mb-0">
+                            <li>Bài thi sẽ tự động nộp khi hết thời gian</li>
+                            <li>Câu hỏi và đáp án sẽ được xáo trộn ngẫu nhiên @(Model.ShuffleQuestions ? "(đã bật)" : "(đã tắt)")</li>
+                            <li>Mỗi học sinh sẽ nhận câu hỏi khác nhau</li>
+                            <li>Không được F5 hoặc reload trang trong khi làm bài</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a asp-action="TakeExam" asp-route-id="@Model.ExamId" class="btn btn-primary btn-lg">
+                            <i class="bi bi-play-circle me-1"></i> Bắt đầu làm bài
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

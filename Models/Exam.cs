@@ -43,6 +43,10 @@ namespace TinhocOnline.Models
         [Column(TypeName = "decimal(4,2)")]
         public decimal PassingScore { get; set; } = 5.0M; // Điểm đạt (mặc định 5/10)
 
+        public DateTime? StartDate { get; set; } // Thời gian bắt đầu cho phép thi
+
+        public DateTime? EndDate { get; set; } // Thời gian kết thúc kỳ thi
+
         [Required]
         public int CreatedBy { get; set; }
 

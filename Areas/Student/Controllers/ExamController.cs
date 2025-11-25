@@ -29,7 +29,8 @@ namespace TinhocOnline.Areas.Student.Controllers
             var exams = await _context.Exams
                 .Include(e => e.ExamType)
                 .Include(e => e.Creator)
-                .Where(e => e.Status == "published" || e.CreatedBy == studentId.Value)
+                .Include(e => e.StudentExams.Where(se => se.StudentId == studentId))
+                .Where(e => e.Status == "published" || e.CreatedBy == studentId)
                 .OrderByDescending(e => e.ExamId)
                 .ToListAsync();
 
@@ -330,6 +331,93 @@ namespace TinhocOnline.Areas.Student.Controllers
             return true;
         }
 
+        // Sinh câu hỏi riêng cho từng học sinh
+        private async Task<bool> GenerateQuestionsForStudent(int examId, int studentExamId)
+        {
+            // Load exam với ExamTopics
+            var exam = await _context.Exams
+                .Include(e => e.ExamTopics)
+                    .ThenInclude(et => et.Topic)
+                .FirstOrDefaultAsync(e => e.ExamId == examId);
+
+            if (exam == null || exam.ExamTopics == null || !exam.ExamTopics.Any())
+            {
+                return false;
+            }
+
+            var studentExamQuestions = new List<StudentExamQuestion>();
+            var order = 1;
+
+            foreach (var examTopic in exam.ExamTopics)
+            {
+                var questionsForTopic = examTopic.QuestionCount;
+
+                if (questionsForTopic == 0) continue;
+
+                // Tính số câu cho từng độ khó
+                var easyCount = (int)Math.Round(questionsForTopic * exam.EasyPercentage / 100);
+                var mediumCount = (int)Math.Round(questionsForTopic * exam.MediumPercentage / 100);
+                var hardCount = questionsForTopic - easyCount - mediumCount;
+
+                var query = _context.Questions
+                    .Where(q => q.TopicId == examTopic.TopicId && q.Status == "active");
+
+                // Lấy câu hỏi theo độ khó
+                var easyQuestions = await query
+                    .Where(q => q.DifficultyLevel == "easy")
+                    .OrderBy(q => Guid.NewGuid())
+                    .Take(easyCount)
+                    .ToListAsync();
+
+                var mediumQuestions = await query
+                    .Where(q => q.DifficultyLevel == "medium")
+                    .OrderBy(q => Guid.NewGuid())
+                    .Take(mediumCount)
+                    .ToListAsync();
+
+                var hardQuestions = await query
+                    .Where(q => q.DifficultyLevel == "hard")
+                    .OrderBy(q => Guid.NewGuid())
+                    .Take(hardCount)
+                    .ToListAsync();
+
+                // Kiểm tra đủ câu hỏi không
+                if (easyQuestions.Count < easyCount ||
+                    mediumQuestions.Count < mediumCount ||
+                    hardQuestions.Count < hardCount)
+                {
+                    return false;
+                }
+
+                // Thêm vào danh sách
+                foreach (var q in easyQuestions.Concat(mediumQuestions).Concat(hardQuestions))
+                {
+                    studentExamQuestions.Add(new StudentExamQuestion
+                    {
+                        StudentExamId = studentExamId,
+                        QuestionId = q.QuestionId,
+                        QuestionOrder = order++
+                    });
+                }
+            }
+
+            // Xáo trộn câu hỏi nếu cần
+            if (exam.ShuffleQuestions)
+            {
+                var shuffled = studentExamQuestions.OrderBy(seq => Guid.NewGuid()).ToList();
+                for (int i = 0; i < shuffled.Count; i++)
+                {
+                    shuffled[i].QuestionOrder = i + 1;
+                }
+                studentExamQuestions = shuffled;
+            }
+
+            _context.StudentExamQuestions.AddRange(studentExamQuestions);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         // GET: Student/Exam/BeforeExam/5 - Màn hình chuẩn bị thi
         public async Task<IActionResult> BeforeExam(int? id)
         {
@@ -350,7 +438,6 @@ namespace TinhocOnline.Areas.Student.Controllers
                 .Include(e => e.Creator)
                 .Include(e => e.ExamTopics)
                     .ThenInclude(et => et.Topic)
-                .Include(e => e.ExamQuestions)
                 .FirstOrDefaultAsync(e => e.ExamId == id);
 
             if (exam == null)
@@ -358,9 +445,22 @@ namespace TinhocOnline.Areas.Student.Controllers
                 return NotFound();
             }
 
+            // Kiểm tra thời gian thi
+            if (exam.StartDate.HasValue && DateTime.Now < exam.StartDate.Value)
+            {
+                TempData["ErrorMessage"] = $"Chưa đến giờ thi! Đề thi bắt đầu lúc {exam.StartDate.Value:dd/MM/yyyy HH:mm}";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (exam.EndDate.HasValue && DateTime.Now > exam.EndDate.Value)
+            {
+                TempData["ErrorMessage"] = $"Đã hết hạn thi! Đề thi kết thúc lúc {exam.EndDate.Value:dd/MM/yyyy HH:mm}";
+                return RedirectToAction(nameof(Index));
+            }
+
             // Kiểm tra quyền xem đề thi
             // Chỉ cho phép xem nếu: đề published HOẶC do chính học sinh tạo
-            if (exam.Status != "published" && exam.CreatedBy != studentId.Value)
+            if (exam.Status != "published" && exam.CreatedBy != studentId)
             {
                 TempData["ErrorMessage"] = "Bạn không có quyền truy cập đề thi này!";
                 return RedirectToAction(nameof(Index));
@@ -370,7 +470,7 @@ namespace TinhocOnline.Areas.Student.Controllers
             if (exam.Status == "published")
             {
                 var existingAttempt = await _context.StudentExams
-                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId.Value);
+                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId);
 
                 if (existingAttempt != null)
                 {
@@ -402,9 +502,8 @@ namespace TinhocOnline.Areas.Student.Controllers
 
             var exam = await _context.Exams
                 .Include(e => e.ExamType)
-                .Include(e => e.ExamQuestions)
-                    .ThenInclude(eq => eq.Question)
-                        .ThenInclude(q => q.Answers)
+                .Include(e => e.ExamTopics)
+                    .ThenInclude(et => et.Topic)
                 .FirstOrDefaultAsync(e => e.ExamId == id);
 
             if (exam == null)
@@ -413,20 +512,207 @@ namespace TinhocOnline.Areas.Student.Controllers
             }
 
             // Kiểm tra đã làm bài chưa (chỉ với đề published)
+            StudentExam studentExam;
             if (exam.Status == "published")
             {
                 var existingAttempt = await _context.StudentExams
-                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId.Value);
+                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId);
 
                 if (existingAttempt != null)
                 {
                     TempData["ErrorMessage"] = "Bạn đã làm bài thi này rồi!";
                     return RedirectToAction(nameof(Index));
                 }
+
+                // Tạo StudentExam record
+                studentExam = new StudentExam
+                {
+                    ExamId = id.Value,
+                    StudentId = studentId.Value,
+                    StartTime = DateTime.Now,
+                    Status = "in-progress"
+                };
+                _context.StudentExams.Add(studentExam);
+                await _context.SaveChangesAsync();
+
+                // Sinh câu hỏi riêng cho học sinh
+                var success = await GenerateQuestionsForStudent(id.Value, studentExam.StudentExamId);
+                if (!success)
+                {
+                    _context.StudentExams.Remove(studentExam);
+                    await _context.SaveChangesAsync();
+                    TempData["ErrorMessage"] = "Không đủ câu hỏi trong ngân hàng để tạo đề thi. Vui lòng liên hệ giáo viên.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                // Với đề draft (học sinh tự tạo), kiểm tra hoặc tạo mới
+                studentExam = await _context.StudentExams
+                    .FirstOrDefaultAsync(se => se.ExamId == id && se.StudentId == studentId);
+
+                if (studentExam == null)
+                {
+                    studentExam = new StudentExam
+                    {
+                        ExamId = id.Value,
+                        StudentId = studentId.Value,
+                        StartTime = DateTime.Now,
+                        Status = "in-progress"
+                    };
+                    _context.StudentExams.Add(studentExam);
+                    await _context.SaveChangesAsync();
+
+                    var success = await GenerateQuestionsForStudent(id.Value, studentExam.StudentExamId);
+                    if (!success)
+                    {
+                        _context.StudentExams.Remove(studentExam);
+                        await _context.SaveChangesAsync();
+                        TempData["ErrorMessage"] = "Không đủ câu hỏi trong ngân hàng để tạo đề thi.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
             }
 
-            // TODO: Implement UI làm bài thi
-            return View(exam);
+            // Load câu hỏi từ StudentExamQuestions
+            var examWithQuestions = await _context.Exams
+                .Include(e => e.ExamType)
+                .Include(e => e.StudentExams.Where(se => se.StudentExamId == studentExam.StudentExamId))
+                    .ThenInclude(se => se.StudentExamQuestions.OrderBy(seq => seq.QuestionOrder))
+                        .ThenInclude(seq => seq.Question)
+                            .ThenInclude(q => q.Answers)
+                .FirstOrDefaultAsync(e => e.ExamId == id);
+
+            ViewBag.StudentExamId = studentExam.StudentExamId;
+            return View(examWithQuestions);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitExam(int studentExamId, IFormCollection form)
+        {
+            var studentId = HttpContext.Session.GetInt32("UserId");
+            if (studentId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            // Load StudentExam với tất cả questions và answers
+            var studentExam = await _context.StudentExams
+                .Include(se => se.Exam)
+                .Include(se => se.StudentExamQuestions)
+                    .ThenInclude(seq => seq.Question)
+                        .ThenInclude(q => q.Answers)
+                .FirstOrDefaultAsync(se => se.StudentExamId == studentExamId && se.StudentId == studentId);
+
+            if (studentExam == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy bài thi.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (studentExam.Status == "completed")
+            {
+                TempData["ErrorMessage"] = "Bài thi này đã được nộp trước đó.";
+                return RedirectToAction("ViewResults", new { id = studentExamId });
+            }
+
+            // Parse submitted answers từ form
+            var submittedAnswers = new Dictionary<int, int>(); // Key: StudentExamQuestionId, Value: AnswerId
+            foreach (var key in form.Keys)
+            {
+                if (key.StartsWith("answer_"))
+                {
+                    var studentExamQuestionIdStr = key.Substring("answer_".Length);
+                    if (int.TryParse(studentExamQuestionIdStr, out int studentExamQuestionId) && 
+                        int.TryParse(form[key], out int answerId))
+                    {
+                        submittedAnswers[studentExamQuestionId] = answerId;
+                    }
+                }
+            }
+
+            // Calculate score
+            int correctAnswers = 0;
+            int totalQuestions = studentExam.StudentExamQuestions.Count;
+
+            foreach (var studentExamQuestion in studentExam.StudentExamQuestions)
+            {
+                if (submittedAnswers.TryGetValue(studentExamQuestion.StudentExamQuestionId, out int submittedAnswerId))
+                {
+                    var correctAnswer = studentExamQuestion.Question.Answers.FirstOrDefault(a => a.IsCorrect);
+                    bool isCorrect = correctAnswer != null && correctAnswer.AnswerId == submittedAnswerId;
+                    
+                    if (isCorrect)
+                    {
+                        correctAnswers++;
+                    }
+
+                    // Save student answer
+                    var studentAnswer = new StudentAnswer
+                    {
+                        StudentExamId = studentExamId,
+                        QuestionId = studentExamQuestion.QuestionId,
+                        AnswerId = submittedAnswerId,
+                        IsCorrect = isCorrect
+                    };
+                    _context.StudentAnswers.Add(studentAnswer);
+                }
+            }
+
+            // Calculate final score (out of 10)
+            decimal score = totalQuestions > 0 ? Math.Round((decimal)correctAnswers / totalQuestions * 10, 2) : 0;
+
+            // Update StudentExam
+            studentExam.EndTime = DateTime.Now;
+            studentExam.SubmittedAt = DateTime.Now;
+            studentExam.Score = score;
+            studentExam.Status = "completed";
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Đã nộp bài thành công! Điểm số: {score}/10 ({correctAnswers}/{totalQuestions} câu đúng)";
+            return RedirectToAction("ViewResults", new { id = studentExamId });
+        }
+
+        // GET: Student/Exam/ViewResults/5
+        public async Task<IActionResult> ViewResults(int? id)
+        {
+            var studentId = HttpContext.Session.GetInt32("UserId");
+            if (studentId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Load StudentExam với tất cả thông tin cần thiết
+            var studentExam = await _context.StudentExams
+                .Include(se => se.Exam)
+                    .ThenInclude(e => e.ExamType)
+                .Include(se => se.StudentExamQuestions)
+                    .ThenInclude(seq => seq.Question)
+                        .ThenInclude(q => q.Answers)
+                .Include(se => se.Student)
+                .FirstOrDefaultAsync(se => se.StudentExamId == id && se.StudentId == studentId);
+
+            if (studentExam == null)
+            {
+                return NotFound();
+            }
+
+            // Load submitted answers
+            var studentAnswers = await _context.StudentAnswers
+                .Include(sa => sa.Answer)
+                .Where(sa => sa.StudentExamId == id)
+                .ToListAsync();
+
+            ViewBag.StudentAnswers = studentAnswers;
+
+            return View(studentExam);
         }
     }
 }

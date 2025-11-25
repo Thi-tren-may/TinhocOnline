@@ -5,84 +5,167 @@
     Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
 }
 
-<div class="pagetitle">
-    <h1>Danh sách Đề thi</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
-            <li class="breadcrumb-item active">Đề thi</li>
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Đề thi</h3>
+        <ol class="breadcrumb justify-content-center text-white mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index" class="text-white">Trang chủ</a></li>
+            <li class="breadcrumb-item active text-secondary">Đề thi</li>
         </ol>
-    </nav>
+    </div>
 </div>
+<!-- Header End -->
 
-<section class="section">
-    <div class="row">
-        <div class="col-lg-12">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
+<!-- Exams List Start -->
+<div class="container-fluid service py-5">
+    <div class="container py-5">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <h5 class="card-title mb-0">Đề thi đã được xuất bản</h5>
-                        <a asp-action="CreatePractice" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> Tạo đề ôn tập
-                        </a>
-                    </div>
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+            <h1 class="display-5 text-capitalize mb-3">Đề thi đã được xuất bản</h1>
+            <p class="mb-4">Chọn đề thi bạn muốn làm. Mỗi học sinh sẽ nhận câu hỏi khác nhau được tạo tự động từ ngân hàng câu hỏi.</p>
+            <a asp-action="CreatePractice" class="btn btn-primary rounded-pill py-3 px-5">
+                <i class="fas fa-plus-circle me-2"></i> Tạo đề ôn tập
+            </a>
+        </div>
 
-                    <div class="row">
-                        @foreach (var item in Model)
-                        {
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title">@item.ExamName</h5>
-                                        <p class="card-text">
-                                            <small class="text-muted">
-                                                <i class="bi bi-person"></i> @item.Creator?.FullName<br/>
-                                                <i class="bi bi-collection"></i> @item.ExamType?.TypeName
-                                            </small>
-                                        </p>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-list-ol"></i> <strong>@item.TotalQuestions</strong> câu</li>
-                                            <li><i class="bi bi-clock"></i> <strong>@item.Duration</strong> phút</li>
-                                            @if (!string.IsNullOrEmpty(item.GradeLevel))
-                                            {
-                                                <li><i class="bi bi-mortarboard"></i> Lớp <strong>@item.GradeLevel</strong></li>
-                                            }
-                                            <li><i class="bi bi-trophy"></i> Điểm đạt: <strong>@item.PassingScore</strong></li>
-                                        </ul>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a asp-action="TakeExam" asp-route-id="@item.ExamId" class="btn btn-success btn-sm w-100">
-                                            <i class="bi bi-pencil-square"></i> Làm bài
-                                        </a>
-                                    </div>
-                                </div>
+        @if (Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="service-item p-4 h-100">
+                            @{
+                                var studentExamStatus = item.StudentExams?.FirstOrDefault();
+                            }
+                            @if (studentExamStatus != null)
+                            {
+                                @if (studentExamStatus.Status == "completed")
+                                {
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-3">
+                                        <i class="fas fa-check-circle me-1"></i> Đã hoàn thành
+                                    </span>
+                                }
+                                else if (studentExamStatus.Status == "in-progress")
+                                {
+                                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">
+                                        <i class="fas fa-clock me-1"></i> Đang làm
+                                    </span>
+                                }
+                            }
+                            <div class="service-icon mb-4">
+                                <i class="fas fa-file-alt fa-2x text-white"></i>
                             </div>
-                        }
-                    </div>
+                            <h5 class="mb-3">@item.ExamName</h5>
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> @item.Creator?.FullName
+                                </small>
+                                <br />
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i> @item.ExamType?.TypeName
+                                </small>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-list-ol text-primary me-2"></i>Số câu:</span>
+                                    <strong>@item.TotalQuestions câu</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-clock text-primary me-2"></i>Thời gian:</span>
+                                    <strong>@item.Duration phút</strong>
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.GradeLevel))
+                                {
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><i class="fas fa-graduation-cap text-primary me-2"></i>Khối:</span>
+                                        <strong>@item.GradeLevel</strong>
+                                    </div>
+                                }
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-trophy text-primary me-2"></i>Điểm đạt:</span>
+                                    <strong>@item.PassingScore</strong>
+                                </div>
+                                @if (item.StartDate.HasValue || item.EndDate.HasValue)
+                                {
+                                    <div class="border-top pt-2 mt-2">
+                                        @if (item.StartDate.HasValue)
+                                        {
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i>Bắt đầu:</small>
+                                                <small><strong>@item.StartDate.Value.ToString("dd/MM/yyyy HH:mm")</strong></small>
+                                            </div>
+                                        }
+                                        @if (item.EndDate.HasValue)
+                                        {
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted"><i class="fas fa-calendar-times me-1"></i>Kết thúc:</small>
+                                                <small><strong>@item.EndDate.Value.ToString("dd/MM/yyyy HH:mm")</strong></small>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            
+                            @{
+                                var studentExam = item.StudentExams?.FirstOrDefault();
+                                var hasCompleted = studentExam != null && studentExam.Status == "completed";
+                                var isInProgress = studentExam != null && studentExam.Status == "in-progress";
+                            }
 
-                    @if (!Model.Any())
-                    {
-                        <div class="alert alert-info text-center">
-                            <i class="bi bi-info-circle"></i> Chưa có đề thi nào được xuất bản.
+                            @if (hasCompleted)
+                            {
+                                <div class="d-flex gap-2">
+                                    <a asp-action="ViewResults" asp-route-id="@studentExam.StudentExamId" class="btn btn-success rounded-pill py-2 px-4 flex-grow-1">
+                                        <i class="fas fa-chart-line me-2"></i> Xem kết quả
+                                    </a>
+                                    <a asp-action="BeforeExam" asp-route-id="@item.ExamId" class="btn btn-outline-primary rounded-pill py-2 px-3">
+                                        <i class="fas fa-redo me-1"></i> Làm lại
+                                    </a>
+                                </div>
+                            }
+                            else if (isInProgress)
+                            {
+                                <a asp-action="TakeExam" asp-route-id="@item.ExamId" class="btn btn-warning rounded-pill py-2 px-4 w-100">
+                                    <i class="fas fa-play-circle me-2"></i> Tiếp tục làm bài
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="BeforeExam" asp-route-id="@item.ExamId" class="btn btn-primary rounded-pill py-2 px-4 w-100">
+                                    <i class="fas fa-play-circle me-2"></i> Làm bài
+                                </a>
+                            }
                         </div>
-                    }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <div class="alert alert-info d-inline-block py-4 px-5">
+                    <i class="fas fa-info-circle fa-3x mb-3 d-block"></i>
+                    <h5>Chưa có đề thi nào được xuất bản</h5>
+                    <p class="mb-0">Vui lòng quay lại sau hoặc tạo đề ôn tập của riêng bạn.</p>
                 </div>
             </div>
-        </div>
+        }
     </div>
-</section>
+</div>
+<!-- Exams List End -->

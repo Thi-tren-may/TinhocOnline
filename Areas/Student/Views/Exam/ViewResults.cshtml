@@ -1,0 +1,341 @@
+@model TinhocOnline.Models.StudentExam
+@{
+    ViewData["Title"] = "Kết quả bài thi";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+    var studentAnswers = ViewBag.StudentAnswers as List<TinhocOnline.Models.StudentAnswer>;
+    var studentAnswersDict = studentAnswers?.ToDictionary(sa => sa.QuestionId, sa => sa) ?? new Dictionary<int, TinhocOnline.Models.StudentAnswer>();
+    
+    int totalQuestions = Model.StudentExamQuestions.Count;
+    int correctCount = studentAnswers?.Count(sa => sa.IsCorrect == true) ?? 0;
+    int incorrectCount = totalQuestions - correctCount;
+    bool isPassed = Model.Score >= Model.Exam.PassingScore;
+}
+
+<style>
+    .results-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 0 40px;
+        color: white;
+        margin-bottom: 50px;
+    }
+    
+    .score-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+        margin-top: -30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin: 0 auto 20px;
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .score-circle.passed {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .score-circle.failed {
+        background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+    
+    .stat-item {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .question-review {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 4px solid #6c757d;
+        transition: all 0.3s;
+    }
+    
+    .question-review:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .question-review.correct {
+        border-left-color: #38ef7d;
+        background: linear-gradient(to right, rgba(56, 239, 125, 0.05), white);
+    }
+    
+    .question-review.incorrect {
+        border-left-color: #ff6a00;
+        background: linear-gradient(to right, rgba(255, 106, 0, 0.05), white);
+    }
+    
+    .question-number {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        text-align: center;
+        line-height: 40px;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+    
+    .question-review.correct .question-number {
+        background: #38ef7d;
+    }
+    
+    .question-review.incorrect .question-number {
+        background: #ff6a00;
+    }
+    
+    .answer-option {
+        padding: 12px 20px;
+        margin: 8px 0;
+        border-radius: 10px;
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    
+    .answer-option.student-answer {
+        background: #fff3cd;
+        border-color: #ffc107;
+    }
+    
+    .answer-option.correct-answer {
+        background: #d4edda;
+        border-color: #28a745;
+    }
+    
+    .answer-option.wrong-answer {
+        background: #f8d7da;
+        border-color: #dc3545;
+    }
+    
+    .badge-result {
+        font-size: 14px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+    
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+    }
+    
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+</style>
+
+<!-- Results Hero -->
+<div class="results-hero">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-chart-line me-2"></i>Kết Quả Bài Thi
+            </h1>
+            <p class="lead">@Model.Exam.ExamName</p>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Score Card -->
+    <div class="score-card">
+        <div class="text-center">
+            <div class="score-circle @(isPassed ? "passed" : "failed")">
+                @Model.Score.GetValueOrDefault().ToString("0.##")
+            </div>
+            <h2 class="mb-3">
+                @if (isPassed)
+                {
+                    <span class="text-success"><i class="fas fa-check-circle"></i> Đạt</span>
+                }
+                else
+                {
+                    <span class="text-danger"><i class="fas fa-times-circle"></i> Chưa đạt</span>
+                }
+            </h2>
+            <p class="text-muted">Điểm tối thiểu: @Model.Exam.PassingScore/10</p>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value">@totalQuestions</div>
+                <div class="stat-label">Tổng câu hỏi</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value text-success">@correctCount</div>
+                <div class="stat-label">Câu đúng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value text-danger">@incorrectCount</div>
+                <div class="stat-label">Câu sai</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">@Model.Exam.Duration'</div>
+                <div class="stat-label">Thời gian</div>
+            </div>
+        </div>
+
+        <!-- Exam Info -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <p><strong>Loại đề:</strong> @Model.Exam.ExamType.TypeName</p>
+                <p><strong>Môn học:</strong> @Model.Exam.GradeLevel</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Thời gian bắt đầu:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
+                <p><strong>Thời gian nộp:</strong> @Model.SubmittedAt?.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="@Url.Action("Index", "Exam")" class="btn btn-outline-primary btn-custom">
+                <i class="fas fa-list me-2"></i>Danh Sách Đề Thi
+            </a>
+            <a href="@Url.Action("Index", "Statistics")" class="btn btn-primary btn-custom">
+                <i class="fas fa-chart-bar me-2"></i>Thống Kê
+            </a>
+        </div>
+    </div>
+
+    <!-- Question Review -->
+    <div class="mt-5">
+        <h3 class="mb-4"><i class="fas fa-clipboard-check me-2"></i>Chi Tiết Câu Hỏi</h3>
+        
+        @foreach (var seq in Model.StudentExamQuestions.OrderBy(seq => seq.QuestionOrder))
+        {
+            var submittedAnswer = studentAnswersDict.ContainsKey(seq.QuestionId) ? studentAnswersDict[seq.QuestionId] : null;
+            var correctAnswer = seq.Question.Answers.FirstOrDefault(a => a.IsCorrect);
+            var isCorrect = submittedAnswer?.IsCorrect ?? false;
+            
+            <div class="question-review @(isCorrect ? "correct" : "incorrect")">
+                <div class="d-flex align-items-start mb-3">
+                    <span class="question-number">@seq.QuestionOrder</span>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-2">@seq.Question.QuestionText</h5>
+                        @if (isCorrect)
+                        {
+                            <span class="badge bg-success badge-result">
+                                <i class="fas fa-check"></i> Đúng
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger badge-result">
+                                <i class="fas fa-times"></i> Sai
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="answers-list ms-5">
+                    @foreach (var answer in seq.Question.Answers)
+                    {
+                        var cssClass = "";
+                        var icon = "";
+                        var label = "";
+
+                        if (answer.IsCorrect)
+                        {
+                            cssClass = "correct-answer";
+                            icon = "<i class='fas fa-check-circle text-success'></i>";
+                            label = "Đáp án đúng";
+                        }
+                        else if (submittedAnswer != null && submittedAnswer.AnswerId == answer.AnswerId)
+                        {
+                            cssClass = "wrong-answer";
+                            icon = "<i class='fas fa-times-circle text-danger'></i>";
+                            label = "Bạn đã chọn";
+                        }
+                        else if (submittedAnswer != null && answer.IsCorrect)
+                        {
+                            cssClass = "student-answer";
+                        }
+
+                        <div class="answer-option @cssClass">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>@answer.AnswerText</span>
+                                <span>
+                                    @Html.Raw(icon)
+                                    @if (!string.IsNullOrEmpty(label))
+                                    {
+                                        <small class="ms-2 fw-bold">@label</small>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    @if (submittedAnswer == null)
+                    {
+                        <div class="alert alert-warning mt-2">
+                            <i class="fas fa-exclamation-triangle"></i> Bạn chưa chọn câu trả lời cho câu hỏi này
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

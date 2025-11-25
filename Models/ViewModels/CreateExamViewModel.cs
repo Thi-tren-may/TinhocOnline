@@ -44,6 +44,10 @@ namespace TinhocOnline.Models.ViewModels
         [Range(0, 10, ErrorMessage = "Điểm đạt từ 0-10")]
         public decimal PassingScore { get; set; } = 5.0M;
 
+        public DateTime? StartDate { get; set; } // Thời gian bắt đầu cho phép thi
+
+        public DateTime? EndDate { get; set; } // Thời gian kết thúc kỳ thi
+
         public string Status { get; set; } = "draft"; // draft, published
 
         public int CreatedBy { get; set; }

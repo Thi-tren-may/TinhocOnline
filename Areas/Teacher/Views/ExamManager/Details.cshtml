@@ -152,60 +152,6 @@
                     </table>
                 </div>
             </div>
-
-            <!-- Danh sách câu hỏi -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Danh sách Câu hỏi (@Model.ExamQuestions.Count câu)</h5>
-
-                    @foreach (var examQuestion in Model.ExamQuestions.OrderBy(eq => eq.QuestionOrder))
-                    {
-                        var question = examQuestion.Question;
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <strong>Câu @examQuestion.QuestionOrder:</strong>
-                                @if (question.DifficultyLevel == "easy")
-                                {
-                                    <span class="badge bg-success float-end">Dễ</span>
-                                }
-                                else if (question.DifficultyLevel == "medium")
-                                {
-                                    <span class="badge bg-warning float-end">Trung bình</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger float-end">Khó</span>
-                                }
-                            </div>
-                            <div class="card-body">
-                                <p class="mb-2">@question.QuestionText</p>
-
-                                @{
-                                    var answerLabels = new[] { "A", "B", "C", "D" };
-                                    var answersList = question.Answers.ToList();
-                                }
-                                @for (int i = 0; i < answersList.Count && i < 4; i++)
-                                {
-                                    var answer = answersList[i];
-                                    var label = answerLabels[i];
-                                    
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" disabled 
-                                               @(answer.IsCorrect ? "checked" : "") />
-                                        <label class="form-check-label @(answer.IsCorrect ? "text-success fw-bold" : "")">
-                                            @label. @answer.AnswerText
-                                            @if (answer.IsCorrect)
-                                            {
-                                                <i class="bi bi-check-circle-fill text-success"></i>
-                                            }
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
         </div>
     </div>
 </section>
