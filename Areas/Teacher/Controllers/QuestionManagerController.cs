@@ -6,8 +6,7 @@ using TinhocOnline.Models.ViewModels;
 
 namespace TinhocOnline.Areas.Teacher.Controllers
 {
-    [Area("Teacher")]
-    public class QuestionManagerController : Controller
+    public class QuestionManagerController : BaseTeacherController
     {
         private readonly DataContext _context;
 

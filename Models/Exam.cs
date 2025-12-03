@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -52,6 +50,8 @@ namespace TinhocOnline.Models
 
         [StringLength(20)]
         public string Status { get; set; } = "draft";
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation properties
         [ValidateNever]

@@ -22,10 +22,10 @@
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="counter-content">
-                        <h3>Đề thi khả dụng</h3>
+                        <h3>Tổng bài thi</h3>
                         <div class="d-flex align-items-center justify-content-center">
-                            <span class="counter-value" data-toggle="counter-up">5</span>
-                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">+</h4>
+                            <span class="counter-value" data-toggle="counter-up">@ViewBag.TotalExams</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;"></h4>
                         </div>
                     </div>
                 </div>
@@ -36,10 +36,10 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="counter-content">
-                        <h3>Đã hoàn thành</h3>
+                        <h3>Bài đạt</h3>
                         <div class="d-flex align-items-center justify-content-center">
-                            <span class="counter-value" data-toggle="counter-up">8</span>
-                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">+</h4>
+                            <span class="counter-value" data-toggle="counter-up">@ViewBag.PassedExams</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;"></h4>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                     <div class="counter-content">
                         <h3>Điểm trung bình</h3>
                         <div class="d-flex align-items-center justify-content-center">
-                            <span class="counter-value" data-toggle="counter-up">8.5</span>
+                            <span class="counter-value" data-toggle="counter-up">@ViewBag.AverageScore</span>
                             <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">/10</h4>
                         </div>
                     </div>
@@ -61,13 +61,13 @@
             <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp" data-wow-delay="0.7s">
                 <div class="counter">
                     <div class="counter-icon">
-                        <i class="fas fa-clock"></i>
+                        <i class="fas fa-trophy"></i>
                     </div>
                     <div class="counter-content">
-                        <h3>Giờ học tập</h3>
+                        <h3>Điểm cao nhất</h3>
                         <div class="d-flex align-items-center justify-content-center">
-                            <span class="counter-value" data-toggle="counter-up">24</span>
-                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">h</h4>
+                            <span class="counter-value" data-toggle="counter-up">@ViewBag.HighestScore</span>
+                            <h4 class="text-secondary mb-0" style="font-weight: 600; font-size: 25px;">/10</h4>
                         </div>
                     </div>
                 </div>
@@ -81,77 +81,68 @@
 <div class="container-fluid blog py-5">
     <div class="container py-5">
         <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
-            <h1 class="display-5 text-capitalize mb-3">Đề thi gần đây</h1>
-            <p class="mb-0">Các bài kiểm tra bạn đã làm và đang làm gần đây</p>
+            <h1 class="display-5 text-capitalize mb-3">Kết quả gần đây</h1>
+            <p class="mb-0">5 bài kiểm tra gần nhất của bạn</p>
         </div>
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="@Url.Content("~/public-assets/img/blog-1.png")" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-categiry py-2 px-4">
-                            <span class="text-white bg-success">Hoàn thành</span>
+        
+        @if (ViewBag.RecentExams != null && ViewBag.RecentExams.Count > 0)
+        {
+            <div class="row g-4">
+                @foreach (var exam in ViewBag.RecentExams)
+                {
+                    <div class="col-lg-12 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h5 class="card-title mb-2">@exam.ExamTitle</h5>
+                                        <p class="text-muted mb-1">
+                                            <i class="fas fa-calendar me-2"></i>Bắt đầu: @exam.StartTime.ToString("dd/MM/yyyy HH:mm")
+                                        </p>
+                                        @if (exam.EndTime != null)
+                                        {
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-clock me-2"></i>Hoàn thành: @exam.EndTime?.ToString("dd/MM/yyyy HH:mm")
+                                            </p>
+                                        }
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        @if (exam.Score != null)
+                                        {
+                                            <h3 class="text-primary mb-0">@exam.Score/10</h3>
+                                            <small class="text-muted">Điểm số</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Chưa chấm</span>
+                                        }
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        @if (exam.Score != null)
+                                        {
+                                            if (exam.Status == "Đạt")
+                                            {
+                                                <span class="badge bg-success fs-6">✓ Đạt</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger fs-6">✗ Không đạt</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="blog-content p-4">
-                        <div class="blog-comment d-flex justify-content-between mb-3">
-                            <div class="small"><span class="fa fa-user text-primary"></span> Nguyễn Văn A</div>
-                            <div class="small"><span class="fa fa-calendar text-primary"></span> 25/11/2025</div>
-                        </div>
-                        <a href="#" class="h4 d-inline-block mb-3">Kiểm tra giữa kỳ - Tin học</a>
-                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>50 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>60 phút</p>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-primary"><i class="fas fa-trophy me-2"></i>Điểm: <strong>8.5/10</strong></span>
-                            <a href="#" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="@Url.Content("~/public-assets/img/blog-2.png")" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-categiry py-2 px-4">
-                            <span class="text-white bg-warning">Đang làm</span>
-                        </div>
-                    </div>
-                    <div class="blog-content p-4">
-                        <div class="blog-comment d-flex justify-content-between mb-3">
-                            <div class="small"><span class="fa fa-user text-primary"></span> Trần Thị B</div>
-                            <div class="small"><span class="fa fa-calendar text-primary"></span> 25/11/2025</div>
-                        </div>
-                        <a href="#" class="h4 d-inline-block mb-3">Bài tập tuần 5 - Lập trình</a>
-                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>30 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>45 phút</p>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted"><i class="fas fa-hourglass-half me-2"></i>Còn <strong>25 phút</strong></span>
-                            <a href="#" class="btn btn-warning rounded-pill text-white py-2 px-4">Tiếp tục</a>
-                        </div>
-                    </div>
-                </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center" role="alert">
+                <i class="fas fa-info-circle me-2"></i>Bạn chưa làm bài thi nào. Hãy bắt đầu làm bài để xem kết quả!
             </div>
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="@Url.Content("~/public-assets/img/blog-3.png")" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-categiry py-2 px-4">
-                            <span class="text-white bg-info">Khả dụng</span>
-                        </div>
-                    </div>
-                    <div class="blog-content p-4">
-                        <div class="blog-comment d-flex justify-content-between mb-3">
-                            <div class="small"><span class="fa fa-user text-primary"></span> Lê Văn C</div>
-                            <div class="small"><span class="fa fa-calendar text-primary"></span> 26/11/2025</div>
-                        </div>
-                        <a href="#" class="h4 d-inline-block mb-3">Kiểm tra định kỳ - CTDL</a>
-                        <p class="mb-3"><i class="fas fa-list-ol text-primary me-2"></i>40 câu | <i class="fas fa-clock text-primary ms-3 me-2"></i>90 phút</p>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i>Bắt đầu: <strong>26/11</strong></span>
-                            <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary rounded-pill text-white py-2 px-4">Xem đề</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
 <!-- Recent Exams End -->

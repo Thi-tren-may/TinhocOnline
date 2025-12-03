@@ -4,8 +4,7 @@ using TinhocOnline.Models;
 
 namespace TinhocOnline.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class TeacherManagerController : Controller
+    public class TeacherManagerController : BaseAdminController
     {
         private readonly DataContext _context;
 
@@ -17,6 +16,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // GET: Admin/TeacherManager
         public async Task<IActionResult> Index()
         {
+
             var result = await _context.Users
                 .Where(u => u.Role == "teacher")
                 .ToListAsync();

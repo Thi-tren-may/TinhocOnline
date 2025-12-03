@@ -6,8 +6,7 @@ using TinhocOnline.Models.ViewModels;
 
 namespace TinhocOnline.Areas.Teacher.Controllers
 {
-    [Area("Teacher")]
-    public class ExamManagerController : Controller
+    public class ExamManagerController : BaseTeacherController
     {
         private readonly DataContext _context;
 
@@ -20,10 +19,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
         public async Task<IActionResult> Index()
         {
             var teacherId = HttpContext.Session.GetInt32("UserId");
-            if (teacherId == null)
-            {
-                return RedirectToAction("Login", "Auth", new { area = "" });
-            }
 
             var exams = await _context.Exams
                 .Include(e => e.ExamType)
@@ -516,8 +511,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 var topicId = topicEntry.Key;
                 var topicPercentage = topicEntry.Value;
                 var questionsForTopic = topicQuestionCounts[topicId];
-
-                Console.WriteLine($"[DEBUG] Topic {topicId}: {questionsForTopic} câu ({topicPercentage}%)");
 
                 if (questionsForTopic == 0) continue;
 

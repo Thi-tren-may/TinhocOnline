@@ -1,22 +1,266 @@
-﻿@model IEnumerable<TinhocOnline.Models.User>
-
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    ViewData["Title"] = "Dashboard - Admin";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="pagetitle">
-    <h1>Tổng quan</h1>
+    <h1>Dashboard</h1>
     <nav>
         <ol class="breadcrumb">
-            @* <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Danh sách giáo viên</li> *@
+            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </nav>
 </div>
 
 <section class="section dashboard">
     <div class="row">
-        Dashboard
+        
+        <!-- Summary Cards Row -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-primary border-4 mb-4">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Tổng người dùng</h6>
+                            <h3 class="mb-0">@ViewBag.TotalUsers</h3>
+                            <small class="text-success"><i class="bi bi-arrow-up"></i> +@ViewBag.NewUsers tuần này</small>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem;">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-success border-4 mb-4">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Học sinh</h6>
+                            <h3 class="mb-0">@ViewBag.TotalStudents</h3>
+                            <small class="text-muted">Tài khoản</small>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem;">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-warning border-4 mb-4">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Giáo viên</h6>
+                            <h3 class="mb-0">@ViewBag.TotalTeachers</h3>
+                            <small class="text-muted">Tài khoản</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem;">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-danger border-4 mb-4">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Admin</h6>
+                            <h3 class="mb-0">@ViewBag.TotalAdmins</h3>
+                            <small class="text-muted">Tài khoản</small>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem;">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Statistics Row -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-light mb-4">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-question-circle text-primary" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2 mb-0">@ViewBag.TotalQuestions</h4>
+                    <p class="text-muted mb-0">Câu hỏi</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-light mb-4">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-file-earmark-text text-success" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2 mb-0">@ViewBag.TotalExams</h4>
+                    <p class="text-muted mb-0">Đề thi</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-light mb-4">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-tags text-warning" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2 mb-0">@ViewBag.TotalTopics</h4>
+                    <p class="text-muted mb-0">Chủ đề</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-light mb-4">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-journal-check text-info" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2 mb-0">@ViewBag.TotalAttempts</h4>
+                    <p class="text-muted mb-0">Lượt thi</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Row -->
+        <div class="col-lg-8">
+            
+            <!-- Average Score Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                <i class="bi bi-trophy text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h6 class="text-muted mb-2">Điểm trung bình toàn hệ thống</h6>
+                            <h1 class="display-4 mb-0 text-primary fw-bold">@ViewBag.AverageScore<small class="text-muted fs-3">/10</small></h1>
+                            <p class="text-muted mb-0 mt-2"><i class="bi bi-info-circle me-1"></i>Dựa trên tất cả các bài thi đã hoàn thành</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Popular Exams -->
+            <div class="card shadow-sm">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0"><i class="bi bi-fire text-danger me-2"></i>Đề thi phổ biến</h5>
+                        <span class="badge bg-primary">Top 5</span>
+                    </div>
+                    @if (ViewBag.PopularExams != null && ViewBag.PopularExams.Count > 0)
+                    {
+                        <div class="list-group list-group-flush">
+                            @{ int index = 1; }
+                            @foreach (var exam in ViewBag.PopularExams)
+                            {
+                                <div class="list-group-item px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="me-3">
+                                            <span class="badge bg-light text-dark fs-6">#@index</span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">@exam.ExamTitle</h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-people-fill me-1"></i>@exam.AttemptCount lượt làm
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="badge bg-success-subtle text-success fs-6">
+                                                <i class="bi bi-star-fill me-1"></i>@Math.Round(exam.AverageScore, 2)/10
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                index++;
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">Chưa có dữ liệu</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            
+            <!-- Recent Activity -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body py-3">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-clock-history text-info me-2"></i>Hoạt động gần đây
+                    </h5>
+                    @if (ViewBag.RecentActivities != null && ViewBag.RecentActivities.Count > 0)
+                    {
+                        <div class="activity-list" style="max-height: 400px; overflow-y: auto;">
+                            @foreach (var activity in ViewBag.RecentActivities)
+                            {
+                                <div class="border-start border-3 border-success ps-3 pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <small class="text-muted fw-bold">@activity.StartTime.ToString("HH:mm")</small>
+                                        @if (activity.Score != null)
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary">@activity.Score/10</span>
+                                        }
+                                    </div>
+                                    <p class="mb-0 small">
+                                        <strong>@activity.StudentName</strong> hoàn thành
+                                    </p>
+                                    <p class="mb-1 small text-primary">@activity.ExamTitle</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3 me-1"></i>@activity.StartTime.ToString("dd/MM/yyyy")
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0 small">Chưa có hoạt động</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-body py-3">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-lightning-charge text-warning me-2"></i>Thao tác nhanh
+                    </h5>
+                    <div class="d-grid gap-2">
+                        <a asp-area="Admin" asp-controller="StudentManager" asp-action="Index" class="btn btn-outline-primary text-start">
+                            <i class="bi bi-people me-2"></i>Quản lý học sinh
+                            <i class="bi bi-chevron-right float-end mt-1"></i>
+                        </a>
+                        <a asp-area="Admin" asp-controller="TeacherManager" asp-action="Index" class="btn btn-outline-success text-start">
+                            <i class="bi bi-person-badge me-2"></i>Quản lý giáo viên
+                            <i class="bi bi-chevron-right float-end mt-1"></i>
+                        </a>
+                        <a asp-area="Admin" asp-controller="TopicManager" asp-action="Index" class="btn btn-outline-info text-start">
+                            <i class="bi bi-tags me-2"></i>Quản lý chủ đề
+                            <i class="bi bi-chevron-right float-end mt-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
     </div>
 </section>

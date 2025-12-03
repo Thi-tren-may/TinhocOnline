@@ -4,8 +4,7 @@ using TinhocOnline.Models;
 
 namespace TinhocOnline.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class TopicManagerController : Controller
+    public class TopicManagerController : BaseAdminController
     {
         private readonly DataContext _context;
 
@@ -17,6 +16,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // GET: Admin/TopicManager
         public async Task<IActionResult> Index()
         {
+
             return View(await _context.Topics.ToListAsync());
         }
 
