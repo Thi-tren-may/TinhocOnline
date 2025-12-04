@@ -714,5 +714,27 @@ namespace TinhocOnline.Areas.Student.Controllers
 
             return View(studentExam);
         }
+
+        // GET: Student/Exam/History - Lịch sử làm bài
+        public async Task<IActionResult> History()
+        {
+            var studentId = HttpContext.Session.GetInt32("UserId");
+            if (studentId == null)
+            {
+                return RedirectToAction("Login", "Auth", new { area = "" });
+            }
+
+            // Load tất cả bài thi đã làm của học sinh
+            var studentExams = await _context.StudentExams
+                .Include(se => se.Exam)
+                    .ThenInclude(e => e.ExamType)
+                .Include(se => se.Exam)
+                    .ThenInclude(e => e.Creator)
+                .Where(se => se.StudentId == studentId && se.Status == "completed")
+                .OrderByDescending(se => se.SubmittedAt)
+                .ToListAsync();
+
+            return View(studentExams);
+        }
     }
 }

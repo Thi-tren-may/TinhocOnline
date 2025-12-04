@@ -241,7 +241,7 @@
         <div class="row mt-4">
             <div class="col-md-6">
                 <p><strong>Loại đề:</strong> @Model.Exam.ExamType.TypeName</p>
-                <p><strong>Môn học:</strong> @Model.Exam.GradeLevel</p>
+                <p><strong>Cấp độ:</strong> @Model.Exam.GradeLevel</p>
             </div>
             <div class="col-md-6">
                 <p><strong>Thời gian bắt đầu:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
@@ -251,6 +251,9 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
+            <a asp-area="Student" asp-controller="AIFeedback" asp-action="GetFeedback" asp-route-studentExamId="@Model.StudentExamId" class="btn btn-success btn-custom">
+                <i class="fas fa-brain me-2"></i>Xem AI Đánh Giá
+            </a>
             <a href="@Url.Action("Index", "Exam")" class="btn btn-outline-primary btn-custom">
                 <i class="fas fa-list me-2"></i>Danh Sách Đề Thi
             </a>

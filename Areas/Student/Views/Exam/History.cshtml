@@ -1,0 +1,181 @@
+@model IEnumerable<TinhocOnline.Models.StudentExam>
+
+@{
+    ViewData["Title"] = "Lịch sử làm bài";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Lịch sử làm bài</h3>
+        <ol class="breadcrumb justify-content-center text-white mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index" class="text-white">Trang chủ</a></li>
+            <li class="breadcrumb-item active text-secondary">Lịch sử</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- History Start -->
+<div class="container-fluid service py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+            <h1 class="display-5 text-capitalize mb-3">Các bài thi đã hoàn thành</h1>
+            <p class="mb-4">Xem lại kết quả và chi tiết các bài thi bạn đã làm. Theo dõi tiến độ học tập của bạn.</p>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <div class="alert alert-info d-inline-block py-4 px-5">
+                    <i class="fas fa-info-circle fa-3x mb-3 d-block"></i>
+                    <h5>Chưa có lịch sử làm bài</h5>
+                    <p class="mb-3">Bạn chưa hoàn thành bài thi nào. Hãy bắt đầu làm bài thi để xem lịch sử tại đây.</p>
+                    <a asp-action="Index" class="btn btn-primary rounded-pill py-2 px-4">
+                        <i class="fas fa-file-alt me-2"></i>Xem danh sách đề thi
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var studentExam in Model)
+                {
+                    var isPassed = studentExam.Score >= studentExam.Exam.PassingScore;
+                    var scoreColor = isPassed ? "success" : "danger";
+                    var statusBadge = isPassed ? "Đạt" : "Không đạt";
+                    var totalQuestions = studentExam.Exam.TotalQuestions;
+                    var correctAnswers = (int)Math.Round((double)(studentExam.Score ?? 0) / 10 * totalQuestions);
+
+                    <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="service-item p-4 h-100">
+                            <span class="badge bg-@scoreColor position-absolute top-0 end-0 m-3">
+                                <i class="fas @(isPassed ? "fa-check-circle" : "fa-times-circle") me-1"></i>@statusBadge
+                            </span>
+                            <div class="service-icon mb-4">
+                                <i class="fas fa-file-alt fa-2x text-white"></i>
+                            </div>
+                            <h5 class="mb-3">@studentExam.Exam.ExamName</h5>
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> @(studentExam.Exam.Creator?.FullName ?? "N/A")
+                                </small>
+                                <br />
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i> @studentExam.Exam.ExamType?.TypeName
+                                </small>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-star text-primary me-2"></i>Điểm số:</span>
+                                    <strong class="text-@scoreColor">@(studentExam.Score?.ToString("0.00") ?? "0.00")/10</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-clipboard-check text-primary me-2"></i>Số câu đúng:</span>
+                                    <strong>@correctAnswers/@totalQuestions</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-percentage text-primary me-2"></i>Tỷ lệ:</span>
+                                    <strong>@(Math.Round((double)correctAnswers / totalQuestions * 100, 1))%</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-clock text-primary me-2"></i>Thời gian:</span>
+                                    <strong>
+                                        @if (studentExam.EndTime.HasValue)
+                                        {
+                                            var duration = studentExam.EndTime.Value - studentExam.StartTime;
+                                            @($"{(int)duration.TotalMinutes} phút")
+                                        }
+                                        else
+                                        {
+                                            @("N/A")
+                                        }
+                                    </strong>
+                                </div>
+                                @if (studentExam.SubmittedAt.HasValue)
+                                {
+                                    <div class="border-top pt-2 mt-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i>Ngày làm:</small>
+                                            <small><strong>@studentExam.SubmittedAt.Value.ToString("dd/MM/yyyy HH:mm")</strong></small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <a asp-action="ViewResults" asp-route-id="@studentExam.StudentExamId" class="btn btn-primary rounded-pill py-2 px-4 w-100">
+                                <i class="fas fa-eye me-2"></i> Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="row mt-4 g-4">
+                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="service-item text-center p-4">
+                        <div class="service-icon mb-3">
+                            <i class="fas fa-file-alt fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-2">@Model.Count()</h3>
+                        <p class="mb-0 text-muted">Tổng số bài thi</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="service-item text-center p-4">
+                        <div class="service-icon mb-3" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <i class="fas fa-check-circle fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-2">@Model.Count(se => se.Score >= se.Exam.PassingScore)</h3>
+                        <p class="mb-0 text-muted">Bài đạt</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="service-item text-center p-4">
+                        <div class="service-icon mb-3" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+                            <i class="fas fa-times-circle fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-2">@Model.Count(se => se.Score < se.Exam.PassingScore)</h3>
+                        <p class="mb-0 text-muted">Bài không đạt</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
+                    <div class="service-item text-center p-4">
+                        <div class="service-icon mb-3" style="background: linear-gradient(135deg, #17a2b8 0%, #6610f2 100%);">
+                            <i class="fas fa-chart-line fa-2x text-white"></i>
+                        </div>
+                        <h3 class="mb-2">@((Model.Average(se => se.Score) ?? 0).ToString("0.00"))</h3>
+                        <p class="mb-0 text-muted">Điểm trung bình</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- History End -->
+
+@section Scripts {
+    <script>
+        // Initialize WOW.js for animations
+        new WOW().init();
+    </script>
+}

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TinhocOnline.Models;
+using TinhocOnline.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -16,6 +17,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+// Đăng ký HttpClient và GeminiService
+builder.Services.AddHttpClient<GeminiService>();
 
 // Lấy chuỗi kết nối từ appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

@@ -1,0 +1,281 @@
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Đánh giá AI";
+    Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
+    
+    var aiResponse = ViewBag.AIResponse as string;
+    var studentExam = ViewBag.StudentExam as TinhocOnline.Models.StudentExam;
+    
+    TinhocOnline.Services.DTOs.ExamAnalysisResponse analysisData = null;
+    
+    if (!string.IsNullOrEmpty(aiResponse))
+    {
+        try
+        {
+            // Remove markdown code block markers if present
+            var jsonString = aiResponse.Trim();
+            if (jsonString.StartsWith("```json"))
+            {
+                jsonString = jsonString.Substring(7);
+            }
+            if (jsonString.StartsWith("```"))
+            {
+                jsonString = jsonString.Substring(3);
+            }
+            if (jsonString.EndsWith("```"))
+            {
+                jsonString = jsonString.Substring(0, jsonString.Length - 3);
+            }
+            jsonString = jsonString.Trim();
+            
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            
+            analysisData = JsonSerializer.Deserialize<TinhocOnline.Services.DTOs.ExamAnalysisResponse>(jsonString, options);
+        }
+        catch
+        {
+            // JSON parsing failed, will show raw response
+        }
+    }
+}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Đánh Giá AI</h3>
+        <ol class="breadcrumb justify-content-center text-white mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index" class="text-white">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Exam" asp-action="Index" class="text-white">Đề thi</a></li>
+            <li class="breadcrumb-item active text-secondary">Đánh giá AI</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- AI Feedback Content -->
+<div class="container-fluid service py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+            <h1 class="display-5 text-capitalize mb-3">Phân tích kết quả bài thi với AI</h1>
+            <p class="mb-4">AI đã phân tích kết quả của bạn và đưa ra các đề xuất cải thiện.</p>
+        </div>
+
+        @if (analysisData != null)
+        {
+            <!-- Exam Info Card -->
+            @if (studentExam != null)
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="service-item p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h4 class="mb-2"><i class="fas fa-file-alt text-primary me-2"></i>@studentExam.Exam.ExamName</h4>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-calendar me-2"></i>Hoàn thành: @studentExam.SubmittedAt?.ToString("dd/MM/yyyy HH:mm")
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <h2 class="mb-0 text-primary">@studentExam.Score?.ToString("0.00")/10</h2>
+                                    <p class="text-muted mb-0">Điểm số</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Topic Summary -->
+            @if (analysisData.TopicSummary != null && analysisData.TopicSummary.Any())
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="mb-4"><i class="fas fa-chart-pie text-primary me-2"></i>Phân tích theo chủ đề</h3>
+                    </div>
+                    @foreach (var topic in analysisData.TopicSummary)
+                    {
+                        var accuracy = topic.Accuracy;
+                        var progressColor = accuracy >= 80 ? "success" : accuracy >= 50 ? "warning" : "danger";
+                        var iconColor = accuracy >= 80 ? "#28a745" : accuracy >= 50 ? "#ffc107" : "#dc3545";
+                        
+                        <div class="col-md-6 col-lg-4 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="service-item p-4 h-100" style="border-top: 4px solid @iconColor;">
+                                <div class="text-center mb-4">
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
+                                         style="width: 80px; height: 80px; background: linear-gradient(135deg, @iconColor 0%, @iconColor 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-book fa-2x text-white"></i>
+                                    </div>
+                                    <h5 class="mb-2">@topic.Topic</h5>
+                                    <div class="badge bg-@progressColor" style="font-size: 1.2rem; padding: 0.5rem 1rem;">
+                                        @accuracy.ToString("0.0")%
+                                    </div>
+                                </div>
+                                <div class="row text-center g-3 mb-3">
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-primary fw-bold" style="font-size: 1.5rem;">@topic.TotalQuestions</div>
+                                            <small class="text-muted">Tổng</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-success fw-bold" style="font-size: 1.5rem;">@topic.Correct</div>
+                                            <small class="text-muted">Đúng</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-danger fw-bold" style="font-size: 1.5rem;">@topic.Wrong</div>
+                                            <small class="text-muted">Sai</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 8px; border-radius: 10px;">
+                                    <div class="progress-bar bg-@progressColor" role="progressbar" 
+                                         style="width: @(accuracy)%;" 
+                                         aria-valuenow="@accuracy" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Question Feedback -->
+            @if (analysisData.FeedbackPerQuestion != null && analysisData.FeedbackPerQuestion.Any(f => !f.IsCorrect))
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="mb-4"><i class="fas fa-comments text-primary me-2"></i>Phản hồi chi tiết (Câu sai)</h3>
+                    </div>
+                    @foreach (var feedback in analysisData.FeedbackPerQuestion.Where(f => !f.IsCorrect))
+                    {
+                        <div class="col-12 mb-3 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="service-item p-4" style="border-left: 4px solid #dc3545;">
+                                <div class="d-flex align-items-start">
+                                    <span class="badge bg-danger me-3" style="font-size: 1rem; padding: 0.5rem 0.75rem; align-self: flex-start;">
+                                        <i class="fas fa-times-circle me-1"></i>Sai
+                                    </span>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-3">@feedback.QuestionText</h5>
+                                        <div class="mb-2">
+                                            <strong>Bạn đã chọn:</strong> 
+                                            <span class="text-danger">@feedback.UserAnswer</span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Đáp án đúng:</strong> 
+                                            <span class="text-success">@feedback.CorrectAnswer</span>
+                                        </div>
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="fas fa-lightbulb me-2"></i>
+                                            <strong>Gợi ý:</strong> @feedback.Feedback
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Study Recommendations -->
+            @if (analysisData.StudyRecommendations != null && analysisData.StudyRecommendations.Any())
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="service-item p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <h3 class="mb-4 text-white"><i class="fas fa-star me-2"></i>Chủ đề nên ôn tập</h3>
+                            <div class="row">
+                                @foreach (var recommendation in analysisData.StudyRecommendations)
+                                {
+                                    <div class="col-md-4 mb-3">
+                                        <div class="d-flex align-items-center rounded p-3" style="background: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-check-circle fa-2x me-3" style="color: #667eea;"></i>
+                                            <span class="fw-semibold" style="color: #2d3748;">@recommendation</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Next Learning Steps -->
+            @if (analysisData.NextLearningSteps != null && analysisData.NextLearningSteps.Any())
+            {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="service-item p-4">
+                            <h3 class="mb-4"><i class="fas fa-route text-primary me-2"></i>Các bước học tiếp theo</h3>
+                            <div class="row">
+                                @for (int i = 0; i < analysisData.NextLearningSteps.Count; i++)
+                                {
+                                    var step = analysisData.NextLearningSteps[i];
+                                    <div class="col-md-4 mb-3 wow fadeInUp" data-wow-delay="@((i * 0.1).ToString("0.0"))s">
+                                        <div class="service-item p-4 h-100 text-center">
+                                            <div class="service-icon mb-3" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                                <span class="text-white" style="font-size: 2rem; font-weight: bold;">@(i + 1)</span>
+                                            </div>
+                                            <p class="mb-0">@step</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+                <a asp-area="Student" asp-controller="Exam" asp-action="ViewResults" asp-route-id="@studentExam?.StudentExamId" class="btn btn-outline-primary rounded-pill py-2 px-4 me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại kết quả
+                </a>
+                <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary rounded-pill py-2 px-4">
+                    <i class="fas fa-list me-2"></i>Danh sách đề thi
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Error State -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="service-item p-4 text-center">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-exclamation-triangle fa-2x text-white"></i>
+                        </div>
+                        <h5 class="mb-3">Không thể phân tích bài thi</h5>
+                        <p class="text-muted mb-4">
+                            Đã xảy ra lỗi khi phân tích kết quả bài thi. 
+                            Vui lòng thử lại sau hoặc liên hệ hỗ trợ.
+                        </p>
+                        @if (!string.IsNullOrEmpty(aiResponse))
+                        {
+                            <details class="text-start mb-4">
+                                <summary class="text-primary" style="cursor: pointer;">Xem phản hồi gốc</summary>
+                                <pre class="bg-light p-3 rounded mt-2" style="max-height: 400px; overflow-y: auto;">@aiResponse</pre>
+                            </details>
+                        }
+                        <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary rounded-pill py-2 px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách đề thi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- AI Feedback Content End -->
+
+@section Scripts {
+    <script>
+        // Initialize WOW.js for animations
+        new WOW().init();
+    </script>
+}
