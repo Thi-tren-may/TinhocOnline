@@ -54,7 +54,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,Username,Password,FullName,Email,Role,Status")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,Username,Password,FullName,Email,Role,Status,DateOfBirth,Gender,PhoneNumber,Address")] User user)
         {
             // Đảm bảo Role luôn là "student"
             user.Role = "student";
@@ -96,7 +96,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,Username,Password,FullName,Email,Role,Status")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,Username,Password,FullName,Email,Role,Status,DateOfBirth,Gender,PhoneNumber,Address")] User user)
         {
             if (id != user.UserId)
             {

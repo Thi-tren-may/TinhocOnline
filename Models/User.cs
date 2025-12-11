@@ -37,6 +37,18 @@ namespace TinhocOnline.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public DateTime? DateOfBirth { get; set; }
+
+        [StringLength(10)]
+        public string? Gender { get; set; } // "Nam", "Nữ", "Khác"
+
+        [StringLength(15)]
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
+        [StringLength(255)]
+        public string? Address { get; set; }
+
         // Navigation properties
         [ValidateNever]
         public virtual ICollection<Question> Questions { get; set; }

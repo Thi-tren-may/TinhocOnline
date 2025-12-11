@@ -110,7 +110,7 @@
                                 <span asp-validation-for="Username" class="text-danger small"></span>
                             </div>
 
-                            <div class="row g-3 mb-4">
+                            <div class="row g-3 my-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <input asp-for="Password" type="password" class="form-control rounded-3" placeholder="Mật khẩu" required>
@@ -122,6 +122,45 @@
                                     <div class="form-floating">
                                         <input name="confirmPassword" type="password" class="form-control rounded-3" placeholder="Xác nhận mật khẩu" required>
                                         <label><i class="bi bi-lock-fill me-2"></i>Xác nhận mật khẩu</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 my-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="DateOfBirth" type="date" class="form-control rounded-3" placeholder="Ngày sinh">
+                                        <label><i class="bi bi-calendar-fill me-2"></i>Ngày sinh</label>
+                                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="Gender" class="form-select rounded-3">
+                                            <option value="">-- Chọn giới tính --</option>
+                                            <option value="Nam">Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                            <option value="Khác">Khác</option>
+                                        </select>
+                                        <label><i class="bi bi-gender-ambiguous me-2"></i>Giới tính</label>
+                                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="PhoneNumber" type="tel" class="form-control rounded-3" placeholder="Số điện thoại">
+                                        <label><i class="bi bi-telephone-fill me-2"></i>Số điện thoại</label>
+                                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Address" class="form-control rounded-3" placeholder="Địa chỉ">
+                                        <label><i class="bi bi-geo-alt-fill me-2"></i>Địa chỉ</label>
+                                        <span asp-validation-for="Address" class="text-danger small"></span>
                                     </div>
                                 </div>
                             </div>
