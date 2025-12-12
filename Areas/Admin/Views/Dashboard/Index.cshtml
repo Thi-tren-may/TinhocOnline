@@ -1,14 +1,14 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard - Admin";
+    ViewData["Title"] = "Tổng quan - Admin";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="pagetitle">
-    <h1>Dashboard</h1>
+    <h1>Tổng quan</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
+            <li class="breadcrumb-item active">Tổng quan</li>
         </ol>
     </nav>
 </div>
@@ -171,11 +171,11 @@
                                                 <i class="bi bi-people-fill me-1"></i>@exam.AttemptCount lượt làm
                                             </small>
                                         </div>
-                                        <div class="text-end">
+                                        @* <div class="text-end">
                                             <div class="badge bg-success-subtle text-success fs-6">
-                                                <i class="bi bi-star-fill me-1"></i>@Math.Round(exam.AverageScore, 2)/10
+                                                <i class="bi bi-star-fill me-1"></i>@exam.AverageScore.ToString("0.00")/10
                                             </div>
-                                        </div>
+                                        </div> *@
                                     </div>
                                 </div>
                                 index++;
