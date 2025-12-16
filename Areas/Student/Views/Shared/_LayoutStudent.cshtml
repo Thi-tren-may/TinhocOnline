@@ -37,24 +37,24 @@
         .topbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         }
-        
+
         .topbar .text-muted {
             color: rgba(255, 255, 255, 0.9) !important;
         }
-        
+
         .topbar .border-primary {
             border-color: rgba(255, 255, 255, 0.3) !important;
         }
-        
+
         .topbar .text-primary {
             color: #ffd700 !important;
         }
-        
+
         .topbar .btn-outline-danger {
             border-color: rgba(255, 255, 255, 0.8);
             color: white;
         }
-        
+
         .topbar .btn-outline-danger:hover {
             background-color: #dc3545;
             border-color: #dc3545;
@@ -72,7 +72,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
         }
-        
+
         .counter-facts::before {
             content: '';
             position: absolute;
@@ -85,12 +85,12 @@
             pointer-events: none;
             z-index: 0;
         }
-        
+
         .counter-facts .container {
             position: relative;
             z-index: 1;
         }
-        
+
         .counter {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -100,13 +100,13 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
-        
+
         .counter:hover {
             transform: translateY(-10px);
             background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .counter-icon {
             width: 80px;
             height: 80px;
@@ -119,14 +119,14 @@
             font-size: 2.5rem;
             color: white;
         }
-        
+
         .counter-content h3 {
             color: white;
             font-size: 1.1rem;
             margin-bottom: 15px;
             font-weight: 600;
         }
-        
+
         .counter-value {
             color: white;
             font-size: 3rem;
@@ -138,7 +138,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             position: relative;
         }
-        
+
         .service::before {
             content: '';
             position: absolute;
@@ -151,12 +151,12 @@
             pointer-events: none;
             z-index: 0;
         }
-        
+
         .service .container {
             position: relative;
             z-index: 1;
         }
-        
+
         .service-item {
             background: white;
             border-radius: 15px;
@@ -166,14 +166,14 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .service-item:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
             border-color: #667eea;
             z-index: 2;
         }
-        
+
         .service-item a,
         .service-item button {
             position: relative;
@@ -206,10 +206,12 @@
                 <div class="col-lg-8 text-center text-lg-start mb-lg-0">
                     <div class="d-flex flex-wrap">
                         <div class="border-end border-primary pe-3">
-                            <span class="text-muted small"><i class="fas fa-user text-primary me-2"></i>Xin chào, @Context.Session.GetString("FullName")</span>
+                            <span class="text-muted small"><i class="fas fa-user text-primary me-2"></i>Xin chào,
+                                @Context.Session.GetString("FullName")</span>
                         </div>
                         <div class="ps-3">
-                            <span class="text-muted small"><i class="fas fa-graduation-cap text-primary me-2"></i>Học sinh</span>
+                            <span class="text-muted small"><i class="fas fa-graduation-cap text-primary me-2"></i>Học
+                                sinh</span>
                         </div>
                     </div>
                 </div>
@@ -229,9 +231,9 @@
     <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light">
-                <a asp-area="Student" asp-controller="Home" asp-action="Index" class="navbar-brand p-0">
-                    <img src="@Url.Content("~/public-assets/img/logo.png")" alt="Logo" width="50" class="me-2">
-                    <h1 class="text-primary mb-0"><i class="fas fa-graduation-cap me-2"></i>N1EDU</h1>
+                <a asp-area="Student" asp-controller="Statistics" asp-action="Index" class="navbar-brand p-0">
+                    <h1 class="text-primary mb-0"><img src="@Url.Content("~/public-assets/img/logo.png")" alt="Logo"
+                            width="50" class="me-2">N1EDU</h1>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="fa fa-bars"></span>
@@ -241,14 +243,14 @@
                         <a asp-area="Student" asp-controller="Statistics" asp-action="Index" class="nav-item nav-link">
                             <i class="fas fa-chart-bar me-1"></i> Thống kê
                         </a>
+                        <a asp-area="Student" asp-controller="LearningProgress" asp-action="Index" class="nav-item nav-link">
+                            <i class="fas fa-chart-line me-1"></i> Quá trình học tập
+                        </a>
                         <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="nav-item nav-link">
                             <i class="fas fa-file-alt me-1"></i> Đề thi
                         </a>
-                        <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice" class="nav-item nav-link">
-                            <i class="fas fa-plus-circle me-1"></i> Tạo đề ôn tập
-                        </a>
                         <a asp-area="Student" asp-controller="Exam" asp-action="History" class="nav-item nav-link">
-                            <i class="fas fa-history me-1"></i> Lịch sử
+                            <i class="fas fa-history me-1"></i> Lịch sử bài thi
                         </a>
                     </div>
                 </div>
@@ -273,16 +275,21 @@
                         <a asp-area="Student" asp-controller="Home" asp-action="Index" class="p-0">
                             <h3 class="text-white"><i class="fas fa-graduation-cap me-3"></i> THI TRỰC TUYẾN</h3>
                         </a>
-                        <p class="text-white mb-4">Hệ thống thi trực tuyến dành cho học sinh. Thực hành, kiểm tra và nâng cao kiến thức của bạn.</p>
+                        <p class="text-white mb-4">Hệ thống thi trực tuyến dành cho học sinh. Thực hành, kiểm tra và
+                            nâng cao kiến thức của bạn.</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="footer-item">
                         <h4 class="text-white mb-4">Liên kết</h4>
-                        <a asp-area="Student" asp-controller="Statistics" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Thống kê</a>
-                        <a asp-area="Student" asp-controller="Exam" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Đề thi</a>
-                        <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice"><i class="fas fa-angle-right me-2"></i> Tạo đề ôn tập</a>
-                        <a asp-area="Student" asp-controller="History" asp-action="Index"><i class="fas fa-angle-right me-2"></i> Lịch sử làm bài</a>
+                        <a asp-area="Student" asp-controller="Statistics" asp-action="Index"><i
+                                class="fas fa-angle-right me-2"></i> Thống kê</a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="Index"><i
+                                class="fas fa-angle-right me-2"></i> Đề thi</a>
+                        <a asp-area="Student" asp-controller="Exam" asp-action="CreatePractice"><i
+                                class="fas fa-angle-right me-2"></i> Tạo đề ôn tập</a>
+                        <a asp-area="Student" asp-controller="History" asp-action="Index"><i
+                                class="fas fa-angle-right me-2"></i> Lịch sử làm bài</a>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -317,7 +324,8 @@
             <div class="row g-4 align-items-center">
                 <div class="col-md-12 text-center">
                     <span class="text-body">
-                        <i class="fas fa-copyright text-light me-2"></i>@DateTime.Now.Year Hệ thống thi trực tuyến. All rights reserved.
+                        <i class="fas fa-copyright text-light me-2"></i>@DateTime.Now.Year Hệ thống thi trực tuyến. All
+                        rights reserved.
                     </span>
                 </div>
 

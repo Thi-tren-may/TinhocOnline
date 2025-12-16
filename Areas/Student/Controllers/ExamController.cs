@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TinhocOnline.Models;
 using TinhocOnline.Models.ViewModels;
+using TinhocOnline.Services;
+using TinhocOnline.Services.DTOs;
 
 namespace TinhocOnline.Areas.Student.Controllers
 {
@@ -10,10 +12,12 @@ namespace TinhocOnline.Areas.Student.Controllers
     public class ExamController : Controller
     {
         private readonly DataContext _context;
+        private readonly GeminiService _geminiService;
 
-        public ExamController(DataContext context)
+        public ExamController(DataContext context, GeminiService geminiService)
         {
             _context = context;
+            _geminiService = geminiService;
         }
 
         // GET: Student/Exam - Danh sách đề thi công khai
@@ -670,6 +674,65 @@ namespace TinhocOnline.Areas.Student.Controllers
             studentExam.Status = "completed";
 
             await _context.SaveChangesAsync();
+
+            // Gọi AI để phân tích bài thi và lưu vào DB
+            try
+            {
+                // Chuẩn bị dữ liệu cho AI
+                var topics = studentExam.StudentExamQuestions
+                    .Select(seq => seq.Question.Topic)
+                    .Where(t => t != null)
+                    .Distinct()
+                    .Select(t => new TopicDto { TopicId = t!.TopicId, TopicName = t.TopicName })
+                    .ToList();
+
+                var questions = studentExam.StudentExamQuestions
+                    .Select(seq => new QuestionDto
+                    {
+                        QuestionId = seq.QuestionId,
+                        TopicName = seq.Question.Topic?.TopicName ?? "N/A",
+                        QuestionText = seq.Question.QuestionText,
+                        CorrectAnswer = seq.Question.Answers.FirstOrDefault(a => a.IsCorrect)?.AnswerText ?? ""
+                    }).ToList();
+
+                var userAnswers = studentExam.StudentExamQuestions
+                    .Select(seq =>
+                    {
+                        var submittedAnswerId = submittedAnswers.ContainsKey(seq.StudentExamQuestionId) 
+                            ? submittedAnswers[seq.StudentExamQuestionId] 
+                            : 0;
+                        var userAnswer = seq.Question.Answers.FirstOrDefault(a => a.AnswerId == submittedAnswerId);
+                        
+                        return new UserAnswerDto
+                        {
+                            QuestionId = seq.QuestionId,
+                            UserAnswer = userAnswer?.AnswerText ?? ""
+                        };
+                    }).ToList();
+
+                var analysisRequest = new ExamAnalysisRequest
+                {
+                    Topics = topics,
+                    Questions = questions,
+                    UserAnswers = userAnswers
+                };
+
+                // Gọi AI
+                var analysisJson = await _geminiService.AnalyzeExamResultAsync(analysisRequest);
+
+                // Lưu kết quả vào DB
+                await _geminiService.SaveAnalysisResultAsync(
+                    studentExamId, 
+                    studentId.Value, 
+                    studentExam.ExamId, 
+                    analysisJson
+                );
+            }
+            catch (Exception ex)
+            {
+                // Log error nhưng không fail việc submit
+                Console.WriteLine($"Error analyzing exam: {ex.Message}");
+            }
 
             TempData["SuccessMessage"] = $"Đã nộp bài thành công! Điểm số: {score}/10 ({correctAnswers}/{totalQuestions} câu đúng)";
             return RedirectToAction("ViewResults", new { id = studentExamId });

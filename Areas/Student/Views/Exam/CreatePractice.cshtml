@@ -7,11 +7,10 @@
 }
 
 <div class="pagetitle">
-    <h1>Tạo Đề ôn tập</h1>
+    <h1><i class="bi bi-file-earmark-plus me-2"></i>Tạo Đề Ôn Tập</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index">Trang
-                    chủ</a></li>
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
             <li class="breadcrumb-item"><a asp-action="Index">Đề thi</a></li>
             <li class="breadcrumb-item active">Tạo đề ôn tập</li>
         </ol>
@@ -19,7 +18,7 @@
 </div>
 
 <section class="section">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-lg-10">
             @if (TempData["ErrorMessage"] != null)
             {
@@ -29,14 +28,13 @@
                 </div>
             }
 
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Cấu hình đề ôn tập</h5>
-
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>Lưu ý:</strong> Đề ôn tập được tạo tự động từ ngân hàng câu hỏi. Bạn có thể làm bài ngay
-                        sau khi tạo. Tổng tỷ lệ độ khó phải bằng 100%.
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="alert alert-primary d-flex align-items-center" role="alert">
+                        <i class="bi bi-lightbulb-fill fs-4 me-3"></i>
+                        <div>
+                            <strong>Lưu ý:</strong> Đề ôn tập được tạo tự động từ ngân hàng câu hỏi. Bạn có thể làm bài ngay sau khi tạo. Tổng tỷ lệ độ khó phải bằng 100%.
+                        </div>
                     </div>
 
                     <form asp-action="CreatePractice" method="post" id="createExamForm">
@@ -47,6 +45,11 @@
                         <input type="hidden" asp-for="ExamName" value="Đề ôn tập" />
 
                         <!-- Thông tin cơ bản -->
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-primary border-3">
+                            <i class="bi bi-gear-fill fs-4 text-primary me-2"></i>
+                            <h5 class="mb-0 fw-bold">Thông tin cơ bản</h5>
+                        </div>
+
                         <div class="row mb-3">
                             <label asp-for="ExamTypeId" class="col-sm-3 col-form-label">Loại đề <span
                                     class="text-danger">*</span></label>
@@ -88,74 +91,97 @@
                             </div>
                         </div>
 
-                        <hr class="my-3">
-
                         <!-- Chọn Chủ đề -->
-                        <h6><i class="bi bi-collection"></i> Chọn Chủ đề</h6>
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-primary border-3 mt-4">
+                            <i class="bi bi-collection-fill fs-4 text-primary me-2"></i>
+                            <h5 class="mb-0 fw-bold">Chọn Chủ Đề</h5>
+                        </div>
+
                         @if (topics != null)
                         {
                             <div class="row mb-3">
                                 <div class="col-sm-12">
                                     @foreach (var topic in topics)
                                     {
-                                        <div class="form-check mb-2">
-                                            <input type="checkbox" name="SelectedTopicIds" value="@topic.TopicId"
-                                                class="form-check-input" id="topic@(topic.TopicId)" checked />
-                                            <label class="form-check-label" for="topic@(topic.TopicId)">
-                                                @topic.TopicName
-                                            </label>
+                                        <div class="bg-light p-3 rounded mb-2 border border-1">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="SelectedTopicIds" value="@topic.TopicId"
+                                                    class="form-check-input" id="topic@(topic.TopicId)" checked />
+                                                <label class="form-check-label fw-semibold" for="topic@(topic.TopicId)">
+                                                    @topic.TopicName
+                                                </label>
+                                            </div>
                                         </div>
                                     }
                                 </div>
                             </div>
-                            <div class="alert alert-info">
-                                <small><i class="bi bi-info-circle"></i> Các chủ đề được chọn sẽ được phân bổ đều số
-                                    lượng câu hỏi (mặc định là tất cả)</small>
+                            <div class="alert alert-info d-flex align-items-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <small class="mb-0">Các chủ đề được chọn sẽ được phân bổ đều số lượng câu hỏi (mặc định là tất cả)</small>
                             </div>
                         }
 
-                        <hr class="my-3">
-
                         <!-- Độ khó -->
-                        <h6><i class="bi bi-sliders"></i> Cấu hình độ khó</h6>
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-primary border-3 mt-4">
+                            <i class="bi bi-sliders fs-4 text-primary me-2"></i>
+                            <h5 class="mb-0 fw-bold">Cấu Hình Độ Khó</h5>
+                        </div>
 
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label">Dễ (%) <span class="text-danger">*</span></label>
-                            <div class="col-sm-9">
-                                <input asp-for="EasyPercentage" class="form-control" type="number"
-                                    step="5" />
-                                <span asp-validation-for="EasyPercentage" class="text-danger"></span>
+                        <div class="bg-light p-4 rounded">
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <label class="col-sm-3 col-form-label fw-bold">
+                                            <i class="bi bi-emoji-smile text-success me-2"></i>Dễ (%) <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="EasyPercentage" class="form-control" type="number" step="5" />
+                                            <span asp-validation-for="EasyPercentage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <label class="col-sm-3 col-form-label fw-bold">
+                                            <i class="bi bi-emoji-neutral text-warning me-2"></i>Trung bình (%) <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="MediumPercentage" class="form-control" type="number" step="5" />
+                                            <span asp-validation-for="MediumPercentage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <label class="col-sm-3 col-form-label fw-bold">
+                                            <i class="bi bi-emoji-frown text-danger me-2"></i>Khó (%) <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="HardPercentage" class="form-control" type="number" step="5" />
+                                            <span asp-validation-for="HardPercentage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center p-3 bg-white rounded border border-primary border-2">
+                                <strong class="fs-5">Tổng độ khó: <span id="totalDifficulty" class="text-primary">100</span>%</strong>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label">Trung bình (%) <span class="text-danger">*</span></label>
-                            <div class="col-sm-9">
-                                <input asp-for="MediumPercentage" class="form-control" type="number"
-                                    step="5" />
-                                <span asp-validation-for="MediumPercentage" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label">Khó (%) <span class="text-danger">*</span></label>
-                            <div class="col-sm-9">
-                                <input asp-for="HardPercentage" class="form-control" type="number"
-                                    step="5" />
-                                <span asp-validation-for="HardPercentage" class="text-danger"></span>
-                                <small>Tổng = <span id="totalDifficulty">100</span>%</small>
-                            </div>
-                        </div>
-
-                        <hr class="my-3">
-
-                        <div class="row mb-3">
-                            <div class="col-sm-9 offset-sm-3">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-play-circle me-1"></i> Tạo đề và Làm bài
+                        <div class="row mb-3 mt-4">
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="bi bi-play-circle me-2"></i> Tạo đề và Làm bài
                                 </button>
-                                <a asp-action="Index" class="btn btn-secondary">
-                                    <i class="bi bi-x-circle me-1"></i> Hủy
+                                <a asp-action="Index" class="btn btn-secondary btn-lg px-5 ms-2">
+                                    <i class="bi bi-x-circle me-2"></i> Hủy
                                 </a>
                             </div>
                         </div>

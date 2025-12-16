@@ -2,6 +2,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using TinhocOnline.Services.DTOs;
+using TinhocOnline.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TinhocOnline.Services
 {
@@ -11,10 +13,12 @@ namespace TinhocOnline.Services
         private readonly string _apiKey;
         private readonly string _baseUrl;
         private readonly string _defaultModel;
+        private readonly DataContext _context;
 
-        public GeminiService(IConfiguration configuration, HttpClient httpClient)
+        public GeminiService(IConfiguration configuration, HttpClient httpClient, DataContext context)
         {
             _httpClient = httpClient;
+            _context = context;
             _apiKey = configuration["Gemini:ApiKey"] ?? throw new ArgumentNullException("Gemini API Key not configured");
             _baseUrl = configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com/v1beta/models";
             _defaultModel = configuration["Gemini:DefaultModel"] ?? "gemini-2.0-flash";
@@ -157,6 +161,196 @@ namespace TinhocOnline.Services
             \";
 
             return await GenerateContentAsync(prompt, request.Model);
+        }
+
+        public async Task<StudentExamAnalysis> SaveAnalysisResultAsync(
+            int studentExamId, 
+            int userId, 
+            int examId, 
+            string analysisJson)
+        {
+            try
+            {
+                // Clean JSON response (loại bỏ markdown code blocks nếu có)
+                string cleanedJson = CleanJsonResponse(analysisJson);
+
+                // Parse JSON từ AI
+                var analysisResult = JsonSerializer.Deserialize<AnalysisResultDto>(cleanedJson);
+                if (analysisResult == null)
+                {
+                    throw new Exception("Failed to parse analysis result");
+                }
+
+                // Tính toán thống kê tổng quan
+                var totalQuestions = analysisResult.FeedbackPerQuestion.Count;
+                var correctAnswers = analysisResult.FeedbackPerQuestion.Count(q => q.IsCorrect);
+                var wrongAnswers = totalQuestions - correctAnswers;
+                var accuracy = totalQuestions > 0 ? (decimal)correctAnswers / totalQuestions * 100 : 0;
+
+                // Lưu StudentExamAnalysis
+                var examAnalysis = new StudentExamAnalysis
+                {
+                    StudentExamId = studentExamId,
+                    UserId = userId,
+                    ExamId = examId,
+                    AnalyzedAt = DateTime.Now,
+                    TotalQuestions = totalQuestions,
+                    CorrectAnswers = correctAnswers,
+                    WrongAnswers = wrongAnswers,
+                    AccuracyPercentage = Math.Round(accuracy, 2),
+                    AnalysisResultJson = analysisJson
+                };
+
+                _context.StudentExamAnalyses.Add(examAnalysis);
+                await _context.SaveChangesAsync();
+
+                // Cập nhật hoặc tạo mới StudentTopicPerformance
+                await UpdateTopicPerformanceAsync(userId, analysisResult.TopicSummary);
+
+                return examAnalysis;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error saving analysis result: {ex.Message}", ex);
+            }
+        }
+
+        private async Task UpdateTopicPerformanceAsync(int userId, List<TopicSummaryDto> topicSummaries)
+        {
+            foreach (var topic in topicSummaries)
+            {
+                // Tìm performance hiện tại
+                var performance = await _context.StudentTopicPerformances
+                    .FirstOrDefaultAsync(p => p.UserId == userId && p.TopicName == topic.Topic);
+
+                if (performance != null)
+                {
+                    // Cập nhật
+                    performance.TotalAttempts += 1;
+                    performance.TotalQuestions += topic.TotalQuestions;
+                    performance.CorrectAnswers += topic.Correct;
+                    performance.AccuracyPercentage = performance.TotalQuestions > 0
+                        ? Math.Round((decimal)performance.CorrectAnswers / performance.TotalQuestions * 100, 2)
+                        : 0;
+                    performance.LastAttemptDate = DateTime.Now;
+                }
+                else
+                {
+                    // Tạo mới
+                    performance = new StudentTopicPerformance
+                    {
+                        UserId = userId,
+                        TopicName = topic.Topic,
+                        TotalAttempts = 1,
+                        TotalQuestions = topic.TotalQuestions,
+                        CorrectAnswers = topic.Correct,
+                        AccuracyPercentage = Math.Round(topic.Accuracy, 2),
+                        LastAttemptDate = DateTime.Now
+                    };
+                    _context.StudentTopicPerformances.Add(performance);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<StudentTopicPerformance>> GetUserTopicPerformanceAsync(int userId)
+        {
+            return await _context.StudentTopicPerformances
+                .Where(p => p.UserId == userId)
+                .OrderBy(p => p.AccuracyPercentage)
+                .ToListAsync();
+        }
+
+        public async Task<StudentExamAnalysis?> GetExamAnalysisAsync(int studentExamId)
+        {
+            return await _context.StudentExamAnalyses
+                .FirstOrDefaultAsync(a => a.StudentExamId == studentExamId);
+        }
+
+        public async Task<string> AnalyzeOverallProgressAsync(int userId)
+        {
+            // Lấy tất cả phân tích của học sinh
+            var analyses = await _context.StudentExamAnalyses
+                .Where(a => a.UserId == userId)
+                .Include(a => a.Exam)
+                .OrderBy(a => a.AnalyzedAt)
+                .ToListAsync();
+
+            if (!analyses.Any())
+            {
+                return string.Empty;
+            }
+
+            // Tạo payload ngắn gọn
+            var summaryText = string.Join("\n", analyses.Select((a, index) => 
+                $"{index + 1}. {a.Exam?.ExamName ?? "N/A"} - {a.AnalyzedAt:dd/MM/yyyy} - {a.CorrectAnswers}/{a.TotalQuestions} ({a.AccuracyPercentage}%)"));
+
+            // Lấy topic performance
+            var topicPerformances = await _context.StudentTopicPerformances
+                .Where(p => p.UserId == userId)
+                .OrderBy(p => p.AccuracyPercentage)
+                .ToListAsync();
+
+            var topicText = string.Join("\n", topicPerformances.Select(tp => 
+                $"- {tp.TopicName}: {tp.AccuracyPercentage}% ({tp.CorrectAnswers}/{tp.TotalQuestions} câu, {tp.TotalAttempts} lần)"));
+
+            var prompt = $@"
+Bạn là trợ lý AI đánh giá tiến độ học tập. Dựa trên lịch sử thi của học sinh, hãy đưa ra đánh giá NGẮN GỌN.
+
+LỊCH SỬ BÀI THI:
+{summaryText}
+
+HIỆU SUẤT THEO CHỦ ĐỀ:
+{topicText}
+
+YÊU CẦU:
+1. Đánh giá xu hướng (tiến bộ/thoái lui/ổn định) - 1 câu
+2. Điểm mạnh chính - 1 câu
+3. Điểm yếu cần cải thiện - 1 câu
+4. 3 khuyến nghị ưu tiên (mỗi khuyến nghị 1 câu ngắn)
+
+TRẢ VỀ CHỈ JSON THUẦN TÚY, KHÔNG CÓ MARKDOWN:
+{{
+  ""trend"": ""Mô tả xu hướng"",
+  ""strengths"": ""Điểm mạnh"",
+  ""weaknesses"": ""Điểm yếu"",
+  ""recommendations"": [
+    ""Khuyến nghị 1"",
+    ""Khuyến nghị 2"",
+    ""Khuyến nghị 3""
+  ]
+}}";
+
+            var response = await GenerateContentAsync(prompt);
+            return CleanJsonResponse(response);
+        }
+
+        private string CleanJsonResponse(string response)
+        {
+            if (string.IsNullOrWhiteSpace(response))
+                return response;
+
+            // Loại bỏ markdown code blocks
+            var cleaned = response.Trim();
+            
+            // Nếu bắt đầu với ```json hoặc ```
+            if (cleaned.StartsWith("```json"))
+            {
+                cleaned = cleaned.Substring(7); // Remove ```json
+            }
+            else if (cleaned.StartsWith("```"))
+            {
+                cleaned = cleaned.Substring(3); // Remove ```
+            }
+
+            // Nếu kết thúc với ```
+            if (cleaned.EndsWith("```"))
+            {
+                cleaned = cleaned.Substring(0, cleaned.Length - 3);
+            }
+
+            return cleaned.Trim();
         }
     }
 }

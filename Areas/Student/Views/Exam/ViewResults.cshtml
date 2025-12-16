@@ -3,8 +3,9 @@
     ViewData["Title"] = "Kết quả bài thi";
     Layout = "~/Areas/Student/Views/Shared/_LayoutStudent.cshtml";
     var studentAnswers = ViewBag.StudentAnswers as List<TinhocOnline.Models.StudentAnswer>;
-    var studentAnswersDict = studentAnswers?.ToDictionary(sa => sa.QuestionId, sa => sa) ?? new Dictionary<int, TinhocOnline.Models.StudentAnswer>();
-    
+    var studentAnswersDict = studentAnswers?.ToDictionary(sa => sa.QuestionId, sa => sa) ?? new Dictionary<int,
+    TinhocOnline.Models.StudentAnswer>();
+
     int totalQuestions = Model.StudentExamQuestions.Count;
     int correctCount = studentAnswers?.Count(sa => sa.IsCorrect == true) ?? 0;
     int incorrectCount = totalQuestions - correctCount;
@@ -18,7 +19,7 @@
         color: white;
         margin-bottom: 50px;
     }
-    
+
     .score-card {
         background: white;
         border-radius: 20px;
@@ -28,7 +29,7 @@
         position: relative;
         z-index: 1;
     }
-    
+
     .score-circle {
         width: 150px;
         height: 150px;
@@ -43,22 +44,22 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
     }
-    
+
     .score-circle.passed {
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     }
-    
+
     .score-circle.failed {
         background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
     }
-    
+
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         margin: 30px 0;
     }
-    
+
     .stat-item {
         background: #f8f9fa;
         border-radius: 15px;
@@ -67,50 +68,50 @@
         border: 2px solid #e9ecef;
         transition: all 0.3s;
     }
-    
+
     .stat-item:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
-    
+
     .stat-value {
         font-size: 32px;
         font-weight: bold;
         color: #667eea;
         margin-bottom: 5px;
     }
-    
+
     .stat-label {
         font-size: 14px;
         color: #6c757d;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    
+
     .question-review {
         background: white;
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         border-left: 4px solid #6c757d;
         transition: all 0.3s;
     }
-    
+
     .question-review:hover {
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     }
-    
+
     .question-review.correct {
         border-left-color: #38ef7d;
         background: linear-gradient(to right, rgba(56, 239, 125, 0.05), white);
     }
-    
+
     .question-review.incorrect {
         border-left-color: #ff6a00;
         background: linear-gradient(to right, rgba(255, 106, 0, 0.05), white);
     }
-    
+
     .question-number {
         display: inline-block;
         width: 40px;
@@ -123,15 +124,15 @@
         font-weight: bold;
         margin-right: 15px;
     }
-    
+
     .question-review.correct .question-number {
         background: #38ef7d;
     }
-    
+
     .question-review.incorrect .question-number {
         background: #ff6a00;
     }
-    
+
     .answer-option {
         padding: 12px 20px;
         margin: 8px 0;
@@ -140,36 +141,36 @@
         border: 2px solid transparent;
         transition: all 0.3s;
     }
-    
+
     .answer-option.student-answer {
         background: #fff3cd;
         border-color: #ffc107;
     }
-    
+
     .answer-option.correct-answer {
         background: #d4edda;
         border-color: #28a745;
     }
-    
+
     .answer-option.wrong-answer {
         background: #f8d7da;
         border-color: #dc3545;
     }
-    
+
     .badge-result {
         font-size: 14px;
         padding: 8px 16px;
         border-radius: 20px;
         font-weight: 600;
     }
-    
+
     .action-buttons {
         display: flex;
         gap: 15px;
         margin-top: 30px;
         justify-content: center;
     }
-    
+
     .btn-custom {
         padding: 12px 30px;
         border-radius: 30px;
@@ -178,10 +179,10 @@
         letter-spacing: 1px;
         transition: all 0.3s;
     }
-    
+
     .btn-custom:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 </style>
 
@@ -251,7 +252,8 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a asp-area="Student" asp-controller="AIFeedback" asp-action="GetFeedback" asp-route-studentExamId="@Model.StudentExamId" class="btn btn-success btn-custom">
+            <a asp-area="Student" asp-controller="AIFeedback" asp-action="GetFeedback"
+                asp-route-studentExamId="@Model.StudentExamId" class="btn btn-success btn-custom">
                 <i class="fas fa-brain me-2"></i>Xem AI Đánh Giá
             </a>
             <a href="@Url.Action("Index", "Exam")" class="btn btn-outline-primary btn-custom">
@@ -261,18 +263,27 @@
                 <i class="fas fa-chart-bar me-2"></i>Thống Kê
             </a>
         </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
     </div>
 
     <!-- Question Review -->
     <div class="mt-5">
         <h3 class="mb-4"><i class="fas fa-clipboard-check me-2"></i>Chi Tiết Câu Hỏi</h3>
-        
+
         @foreach (var seq in Model.StudentExamQuestions.OrderBy(seq => seq.QuestionOrder))
         {
-            var submittedAnswer = studentAnswersDict.ContainsKey(seq.QuestionId) ? studentAnswersDict[seq.QuestionId] : null;
+            var submittedAnswer = studentAnswersDict.ContainsKey(seq.QuestionId) ? studentAnswersDict[seq.QuestionId] :
+            null;
             var correctAnswer = seq.Question.Answers.FirstOrDefault(a => a.IsCorrect);
             var isCorrect = submittedAnswer?.IsCorrect ?? false;
-            
+
             <div class="question-review @(isCorrect ? "correct" : "incorrect")">
                 <div class="d-flex align-items-start mb-3">
                     <span class="question-number">@seq.QuestionOrder</span>

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TinhocOnline.Models;
 using TinhocOnline.Services;
-using TinhocOnline.Services.DTOs;
 
 namespace TinhocOnline.Areas.Student.Controllers
 {
@@ -34,11 +33,9 @@ namespace TinhocOnline.Areas.Student.Controllers
 
             try
             {
-                // 1. Load StudentExam với tất cả thông tin cần thiết
+                // Load StudentExam với tất cả thông tin cần thiết
                 var studentExam = await _context.StudentExams
                     .Include(se => se.Exam)
-                        .ThenInclude(e => e.ExamTopics)
-                            .ThenInclude(et => et.Topic)
                     .Include(se => se.StudentExamQuestions)
                         .ThenInclude(seq => seq.Question)
                             .ThenInclude(q => q.Topic)
@@ -61,59 +58,74 @@ namespace TinhocOnline.Areas.Student.Controllers
                     return RedirectToAction("ViewResults", "Exam", new { id = studentExamId });
                 }
 
-                // 2. Chuẩn bị data cho ExamAnalysisRequest
-                // Lấy danh sách topics
-                var topics = studentExam.Exam.ExamTopics
-                    .Select(et => new TopicDto
-                    {
-                        TopicId = et.TopicId,
-                        TopicName = et.Topic.TopicName
-                    })
-                    .ToList();
+                // Lấy kết quả phân tích từ DB (đã lưu khi submit)
+                var analysis = await _geminiService.GetExamAnalysisAsync(studentExamId.Value);
 
-                // Lấy danh sách questions với đáp án đúng
-                var questions = studentExam.StudentExamQuestions
-                    .Select(seq => new QuestionDto
-                    {
-                        QuestionId = seq.QuestionId,
-                        TopicName = seq.Question.Topic?.TopicName ?? "N/A",
-                        QuestionText = seq.Question.QuestionText,
-                        CorrectAnswer = seq.Question.Answers.FirstOrDefault(a => a.IsCorrect)?.AnswerText ?? "N/A"
-                    })
-                    .ToList();
+                string analysisJson;
 
-                // Lấy danh sách answers của học sinh
-                var userAnswers = studentExam.StudentAnswers
-                    .Select(sa => new UserAnswerDto
-                    {
-                        QuestionId = sa.QuestionId,
-                        UserAnswer = sa.Answer?.AnswerText ?? "Không trả lời"
-                    })
-                    .ToList();
-
-                // Tạo request object
-                var analysisRequest = new ExamAnalysisRequest
+                if (analysis == null)
                 {
-                    Topics = topics,
-                    Questions = questions,
-                    UserAnswers = userAnswers,
-                    Model = null // Sử dụng model mặc định từ appsettings.json
-                };
+                    // Chưa có phân tích -> Gọi AI ngay bây giờ
+                    var topics = studentExam.StudentExamQuestions
+                        .Select(seq => seq.Question.Topic)
+                        .Where(t => t != null)
+                        .Distinct()
+                        .Select(t => new Services.DTOs.TopicDto 
+                        { 
+                            TopicId = t!.TopicId, 
+                            TopicName = t.TopicName 
+                        })
+                        .ToList();
 
-                // 3. Gọi Gemini API
-                var aiResponse = await _geminiService.AnalyzeExamResultAsync(analysisRequest);
+                    var questions = studentExam.StudentExamQuestions
+                        .Select(seq => new Services.DTOs.QuestionDto
+                        {
+                            QuestionId = seq.QuestionId,
+                            TopicName = seq.Question.Topic?.TopicName ?? "N/A",
+                            QuestionText = seq.Question.QuestionText,
+                            CorrectAnswer = seq.Question.Answers.FirstOrDefault(a => a.IsCorrect)?.AnswerText ?? ""
+                        }).ToList();
 
-                // 4. Parse JSON response
-                // TODO: Implement JSON parsing to ExamAnalysisResponse
-                // For now, pass raw response to view
-                ViewBag.AIResponse = aiResponse;
+                    var userAnswers = studentExam.StudentAnswers
+                        .Select(sa => new Services.DTOs.UserAnswerDto
+                        {
+                            QuestionId = sa.QuestionId,
+                            UserAnswer = sa.Answer?.AnswerText ?? ""
+                        }).ToList();
+
+                    var analysisRequest = new Services.DTOs.ExamAnalysisRequest
+                    {
+                        Topics = topics,
+                        Questions = questions,
+                        UserAnswers = userAnswers
+                    };
+
+                    // Gọi AI
+                    analysisJson = await _geminiService.AnalyzeExamResultAsync(analysisRequest);
+
+                    // Lưu vào DB
+                    await _geminiService.SaveAnalysisResultAsync(
+                        studentExamId.Value,
+                        studentId.Value,
+                        studentExam.ExamId,
+                        analysisJson
+                    );
+                }
+                else
+                {
+                    // Đã có phân tích trong DB
+                    analysisJson = analysis.AnalysisResultJson;
+                }
+
+                // Parse JSON và hiển thị
+                ViewBag.AIResponse = analysisJson;
                 ViewBag.StudentExam = studentExam;
 
                 return View();
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Đã xảy ra lỗi khi phân tích bài thi: {ex.Message}";
+                TempData["ErrorMessage"] = $"Đã xảy ra lỗi khi tải kết quả phân tích: {ex.Message}";
                 return RedirectToAction("ViewResults", "Exam", new { id = studentExamId });
             }
         }
