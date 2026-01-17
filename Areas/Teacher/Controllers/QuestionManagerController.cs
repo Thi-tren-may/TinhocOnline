@@ -18,6 +18,8 @@ namespace TinhocOnline.Areas.Teacher.Controllers
         // GET: Teacher/QuestionManager
         public async Task<IActionResult> Index(int page = 1)
         {
+            var teacherId = HttpContext.Session.GetInt32("UserId");
+
             int pageSize = 20;
             
             // Lấy tổng số câu hỏi
@@ -28,6 +30,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 .Include(q => q.Answers)
                 .Include(q => q.Creator)
                 .Include(q => q.Topic)
+                .Where(q => q.CreatedBy == teacherId.Value)
                 .OrderBy(q => q.QuestionId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)

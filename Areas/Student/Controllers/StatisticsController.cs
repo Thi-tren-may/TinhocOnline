@@ -34,7 +34,7 @@ namespace TinhocOnline.Areas.Student.Controllers
                 .Select(se => se.Score.Value)
                 .ToListAsync();
             
-            var averageScore = studentExamsWithScore.Any() ? (double)studentExamsWithScore.Average() : 0;
+            var averageScore = studentExamsWithScore.Any() ? studentExamsWithScore.Average() : 0;
 
             // Số bài đạt
             var passedExams = await _context.StudentExams
@@ -47,9 +47,6 @@ namespace TinhocOnline.Areas.Student.Controllers
 
             // Điểm cao nhất
             var highestScore = studentExamsWithScore.Any() ? studentExamsWithScore.Max() : 0;
-
-            // Điểm thấp nhất
-            var lowestScore = studentExamsWithScore.Any() ? studentExamsWithScore.Min() : 0;
 
             // 5 bài thi gần nhất
             var recentExams = await _context.StudentExams
@@ -68,11 +65,10 @@ namespace TinhocOnline.Areas.Student.Controllers
                 .ToListAsync();
 
             ViewBag.TotalExams = totalExams;
-            ViewBag.AverageScore = Math.Round(averageScore / 100, 2);
+            ViewBag.AverageScore = (int)Math.Round(averageScore, 2);
             ViewBag.PassedExams = passedExams;
             ViewBag.FailedExams = failedExams;
-            ViewBag.HighestScore = highestScore / 100;
-            ViewBag.LowestScore = lowestScore / 100;
+            ViewBag.HighestScore = (int)highestScore;
             ViewBag.RecentExams = recentExams;
 
             return View();

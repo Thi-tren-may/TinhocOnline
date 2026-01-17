@@ -53,7 +53,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
                 .Where(se => se.Score.HasValue)
                 .Select(se => se.Score.Value)
                 .ToListAsync();
-            var averageScore = scores.Any() ? (double)scores.Average() / 100 : 0;
+            var averageScore = scores.Any() ? (double)scores.Average() : 0;
 
             // Người dùng mới (7 ngày gần nhất)
             var sevenDaysAgo = DateTime.Now.AddDays(-7);
@@ -90,8 +90,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
                 p.ExamTitle,
                 p.AttemptCount,
                 AverageScore = p.Scores.Where(s => s.HasValue).Any() 
-                    ? p.Scores.Where(s => s.HasValue).Average(s => s.Value) / 100 
-                    : 0
+                    ? p.Scores.Where(s => s.HasValue).Average(s => s.Value) : 0
             }).ToList();
 
             // Hoạt động gần đây
@@ -106,7 +105,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
             {
                 StudentName = se.Student.FullName,
                 ExamTitle = se.Exam.ExamName,
-                Score = se.Score.HasValue ? se.Score.Value / 100 : (decimal?)null,
+                Score = se.Score.HasValue ? se.Score.Value : (decimal?)null,
                 StartTime = se.StartTime
             }).ToList();
 
@@ -118,7 +117,7 @@ namespace TinhocOnline.Areas.Admin.Controllers
             ViewBag.TotalExams = totalExams;
             ViewBag.TotalTopics = totalTopics;
             ViewBag.TotalAttempts = totalAttempts;
-            ViewBag.AverageScore = Math.Round(averageScore, 2);
+            ViewBag.AverageScore = (int)Math.Round(averageScore, 2);
             ViewBag.NewUsers = newUsers;
             ViewBag.UsersByRole = usersByRole;
             ViewBag.PopularExams = popularExams;
