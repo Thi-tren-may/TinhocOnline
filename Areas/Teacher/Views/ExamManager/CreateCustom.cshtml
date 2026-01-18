@@ -1,0 +1,345 @@
+@model TinhocOnline.Models.ViewModels.CreateExamViewModel
+
+@{
+    ViewData["Title"] = "Tạo Đề thi Tùy chỉnh";
+    Layout = "~/Areas/Teacher/Views/Shared/_LayoutTeacher.cshtml";
+    var topics = ViewBag.Topics as List<TinhocOnline.Models.Topic>;
+}
+
+<div class="pagetitle">
+    <h1><i class="bi bi-gear-fill"></i> Tạo Đề thi Tùy chỉnh</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Teacher" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách Đề thi</a></li>
+            <li class="breadcrumb-item active">Tạo Tùy chỉnh</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <form asp-action="CreateCustom" method="post" id="createExamForm">
+        
+        @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Hidden fields -->
+        <input type="hidden" asp-for="CreatedBy" />
+        <input type="hidden" asp-for="CreateMode" />
+        <input type="hidden" asp-for="CurrentPage" />
+        <input type="hidden" asp-for="PageSize" />
+        <input type="hidden" asp-for="ActionButton" id="actionButtonInput" />
+        
+        @if (Model.SelectedQuestionIds != null)
+        {
+            @for (int i = 0; i < Model.SelectedQuestionIds.Count; i++)
+            {
+                <input type="hidden" name="SelectedQuestionIds[@i]" value="@Model.SelectedQuestionIds[i]" />
+            }
+        }
+
+        <div class="row">
+            <!-- LEFT COLUMN: Form thông tin đề thi -->
+            <div class="col-lg-4">
+                <div class="card" style="height: 800px; overflow-y: auto;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Thông tin Đề thi</h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="mb-3">
+                            <label asp-for="ExamName" class="form-label fw-semibold">Tên đề thi</label>
+                            <input asp-for="ExamName" class="form-control" />
+                            <span asp-validation-for="ExamName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ExamTypeId" class="form-label fw-semibold">Loại đề thi</label>
+                            <select asp-for="ExamTypeId" asp-items="ViewBag.ExamTypes" class="form-select">
+                                <option value="0">-- Chọn loại --</option>
+                            </select>
+                            <span asp-validation-for="ExamTypeId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GradeLevel" class="form-label fw-semibold">Lớp</label>
+                            <select asp-for="GradeLevel" class="form-select">
+                                <option value="">-- Chọn lớp --</option>
+                                <option value="10">Lớp 10</option>
+                                <option value="11">Lớp 11</option>
+                                <option value="12">Lớp 12</option>
+                            </select>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label asp-for="Duration" class="form-label fw-semibold">Thời gian (phút)</label>
+                                <input asp-for="Duration" type="number" class="form-control" min="1" max="300" />
+                                <span asp-validation-for="Duration" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="TotalQuestions" class="form-label fw-semibold">Tổng số câu</label>
+                                <input asp-for="TotalQuestions" type="number" class="form-control" min="1" max="100" />
+                                <span asp-validation-for="TotalQuestions" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PassingScore" class="form-label fw-semibold">Điểm đạt</label>
+                            <input asp-for="PassingScore" type="number" class="form-control" min="0" max="10" step="0.5" />
+                            <span asp-validation-for="PassingScore" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StartDate" class="form-label fw-semibold">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EndDate" class="form-label fw-semibold">Ngày kết thúc</label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input asp-for="ShuffleQuestions" class="form-check-input" type="checkbox" />
+                                <label asp-for="ShuffleQuestions" class="form-check-label">Trộn câu hỏi</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="ShuffleAnswers" class="form-check-input" type="checkbox" />
+                                <label asp-for="ShuffleAnswers" class="form-check-label">Trộn đáp án</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Catalog câu hỏi -->
+            <div class="col-lg-8">
+                <div class="card" style="height: 800px; display: flex; flex-direction: column;">
+                    <!-- Header - Fixed -->
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list-check"></i> Chọn câu hỏi</h5>
+                    </div>
+                    
+                    <!-- Filter - Fixed -->
+                    <div class="card-body" style="flex: 0 0 auto; padding-bottom: 0;">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3">
+                                <select name="FilterTopicId" class="form-select form-select-sm">
+                                    <option value="">-- Chủ đề --</option>
+                                    @if (topics != null)
+                                    {
+                                        @foreach (var topic in topics)
+                                        {
+                                            <option value="@topic.TopicId" 
+                                                    selected="@(Model.FilterTopicId == topic.TopicId)">
+                                                @topic.TopicName
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="FilterDifficulty" class="form-select form-select-sm">
+                                    <option value="">-- Độ khó --</option>
+                                    <option value="easy" selected="@(Model.FilterDifficulty == "easy")">Dễ</option>
+                                    <option value="medium" selected="@(Model.FilterDifficulty == "medium")">Trung bình</option>
+                                    <option value="hard" selected="@(Model.FilterDifficulty == "hard")">Khó</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="FilterGradeLevel" class="form-select form-select-sm">
+                                    <option value="">-- Lớp --</option>
+                                    <option value="10" selected="@(Model.FilterGradeLevel == "10")">Lớp 10</option>
+                                    <option value="11" selected="@(Model.FilterGradeLevel == "11")">Lớp 11</option>
+                                    <option value="12" selected="@(Model.FilterGradeLevel == "12")">Lớp 12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btn-sm w-100" 
+                                        onclick="setAction('filter')">
+                                    <i class="bi bi-funnel"></i> Lọc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content - Scrollable -->
+                    <div class="card-body" style="flex: 1 1 auto; overflow-y: auto; padding-top: 0;">
+                        @if (Model.Questions == null || !Model.Questions.Any())
+                        {
+                            <div class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p class="mt-2">
+                                    @if (Model.TotalQuestionItems == 0 && (Model.FilterTopicId.HasValue || !string.IsNullOrEmpty(Model.FilterDifficulty) || !string.IsNullOrEmpty(Model.FilterGradeLevel)))
+                                    {
+                                        <span>Không tìm thấy câu hỏi nào</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Nhấn "Lọc" để tải câu hỏi</span>
+                                    }
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            int startIndex = (Model.CurrentPage - 1) * Model.PageSize;
+                            
+                            @for (int i = 0; i < Model.Questions.Count; i++)
+                            {
+                                var q = Model.Questions[i];
+                                var globalIndex = startIndex + i + 1;
+                                var isChecked = Model.SelectedQuestionIds?.Contains(q.QuestionId) ?? false;
+
+                                <div class="card mb-2 @(isChecked ? "border-primary" : "")">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex align-items-start">
+                                            <div class="me-3 mt-1">
+                                                <input type="checkbox" 
+                                                       class="form-check-input question-checkbox"
+                                                       name="CurrentPageSelections" 
+                                                       value="@q.QuestionId" 
+                                                       checked="@isChecked"
+                                                       style="width: 20px; height: 20px;" />
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <span class="badge bg-secondary me-2">#@globalIndex</span>
+                                                    @switch (q.DifficultyLevel)
+                                                    {
+                                                        case "easy":
+                                                            <span class="badge bg-success">Dễ</span>
+                                                            break;
+                                                        case "medium":
+                                                            <span class="badge bg-warning">TB</span>
+                                                            break;
+                                                        case "hard":
+                                                            <span class="badge bg-danger">Khó</span>
+                                                            break;
+                                                    }
+                                                </div>
+                                                <p class="mb-1">@q.QuestionText</p>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-tag"></i> @q.TopicName
+                                                    @if (q.GradeLevel != null)
+                                                    {
+                                                        <span class="ms-2"><i class="bi bi-mortarboard"></i> Lớp @q.GradeLevel</span>
+                                                    }
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <!-- Pagination - Fixed -->
+                    @if (Model.TotalPages > 1)
+                    {
+                        <div class="card-footer bg-white" style="flex: 0 0 auto;">
+                            <nav>
+                                <ul class="pagination pagination-sm justify-content-center mb-0">
+                                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                        <button type="submit" class="page-link" 
+                                                onclick="setPage(@(Model.CurrentPage - 1)); return true;"
+                                                @(Model.CurrentPage == 1 ? "disabled" : "")>
+                                            Trước
+                                        </button>
+                                    </li>
+
+                                    @for (int i = 1; i <= Model.TotalPages; i++)
+                                    {
+                                        if (i == 1 || i == Model.TotalPages || (i >= Model.CurrentPage - 2 && i <= Model.CurrentPage + 2))
+                                        {
+                                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                                <button type="submit" class="page-link" 
+                                                        onclick="setPage(@i); return true;">
+                                                    @i
+                                                </button>
+                                            </li>
+                                        }
+                                        else if (i == Model.CurrentPage - 3 || i == Model.CurrentPage + 3)
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        }
+                                    }
+
+                                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                        <button type="submit" class="page-link" 
+                                                onclick="setPage(@(Model.CurrentPage + 1)); return true;"
+                                                @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")>
+                                            Sau
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER: Nút chốt đơn -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted">Đã chọn: </span>
+                                <strong class="fs-5 text-primary">@(Model.SelectedQuestionIds?.Count ?? 0)</strong>
+                                <span class="text-muted">/ @Model.TotalQuestions câu</span>
+                            </div>
+                            <div>
+                                <a asp-action="Index" class="btn btn-secondary me-2">
+                                    <i class="bi bi-x-circle"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg" 
+                                        onclick="setAction('submit')">
+                                    <i class="bi bi-check-circle"></i> Tạo đề thi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function setAction(action) {
+            document.getElementById('actionButtonInput').value = action;
+            if (action === 'filter') {
+                document.querySelector('input[name="CurrentPage"]').value = '1';
+            }
+        }
+
+        function setPage(page) {
+            document.querySelector('input[name="CurrentPage"]').value = page;
+            document.getElementById('actionButtonInput').value = 'page';
+        }
+    </script>
+}

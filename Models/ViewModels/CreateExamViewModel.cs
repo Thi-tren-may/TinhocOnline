@@ -57,5 +57,37 @@ namespace TinhocOnline.Models.ViewModels
 
         // Custom mode: Danh sách câu hỏi được chọn thủ công
         public List<int> SelectedQuestionIds { get; set; } = new List<int>();
+
+        // Checkbox selections từ trang hiện tại (dùng để merge)
+        public List<int>? CurrentPageSelections { get; set; }
+
+        // State phân trang và lọc (cho Custom mode)
+        public int CurrentPage { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+        public int TotalPages { get; set; }
+        public int TotalQuestionItems { get; set; }
+        
+        // Bộ lọc
+        public int? FilterTopicId { get; set; }
+        public string? FilterDifficulty { get; set; }
+        public string? FilterGradeLevel { get; set; }
+
+        // Danh sách câu hỏi hiện tại (cho hiển thị)
+        public List<QuestionItemDto>? Questions { get; set; }
+
+        // Action button được nhấn
+        public string? ActionButton { get; set; }
+    }
+
+    // DTO cho câu hỏi
+    public class QuestionItemDto
+    {
+        public int QuestionId { get; set; }
+        public string QuestionText { get; set; } = string.Empty;
+        public string DifficultyLevel { get; set; } = string.Empty;
+        public string? GradeLevel { get; set; }
+        public int TopicId { get; set; }
+        public string TopicName { get; set; } = string.Empty;
+        public bool IsSelected { get; set; }
     }
 }
