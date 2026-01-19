@@ -86,7 +86,7 @@
                             </div>
                             <div class="col-6">
                                 <label asp-for="TotalQuestions" class="form-label fw-semibold">Tổng số câu</label>
-                                <input asp-for="TotalQuestions" type="number" class="form-control" min="1" max="100" />
+                                <input asp-for="TotalQuestions" type="number" class="form-control" min="1" max="50" />
                                 <span asp-validation-for="TotalQuestions" class="text-danger small"></span>
                             </div>
                         </div>
@@ -304,7 +304,6 @@
                             <div>
                                 <span class="text-muted">Đã chọn: </span>
                                 <strong class="fs-5 text-primary">@(Model.SelectedQuestionIds?.Count ?? 0)</strong>
-                                <span class="text-muted">/ @Model.TotalQuestions câu</span>
                             </div>
                             <div>
                                 <a asp-action="Index" class="btn btn-secondary me-2">
@@ -341,5 +340,83 @@
             document.querySelector('input[name="CurrentPage"]').value = page;
             document.getElementById('actionButtonInput').value = 'page';
         }
+
+        // Kiểm tra số lượng câu hỏi được chọn
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.question-checkbox');
+            
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const maxQuestions = parseInt(document.querySelector('input[name="TotalQuestions"]').value);
+                    
+                    // Lấy danh sách câu đã chọn từ các trang khác (hidden fields)
+                    const selectedFromOtherPages = Array.from(document.querySelectorAll('input[name^="SelectedQuestionIds"]'))
+                        .map(input => parseInt(input.value));
+                    
+                    // Lấy danh sách ID câu hỏi trên trang hiện tại
+                    const currentPageQuestionIds = Array.from(document.querySelectorAll('.question-checkbox'))
+                        .map(cb => parseInt(cb.value));
+                    
+                    // Lọc ra các câu đã chọn từ trang khác (không bao gồm trang hiện tại)
+                    const selectedFromOther = selectedFromOtherPages.filter(id => !currentPageQuestionIds.includes(id));
+                    
+                    // Đếm số câu đang checked trên trang hiện tại
+                    const checkedOnCurrentPage = document.querySelectorAll('.question-checkbox:checked').length;
+                    
+                    // Tổng số câu đã chọn
+                    const totalSelected = selectedFromOther.length + checkedOnCurrentPage;
+                    
+                    if (totalSelected > maxQuestions) {
+                        alert('Đã đạt giới hạn ' + maxQuestions + ' câu hỏi!');
+                        this.checked = false;
+                    }
+                });
+            });
+
+            // Đồng bộ filter lớp với lớp đã chọn và disable checkbox
+            const gradeLevelSelect = document.querySelector('select[name="GradeLevel"]');
+            const filterGradeLevelSelect = document.querySelector('select[name="FilterGradeLevel"]');
+            
+            function updateFilterGradeLevel() {
+                const selectedGrade = gradeLevelSelect.value;
+                
+                // Set filter về lớp được chọn
+                if (selectedGrade !== '') {
+                    filterGradeLevelSelect.value = selectedGrade;
+                }
+                
+                // Disable/Enable các checkbox dựa trên lớp
+                const questionCards = document.querySelectorAll('.card.mb-2');
+                questionCards.forEach(function(card) {
+                    const gradeInfo = card.querySelector('.text-muted');
+                    const checkbox = card.querySelector('.question-checkbox');
+                    
+                    if (checkbox && gradeInfo) {
+                        const gradeText = gradeInfo.textContent;
+                        
+                        if (selectedGrade === '') {
+                            // Không chọn lớp -> enable tất cả
+                            checkbox.disabled = false;
+                            card.style.opacity = '1';
+                        } else {
+                            // Kiểm tra xem câu hỏi có thuộc lớp được chọn không
+                            const belongsToGrade = gradeText.includes('Lớp ' + selectedGrade);
+                            
+                            if (!belongsToGrade) {
+                                checkbox.disabled = true;
+                                checkbox.checked = false;
+                                card.style.opacity = '0.5';
+                            } else {
+                                checkbox.disabled = false;
+                                card.style.opacity = '1';
+                            }
+                        }
+                    }
+                });
+            }
+            
+            gradeLevelSelect.addEventListener('change', updateFilterGradeLevel);
+            updateFilterGradeLevel(); // Chạy lần đầu khi load trang
+        });
     </script>
 }

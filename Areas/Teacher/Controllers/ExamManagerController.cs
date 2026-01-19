@@ -57,13 +57,16 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             ViewBag.Topics = topics;
 
             // Khởi tạo model với giá trị mặc định
+            var now = DateTime.UtcNow;
+
             var model = new CreateExamViewModel
             {
                 CreatedBy = teacherId.Value,
                 TotalQuestions = 10,
                 Duration = 45,
                 PassingScore = 5.0M,
-                CreateMode = "custom"
+                CreateMode = "quick",
+                StartDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, DateTimeKind.Utc),
             };
 
             return View(model);
@@ -80,7 +83,7 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 return RedirectToAction("Login", "Auth", new { area = "" });
             }
 
-            model.CreateMode = "custom";
+            model.CreateMode = "quick";
 
             // Validate chủ đề đã chọn
             if (model.SelectedTopicIds == null || !model.SelectedTopicIds.Any())

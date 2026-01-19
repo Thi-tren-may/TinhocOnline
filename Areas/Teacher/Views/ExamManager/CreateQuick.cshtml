@@ -38,9 +38,9 @@
                         Câu hỏi sẽ được sinh tự động khi học sinh vào làm bài.
                     </div>
 
-                    <form asp-action="CreateCustom" method="post" id="createExamForm">
+                    <form asp-action="CreateQuick" method="post" id="createExamForm">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger mt-3" role="alert"></div>
-                        <input type="hidden" asp-for="CreateMode" value="custom" />
+                        <input type="hidden" asp-for="CreateMode" value="quick" />
                         <input type="hidden" asp-for="CreatedBy" />
 
                         @await Html.PartialAsync("_BasicExamSettings")

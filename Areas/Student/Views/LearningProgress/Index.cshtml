@@ -10,7 +10,8 @@
     <div class="container text-center py-5" style="max-width: 900px;">
         <h3 class="text-white display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Quá trình học tập</h3>
         <ol class="breadcrumb justify-content-center text-white mb-0 wow fadeInDown" data-wow-delay="0.3s">
-            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index" class="text-white">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-area="Student" asp-controller="Home" asp-action="Index"
+                    class="text-white">Trang chủ</a></li>
             <li class="breadcrumb-item active text-secondary">Quá trình học tập</li>
         </ol>
     </div>
@@ -20,13 +21,13 @@
 <!-- Learning Progress Content Start -->
 <div class="container-fluid service py-5">
     <div class="container py-5">
-        
+
         @if (Model.Progress.TotalExamsTaken > 0)
         {
             <!-- Progress Statistics -->
             <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
                 <h1 class="display-5 text-capitalize mb-4">Thống kê tổng quan</h1>
-                
+
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
                         <div class="counter-item bg-light p-4 rounded-3 shadow-sm">
@@ -177,10 +178,11 @@
                                                 var topic = Model.RecommendedTopics[i];
                                                 var priorityClass = topic.Priority == "High" ? "danger" : topic.Priority == "Medium" ? "warning" : "success";
                                                 var priorityText = topic.Priority == "High" ? "Cần ôn" : topic.Priority == "Medium" ? "Khá" : "Tốt";
-                                                var wrongAnswers = topic.TotalQuestions - topic.TotalAttempts * topic.TotalQuestions;
+                                                var wrongAnswers = topic.TotalQuestions - topic.TotalAttempts *
+                                                topic.TotalQuestions;
                                                 var correctAnswers = (int)(topic.TotalQuestions * topic.AccuracyPercentage / 100);
                                                 var wrong = topic.TotalQuestions - correctAnswers;
-                                                
+
                                                 <tr>
                                                     <td>@(i + 1)</td>
                                                     <td>
@@ -230,7 +232,8 @@
                                                         @if (topic.TotalAttempts > 0)
                                                         {
                                                             <div class="d-flex align-items-center justify-content-center">
-                                                                <span class="ms-2 fw-bold text-@priorityClass">@topic.AccuracyPercentage.ToString("0.0")%</span>
+                                                                <span
+                                                                    class="ms-2 fw-bold text-@priorityClass">@topic.AccuracyPercentage.ToString("0.0")%</span>
                                                             </div>
                                                         }
                                                         else
@@ -271,37 +274,41 @@
                             </h2>
                         </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tên bài thi</th>
-                                        <th>Ngày làm</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < Model.RecentAnalyses.Count; i++)
-                                    {
-                                        var exam = Model.RecentAnalyses[i];
-                                        var badgeClass = exam.AccuracyPercentage >= 80 ? "success" : exam.AccuracyPercentage >= 50 ? "warning" : "danger";
-                                        
-                                        <tr>
-                                            <td>@(i + 1)</td>
-                                            <td><strong>@exam.ExamName</strong></td>
-                                            <td>@exam.AnalyzedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                            <td>
-                                                <a asp-area="Student" asp-controller="Exam" asp-action="ViewResults" 
-                                                   asp-route-id="@exam.StudentExamId" 
-                                                   class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-eye me-1"></i>Chi tiết
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Tên bài thi</th>
+                                                <th>Ngày làm</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i < Model.RecentAnalyses.Count; i++)
+                                            {
+                                                var exam = Model.RecentAnalyses[i];
+                                                var badgeClass = exam.AccuracyPercentage >= 80 ? "success" : exam.AccuracyPercentage >= 50 ?
+                                                "warning" : "danger";
+
+                                                <tr>
+                                                    <td>@(i + 1)</td>
+                                                    <td><strong>@exam.ExamName</strong></td>
+                                                    <td>@exam.AnalyzedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>
+                                                        <a asp-area="Student" asp-controller="Exam" asp-action="ViewResults"
+                                                            asp-route-id="@exam.StudentExamId" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-eye me-1"></i>Chi tiết
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -313,8 +320,10 @@
             <div class="text-center py-5 wow fadeInUp" data-wow-delay="0.1s">
                 <i class="fas fa-inbox fa-5x text-muted mb-4"></i>
                 <h3 class="mb-3">Chưa có dữ liệu quá trình học tập</h3>
-                <p class="text-muted mb-4">Bạn chưa hoàn thành bài thi nào. Hãy bắt đầu làm bài để xem quá trình học tập của mình!</p>
-                <a asp-area="Student" asp-controller="Exam" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-5">
+                <p class="text-muted mb-4">Bạn chưa hoàn thành bài thi nào. Hãy bắt đầu làm bài để xem quá trình học tập của
+                    mình!</p>
+                <a asp-area="Student" asp-controller="Exam" asp-action="Index"
+                    class="btn btn-primary btn-lg rounded-pill px-5">
                     <i class="fas fa-play-circle me-2"></i>Bắt đầu làm bài
                 </a>
             </div>
