@@ -126,18 +126,18 @@
                     <h5 class="card-title">Thống kê học tập</h5>
                     <div class="activity">
                         <div class="activity-item d-flex mb-3">
-                            <div class="activite-label text-muted">Số khóa học đã đăng ký:</div>
-                            <i class="bi bi-circle-fill activity-badge text-success align-self-start ms-auto"></i>
+                            <div class="activite-label text-muted">Tổng số bài thi:</div>
+                            <i class="bi bi-circle-fill activity-badge text-primary align-self-start ms-auto"></i>
                             <div class="activity-content ms-2">
-                                <strong>0</strong> khóa
+                                <strong>@ViewBag.TotalExams</strong> bài
                             </div>
                         </div>
 
                         <div class="activity-item d-flex mb-3">
-                            <div class="activite-label text-muted">Bài tập đã hoàn thành:</div>
-                            <i class="bi bi-circle-fill activity-badge text-info align-self-start ms-auto"></i>
+                            <div class="activite-label text-muted">Bài thi đã hoàn thành:</div>
+                            <i class="bi bi-circle-fill activity-badge text-success align-self-start ms-auto"></i>
                             <div class="activity-content ms-2">
-                                <strong>0</strong> bài
+                                <strong>@ViewBag.CompletedExams</strong> bài
                             </div>
                         </div>
 
@@ -145,27 +145,9 @@
                             <div class="activite-label text-muted">Điểm trung bình:</div>
                             <i class="bi bi-circle-fill activity-badge text-warning align-self-start ms-auto"></i>
                             <div class="activity-content ms-2">
-                                <strong>0</strong> điểm
+                                <strong>@ViewBag.AverageScore</strong> điểm
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions Card -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thao tác nhanh</h5>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary btn-sm" disabled>
-                            <i class="bi bi-envelope"></i> Gửi email
-                        </button>
-                        <button class="btn btn-outline-info btn-sm" disabled>
-                            <i class="bi bi-file-text"></i> Xem báo cáo
-                        </button>
-                        <button class="btn btn-outline-warning btn-sm" disabled>
-                            <i class="bi bi-key"></i> Đặt lại mật khẩu
-                        </button>
                     </div>
                 </div>
             </div>

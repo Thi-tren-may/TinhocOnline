@@ -10,7 +10,15 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">@Model.ExamName</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">@Model.ExamName</h5>
+                        <div class="text-end">
+                            <div id="countdown-timer" class="badge bg-primary fs-5 p-3">
+                                <i class="bi bi-clock me-2"></i>
+                                <span id="timer-display">@(Model.Duration.ToString("00")):00:00</span>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="alert alert-info">
                         <strong>Thời gian:</strong> @Model.Duration phút |
@@ -51,10 +59,9 @@
                                                 @foreach (var answer in answers)
                                                 {
                                                     <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="radio" 
-                                                               name="answer_@seq.StudentExamQuestionId" 
-                                                               id="answer_@answer.AnswerId" 
-                                                               value="@answer.AnswerId">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="answer_@seq.StudentExamQuestionId" id="answer_@answer.AnswerId"
+                                                            value="@answer.AnswerId">
                                                         <label class="form-check-label" for="answer_@answer.AnswerId">
                                                             @Html.Raw(answer.AnswerText)
                                                         </label>
@@ -67,7 +74,7 @@
                             }
 
                             <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
                                     <i class="bi bi-check-circle me-1"></i> Nộp bài
                                 </button>
                                 <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">
@@ -92,3 +99,99 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Countdown timer
+        const duration = @Model.Duration; // phút
+        let timeLeft = duration * 60; // chuyển sang giây
+        const timerDisplay = document.getElementById('timer-display');
+        const countdownTimer = document.getElementById('countdown-timer');
+        const submitBtn = document.getElementById('submit-btn');
+        const form = document.querySelector('form');
+        const totalQuestions = @Model.TotalQuestions;
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(timeLeft);
+
+            // Đổi màu khi còn 5 phút
+            if (timeLeft <= 300) {
+                countdownTimer.classList.remove('bg-primary');
+                countdownTimer.classList.add('bg-danger');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('Hết giờ! Bài thi sẽ được nộp tự động.');
+                form.submit();
+                return;
+            }
+
+            timeLeft--;
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Cập nhật ngay lập tức
+
+        // Kiểm tra tất cả câu hỏi đã được trả lời
+        form.addEventListener('submit', function (e) {
+            let answeredCount = 0;
+
+            // Đếm số câu đã trả lời
+            for (let i = 1; i <= totalQuestions; i++) {
+                const radios = document.querySelectorAll(`input[type="radio"][name^="answer_"]`);
+                const questionGroups = {};
+
+                radios.forEach(radio => {
+                    const questionName = radio.name;
+                    if (!questionGroups[questionName]) {
+                        questionGroups[questionName] = [];
+                    }
+                    questionGroups[questionName].push(radio);
+                });
+
+                for (const [questionName, radioGroup] of Object.entries(questionGroups)) {
+                    const isAnswered = radioGroup.some(radio => radio.checked);
+                    if (isAnswered) {
+                        answeredCount++;
+                    }
+                }
+                break;
+            }
+
+            if (answeredCount < totalQuestions) {
+                e.preventDefault();
+                alert(`Bạn cần trả lời tất cả ${totalQuestions} câu hỏi trước khi nộp bài!\nSố câu đã trả lời: ${answeredCount}/${totalQuestions}`);
+                return false;
+            }
+
+            // Xác nhận trước khi nộp
+            if (!confirm('Bạn có chắc chắn muốn nộp bài không?')) {
+                e.preventDefault();
+                return false;
+            }
+
+            clearInterval(timerInterval);
+        });
+
+        // Cảnh báo khi người dùng cố gắng rời khỏi trang
+        window.addEventListener('beforeunload', function (e) {
+            if (timeLeft > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+    </script>
+}

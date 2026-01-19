@@ -39,6 +39,23 @@ namespace TinhocOnline.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            // Thống kê học tập
+            var studentExams = await _context.StudentExams
+                .Where(se => se.StudentId == id)
+                .ToListAsync();
+
+            // Tổng số bài thi đã làm
+            ViewBag.TotalExams = studentExams.Count;
+
+            // Số bài thi đã hoàn thành (có điểm)
+            var completedExams = studentExams.Where(se => se.Score.HasValue).ToList();
+            ViewBag.CompletedExams = completedExams.Count;
+
+            // Điểm trung bình
+            ViewBag.AverageScore = completedExams.Any() 
+                ? Math.Round(completedExams.Average(se => se.Score.Value), 2) 
+                : 0;
+
             return View(user);
         }
 
@@ -110,10 +127,29 @@ namespace TinhocOnline.Areas.Admin.Controllers
                 return View(user);
             }
 
+            // Xóa lỗi validation cho Password nếu nó trống (không bắt buộc khi edit)
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                ModelState.Remove("Password");
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Lấy user hiện tại từ database
+                    var existingUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == id);
+                    if (existingUser == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Nếu password trống, giữ nguyên password cũ
+                    if (string.IsNullOrWhiteSpace(user.Password))
+                    {
+                        user.Password = existingUser.Password;
+                    }
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

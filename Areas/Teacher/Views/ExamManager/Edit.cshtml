@@ -125,4 +125,73 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // Time picker logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.querySelector('input[name="StartDate"]');
+            const endDateInput = document.querySelector('input[name="EndDate"]');
+            const durationInput = document.querySelector('input[name="Duration"]');
+
+            if (!startDateInput || !endDateInput || !durationInput) return;
+
+            // Set min datetime to now
+            function setMinDateTime() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                startDateInput.setAttribute('min', minDateTime);
+                endDateInput.setAttribute('min', minDateTime);
+            }
+
+            // Calculate end date based on start date and duration
+            function calculateEndDate() {
+                if (!startDateInput.value || !durationInput.value) return;
+                
+                // Parse datetime-local value
+                const startStr = startDateInput.value;
+                const duration = parseInt(durationInput.value) || 0;
+                
+                // Create date from local string
+                const startDate = new Date(startStr);
+                const endDate = new Date(startDate.getTime() + duration * 60000);
+                
+                // Format back to datetime-local
+                const year = endDate.getFullYear();
+                const month = String(endDate.getMonth() + 1).padStart(2, '0');
+                const day = String(endDate.getDate()).padStart(2, '0');
+                const hours = String(endDate.getHours()).padStart(2, '0');
+                const minutes = String(endDate.getMinutes()).padStart(2, '0');
+                
+                endDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            // Initialize start date to now if empty
+            if (!startDateInput.value) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
+                startDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            setMinDateTime();
+            calculateEndDate(); // Calculate immediately after setting start date
+
+            // Update end date when duration changes
+            durationInput.addEventListener('change', calculateEndDate);
+            durationInput.addEventListener('input', calculateEndDate);
+
+            // Update end date when start date changes
+            startDateInput.addEventListener('change', calculateEndDate);
+        });
+    </script>
 }

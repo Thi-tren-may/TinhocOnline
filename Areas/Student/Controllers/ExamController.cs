@@ -34,7 +34,7 @@ namespace TinhocOnline.Areas.Student.Controllers
                 .Include(e => e.ExamType)
                 .Include(e => e.Creator)
                 .Include(e => e.StudentExams.Where(se => se.StudentId == studentId))
-                .Where(e => e.Status == "published" || e.CreatedBy == studentId)
+                .Where(e =>e.CreatedBy == studentId || (e.Status == "published" && e.EndDate >= DateTime.Now))
                 .OrderByDescending(e => e.ExamId)
                 .ToListAsync();
 

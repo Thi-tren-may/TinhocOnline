@@ -9,7 +9,8 @@
     <h1>Quản lý Chủ đề</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Trang chủ</a>
+            </li>
             <li class="breadcrumb-item active">Danh sách chủ đề</li>
         </ol>
     </nav>
@@ -47,7 +48,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int index = 1;}
+                                @{
+                                    int index = 1;
+                                }
                                 @foreach (var item in Model)
                                 {
                                     <tr>
@@ -76,16 +79,16 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
-                                                <a asp-action="Details" asp-route-id="@item.TopicId" 
-                                                   class="btn btn-sm btn-info" title="Chi tiết">
+                                                <a asp-action="Details" asp-route-id="@item.TopicId"
+                                                    class="btn btn-sm btn-info" title="Chi tiết">
                                                     <i class="bi bi-info-circle"></i>
                                                 </a>
-                                                <a asp-action="Edit" asp-route-id="@item.TopicId" 
-                                                   class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                <a asp-action="Edit" asp-route-id="@item.TopicId"
+                                                    class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-                                                <a asp-action="Delete" asp-route-id="@item.TopicId" 
-                                                   class="btn btn-sm btn-danger" title="Xóa">
+                                                <a asp-action="Delete" asp-route-id="@item.TopicId"
+                                                    class="btn btn-sm btn-danger" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
                                             </div>
@@ -102,14 +105,6 @@
                         <div class="alert alert-warning text-center" role="alert">
                             <i class="bi bi-exclamation-triangle"></i>
                             Chưa có chủ đề nào. Hãy thêm chủ đề mới!
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-                            <i class="bi bi-exclamation-triangle"></i> Chưa có chủ đề nào trong hệ thống. Vui lòng thêm mới!
                         </div>
                     }
                 </div>

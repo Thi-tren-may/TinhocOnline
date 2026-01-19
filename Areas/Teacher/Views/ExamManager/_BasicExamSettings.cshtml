@@ -12,7 +12,7 @@
     <label asp-for="ExamTypeId" class="col-sm-3 col-form-label">Loại đề thi <span class="text-danger">*</span></label>
     <div class="col-sm-9">
         <select asp-for="ExamTypeId" class="form-select" asp-items="ViewBag.ExamTypes">
-            <option value="">-- Chọn loại đề --</option>
+            <option value="0">-- Chọn loại đề --</option>
         </select>
         <span asp-validation-for="ExamTypeId" class="text-danger"></span>
     </div>
@@ -34,7 +34,7 @@
 <div class="row mb-3">
     <label asp-for="TotalQuestions" class="col-sm-3 col-form-label">Tổng số câu <span class="text-danger">*</span></label>
     <div class="col-sm-9">
-        <input asp-for="TotalQuestions" class="form-control" type="number" />
+        <input asp-for="TotalQuestions" class="form-control" type="number" min="10" step="50" />
         <span asp-validation-for="TotalQuestions" class="text-danger"></span>
     </div>
 </div>
@@ -42,7 +42,7 @@
 <div class="row mb-3">
     <label asp-for="Duration" class="col-sm-3 col-form-label">Thời gian (phút) <span class="text-danger">*</span></label>
     <div class="col-sm-9">
-        <input asp-for="Duration" class="form-control" type="number" />
+        <input asp-for="Duration" class="form-control" type="number" min="10" max="180" step="5"/>
         <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
 </div>

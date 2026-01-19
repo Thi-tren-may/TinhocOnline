@@ -57,8 +57,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
             ViewBag.Topics = topics;
 
             // Khởi tạo model với giá trị mặc định
-            var now = DateTime.UtcNow;
-
             var model = new CreateExamViewModel
             {
                 CreatedBy = teacherId.Value,
@@ -66,7 +64,6 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 Duration = 45,
                 PassingScore = 5.0M,
                 CreateMode = "quick",
-                StartDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, DateTimeKind.Utc),
             };
 
             return View(model);
@@ -718,6 +715,25 @@ namespace TinhocOnline.Areas.Teacher.Controllers
                 if (questions.Count != selectedQuestionIds.Count)
                 {
                     return false; // Có câu hỏi không tồn tại hoặc không active
+                }
+
+                // Tính toán ma trận độ khó dựa trên câu hỏi thực tế
+                var easyCount = questions.Count(q => q.DifficultyLevel == "easy");
+                var mediumCount = questions.Count(q => q.DifficultyLevel == "medium");
+                var hardCount = questions.Count(q => q.DifficultyLevel == "hard");
+                var totalCount = questions.Count;
+
+                var easyPercentage = totalCount > 0 ? Math.Round((decimal)easyCount * 100 / totalCount, 2) : 0;
+                var mediumPercentage = totalCount > 0 ? Math.Round((decimal)mediumCount * 100 / totalCount, 2) : 0;
+                var hardPercentage = totalCount > 0 ? Math.Round((decimal)hardCount * 100 / totalCount, 2) : 0;
+
+                // Cập nhật ma trận độ khó vào Exam
+                var exam = await _context.Exams.FindAsync(examId);
+                if (exam != null)
+                {
+                    exam.EasyPercentage = easyPercentage;
+                    exam.MediumPercentage = mediumPercentage;
+                    exam.HardPercentage = hardPercentage;
                 }
 
                 // Tạo ExamQuestions với thứ tự theo danh sách đã chọn

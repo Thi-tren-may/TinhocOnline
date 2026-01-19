@@ -18,7 +18,7 @@ namespace TinhocOnline.Models.ViewModels
         public int Duration { get; set; } = 45;
 
         [Required(ErrorMessage = "Vui lòng nhập tổng số câu hỏi")]
-        [Range(10, 100, ErrorMessage = "Số câu hỏi từ 10-100")]
+        [Range(10, 50, ErrorMessage = "Số câu hỏi từ 10-50")]
         public int TotalQuestions { get; set; } = 50;
 
         // Ma trận độ khó
